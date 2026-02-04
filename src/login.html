@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus OS - Acceso</title>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/landing.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <div class="auth-layout">
+        <div class="auth-form-side">
+            <div class="auth-container">
+                <a href="landing.html" class="auth-logo">
+                    <div class="logo-box nexus-gradient">
+                        <i data-lucide="zap" class="icon-white"></i>
+                    </div>
+                    <span class="font-bold text-xl">Nexus OS</span>
+                </a>
+
+                <div class="auth-header">
+                    <h1 id="pageTitle">Bienvenido de vuelta</h1>
+                    <p id="pageSubtitle" class="text-muted">Ingresa tus credenciales para acceder</p>
+                </div>
+
+                <form id="authForm" class="auth-form">
+                    <div id="nameField" class="form-group hidden">
+                        <label>Nombre completo</label>
+                        <input type="text" id="inputName" placeholder="Tu nombre">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <div class="input-icon-wrapper">
+                            <i data-lucide="mail" class="input-icon"></i>
+                            <input type="email" id="inputEmail" placeholder="tu@email.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label>Contraseña</label>
+                            <a href="#" id="forgotPass" class="link-primary text-sm">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <div class="input-icon-wrapper">
+                            <i data-lucide="lock" class="input-icon"></i>
+                            <input type="password" id="inputPassword" placeholder="••••••••" required>
+                            <button type="button" id="togglePass" class="pass-toggle">
+                                <i data-lucide="eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary nexus-gradient full-width btn-lg">
+                        <span id="btnText">Iniciar Sesión</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </form>
+
+                <div class="divider">
+                    <span>o continúa con</span>
+                </div>
+
+                <div class="social-login">
+                    <button class="btn-outline full-width"><i data-lucide="chrome"></i> Google</button>
+                    <button class="btn-outline full-width"><i data-lucide="github"></i> GitHub</button>
+                </div>
+
+                <p class="auth-switch">
+                    <span id="switchText">¿No tienes cuenta?</span>
+                    <button type="button" id="toggleModeBtn" class="link-primary">Regístrate</button>
+                </p>
+            </div>
+        </div>
+
+        <div class="auth-visual-side">
+            <div class="bg-blobs">
+                <div class="blob blob-1"></div>
+                <div class="blob blob-2"></div>
+            </div>
+            <div class="visual-content">
+                <div class="visual-icon nexus-gradient nexus-glow animate-float">
+                    <i data-lucide="zap" class="icon-large-white"></i>
+                </div>
+                <h2>Tu centro de control personal</h2>
+                <p>Ideas, proyectos, tiempo y finanzas. Todo sincronizado.</p>
+                <div class="pills-container">
+                    <span class="pill">Notes</span>
+                    <span class="pill">Projects</span>
+                    <span class="pill">Kanban</span>
+                    <span class="pill">Wallet</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/landing.js"></script>
+    <script>
+        lucide.createIcons();
+        // Inicializar lógica de auth específica
+        if (window.initAuthPage) window.initAuthPage();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,337 @@
+/* =========================================
+   FINANZAS
+   ========================================= */
+.finance-dashboard-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 25px;
+    height: calc(100vh - 140px);
+    min-height: 550px;
+}
+
+.finance-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.f-card.f-diario-hero {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    border-left: 6px solid transparent;
+    flex-shrink: 0;
+}
+
+.f-diario-hero.status-ok {
+    border-left-color: var(--success);
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), var(--bg-card));
+}
+
+.f-diario-hero.status-warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.05), var(--bg-card));
+}
+
+.f-diario-hero.status-danger {
+    border-left-color: var(--danger);
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.05), var(--bg-card));
+}
+
+.diario-content .big {
+    font-size: 3.5rem;
+    margin: 5px 0;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.diario-content span {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Mini Grid */
+.finance-mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    align-content: start;
+}
+
+.f-mini-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--shadow);
+}
+
+.f-mini-card.highlight {
+    background: var(--input-bg);
+    border-color: var(--primary);
+}
+
+.mini-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.mini-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-warning {
+    color: #f59e0b;
+}
+
+/* Panel Derecho */
+.f-panel-clean {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.panel-header-clean {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.btn-plus-round {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.btn-plus-round:hover {
+    transform: rotate(90deg);
+}
+
+/* Formulario Inline */
+.form-fijo-row {
+    background: var(--input-bg);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid var(--primary);
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fijo-row-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.fijo-row-inputs input,
+.fijo-row-inputs select {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.input-mini-icon {
+    flex: 0 0 55px !important;
+    text-align: center;
+    cursor: pointer;
+}
+
+.input-suffix-group {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding-right: 8px;
+    flex: 1;
+}
+
+.input-suffix-group input {
+    border: none !important;
+    width: 55px;
+}
+
+.btn-check {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Lista Scroll */
+.fijos-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.fijos-list-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.fijos-list-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+.list-clean {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.list-clean li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 5px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s;
+}
+
+.list-clean li:hover {
+    background: var(--input-bg);
+    border-radius: 8px;
+}
+
+.fijo-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    background: var(--input-bg);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-right: 12px;
+}
+
+.fijo-info-clean {
+    display: flex;
+    flex-direction: column;
+}
+
+.fijo-name-clean {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+.fijo-meta-clean {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.fijo-amount-clean {
+    font-weight: 700;
+    color: var(--text-main);
+    font-size: 1rem;
+}
+
+/* Botón Borrar */
+.btn-delete-mini {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid transparent;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 1.1rem;
+    margin-left: 10px;
+}
+
+.btn-delete-mini:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+#listaGastosFijos .btn-delete-mini {
+    opacity: 1 !important;
+    visibility: visible !important;
+    background-color: rgba(128, 128, 128, 0.1);
+    margin-left: 15px;
+    border: 1px solid var(--border-color);
+}
+
+#listaGastosFijos .btn-delete-mini:hover {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border-color: var(--danger);
+    transform: scale(1.1);
+}
+
+@media (max-width: 900px) {
+    .finance-dashboard-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+        padding-bottom: 40px;
+    }
+
+    .finance-mini-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

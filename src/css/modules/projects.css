@@ -1,0 +1,741 @@
+/* src/css/modules/projects.css */
+
+/* Layout Principal */
+.projects-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    height: 100%;
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* --- 1. KPI GRID (4 Recuadros) --- */
+.proj-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.kpi-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+.kpi-box:hover {
+    border-color: transparent;
+    transform: translateY(-5px);
+    z-index: 10;
+    box-shadow: 0 7px var(--neon-spread) rgba(var(--neon-color), 0.5);
+    /* Simplificado para compatibilidad */
+}
+
+.kpi-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.kpi-total .kpi-value {
+    color: var(--text-main);
+}
+
+.kpi-active .kpi-value {
+    color: var(--primary);
+}
+
+.kpi-inactive .kpi-value {
+    color: var(--text-muted);
+}
+
+.kpi-completed .kpi-value {
+    color: var(--success);
+}
+
+/* --- 2. TOOLBAR --- */
+.proj-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.toolbar-top {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.search-proj {
+    flex: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: var(--text-main);
+    outline: none;
+}
+
+/* Tabs */
+.proj-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+/* --- 3. LISTA DE PROYECTOS (Base) --- */
+.projects-list-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    /* Por defecto lista vertical */
+    gap: 15px;
+}
+
+/* Scrollbar global fina */
+.projects-list-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.projects-list-scroll::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+/* --- TARJETA DE PROYECTO (Estilo Lista) --- */
+.project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+
+/* Header Card */
+.pc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.pc-title-area h3 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 5px;
+}
+
+.pc-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.pc-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Status Badge */
+.status-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.status-badge:hover {
+    filter: brightness(0.9);
+    transform: scale(1.05);
+}
+
+.st-active {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--success);
+    border-color: rgba(99, 102, 241, 0.2);
+}
+
+.st-paused {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--warning);
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.st-completed {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--success);
+    border-color: rgba(16, 185, 129, 0.2);
+    cursor: default;
+}
+
+.btn-dots {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+.btn-dots:hover {
+    color: var(--text-main);
+}
+
+/* Info Grid */
+.pc-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.info-item label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.info-item span {
+    font-size: 0.85rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+/* Progreso */
+.pc-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.progress-bar-bg {
+    height: 6px;
+    background: var(--bg-body);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s;
+}
+
+.pc-progress-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Subtareas */
+.pc-subtasks-list {
+    margin-top: 15px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.pc-subtasks-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.pc-subtasks-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.pc-subtask-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-main);
+    padding: 4px 0;
+}
+
+.pc-subtask-item input[type="checkbox"] {
+    accent-color: var(--primary);
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.pc-subtask-item.completed span {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* --- MODAL --- */
+/* =========================================
+   CORRECCIONES MODAL Y DRAG & DROP
+   ========================================= */
+
+/* 1. Modal con Scrollbar Elegante */
+.form-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    padding: 30px;
+    max-width: 650px;
+    width: 95%;
+    max-height: 85vh;
+    /* Altura máxima */
+    overflow-y: auto;
+    /* Scroll vertical */
+    position: relative;
+}
+
+/* Scrollbar fina para el modal */
+.form-card::-webkit-scrollbar {
+    width: 8px;
+}
+
+.form-card::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.form-card::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+    border: 2px solid var(--bg-card);
+    /* Espacio visual */
+}
+
+.form-card::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+/* 2. Bloques de Secciones más limpios */
+.proj-section-block {
+    background: rgba(255, 255, 255, 0.03);
+    /* Fondo muy sutil */
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: background 0.2s;
+}
+
+.proj-section-block:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--text-muted);
+}
+
+/* 3. Filas de Tareas (Drag & Drop) */
+.task-input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 4px;
+    border-radius: 6px;
+    background: var(--bg-card);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+/* Efecto al arrastrar */
+.task-input-row.dragging {
+    opacity: 0.5;
+    border: 1px dashed var(--primary);
+    background: rgba(var(--primary-rgb), 0.1);
+}
+
+/* Icono de arrastre (6 puntos) */
+.drag-handle {
+    cursor: grab;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 5px;
+    user-select: none;
+    opacity: 0.5;
+}
+
+.drag-handle:hover {
+    opacity: 1;
+    color: var(--text-main);
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Input de tarea mejorado */
+.task-input-real {
+    flex: 1;
+    background: transparent !important;
+    border: none !important;
+    padding: 8px !important;
+    font-size: 0.95rem !important;
+    color: var(--text-main);
+    border-bottom: 1px solid transparent !important;
+}
+
+.task-input-real:focus {
+    border-bottom-color: var(--primary) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Botones de acción pequeños */
+.btn-mini-add {
+    margin-top: 10px;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    padding: 8px;
+    width: 100%;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.btn-mini-add:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+}
+
+/* Separador visual del título de sección */
+.section-header-row {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+.form-card input,
+.form-card textarea {
+    background: var(--bg-body);
+    border: 1px solid transparent;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+    background: var(--bg-card);
+    border-color: var(--primary);
+}
+
+.sections-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    max-height: 250px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.proj-section-block {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.section-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-section-title {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px dashed var(--border-color) !important;
+    border-radius: 0 !important;
+    font-weight: 700;
+    color: var(--primary);
+    width: 80%;
+}
+
+.modal-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.priority-selector {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.prio-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: 0.5;
+    border: 2px solid transparent;
+}
+
+.prio-option.selected {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 0 2px var(--text-main);
+}
+
+.bg-red {
+    background-color: #ef4444;
+}
+
+.bg-yellow {
+    background-color: #f59e0b;
+}
+
+.bg-green {
+    background-color: #10b981;
+}
+
+.tags-input-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    border: 1px solid var(--border-color);
+    padding: 5px;
+    border-radius: 8px;
+    background: var(--input-bg);
+    min-height: 38px;
+}
+
+.tag-chip {
+    font-size: 0.75rem;
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tag-input-ghost {
+    border: none;
+    background: transparent;
+    outline: none;
+    flex: 1;
+    color: var(--text-main);
+    min-width: 60px;
+}
+
+/* --- BOTONES VISTA --- */
+.view-toggles {
+    display: flex;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2px;
+    margin-left: 10px;
+}
+
+.btn-view {
+    background: transparent;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-view:hover {
+    color: var(--text-main);
+    background: var(--bg-body);
+}
+
+.btn-view.active {
+    background: var(--primary);
+    color: white;
+}
+
+/* =========================================
+   GRID VIEW (Cuadrícula Mejorada)
+   ========================================= */
+
+/* 1. Contenedor Grid */
+.projects-container.grid-view {
+    display: grid;
+    /* Columnas responsive: mínimo 320px */
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+    padding-bottom: 40px;
+    align-items: start;
+}
+
+/* 2. Tarjeta Grid (Tamaño Fijo Uniforme) */
+.projects-container.grid-view .project-card {
+    display: flex;
+    flex-direction: column;
+    height: 420px;
+    /* Altura fija para uniformidad */
+    overflow: hidden;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.projects-container.grid-view .project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--primary);
+}
+
+/* 3. Header Grid */
+.projects-container.grid-view .pc-header {
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}
+
+.projects-container.grid-view .pc-title-area h3 {
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.projects-container.grid-view .pc-desc {
+    display: -webkit-box;
+    -web-kit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    height: 2.6em;
+    margin-bottom: 10px;
+}
+
+/* 4. Info Grid */
+.projects-container.grid-view .pc-info-grid {
+    background: var(--bg-body);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border-color);
+}
+
+/* 5. Lista de Tareas Grid (Scroll Fino) */
+.projects-container.grid-view .pc-subtasks-list {
+    flex: 1;
+    /* Ocupa el espacio restante */
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 10px;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 10px;
+}
+
+.projects-container.grid-view .pc-subtasks-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.projects-container.grid-view .pc-subtasks-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.projects-container.grid-view .pc-subtasks-list::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 10px;
+}
+
+.projects-container.grid-view .pc-subtasks-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+.projects-container.grid-view .pc-subtask-item {
+    font-size: 0.85rem;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* 6. Footer Grid */
+.projects-container.grid-view .pc-progress,
+.projects-container.grid-view .finished-message {
+    margin-top: auto;
+    flex-shrink: 0;
+}
+
+/* Responsive Móvil */
+@media (max-width: 768px) {
+    .proj-kpi-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .kpi-value {
+        font-size: 1.4rem;
+    }
+
+    .projects-container.grid-view {
+        grid-template-columns: 1fr;
+        /* 1 col en móvil */
+    }
+}

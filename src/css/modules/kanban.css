@@ -1,0 +1,280 @@
+/* --- LAYOUT PRINCIPAL --- */
+.kanban-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* Ajuste para ocupar espacio real disponible */
+    overflow: hidden;
+    animation: fadeIn 0.3s ease-out;
+}
+
+#headerKanban {
+    justify-content: center !important;
+}
+
+.kanban-board {
+    display: flex;
+    gap: 15px;
+    /* Reducir un poco el espacio entre columnas */
+    overflow-x: auto;
+    padding-bottom: 10px;
+    /* Menos padding abajo */
+    height: 100%;
+    align-items: flex-start;
+    padding: 10px 20px;
+}
+
+
+/* --- ESTILIZAR EL SCROLLBAR (Adiós barra blanca gigante) --- */
+.kanban-board::-webkit-scrollbar {
+    height: 8px;
+    /* Altura de la barra horizontal */
+}
+
+.kanban-board::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.kanban-board::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    /* Color sutil */
+    border-radius: 4px;
+}
+
+.kanban-board::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+/* --- COLUMNA --- */
+.k-column {
+    /* CAMBIO CLAVE: */
+    flex: 1;
+    /* Ocupar espacio disponible equitativamente */
+    min-width: 250px;
+    /* Ancho mínimo más pequeño para que quepan 4 */
+    max-width: 350px;
+    /* Evitar que se hagan gigantes en monitores grandes */
+
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+    transition: background 0.3s;
+    flex-shrink: 0;
+    /* Evita que se aplasten demasiado si no quieres */
+}
+
+.k-column-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: var(--bg-card);
+    /* Asegurar fondo */
+    border-radius: 16px 16px 0 0;
+}
+
+.k-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.k-count {
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+}
+
+/* Puntos de estado */
+.dot-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-backlog {
+    background: var(--text-muted);
+    opacity: 0.5;
+}
+
+.dot-todo {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+}
+
+.dot-doing {
+    background: var(--warning);
+    box-shadow: 0 0 8px var(--warning);
+}
+
+.dot-done {
+    background: var(--success);
+}
+
+.k-column-body {
+    padding: 12px;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100px;
+    /* Altura mínima para permitir drop en columna vacía */
+    transition: background-color 0.2s;
+}
+
+/* Efecto cuando arrastras algo sobre la columna */
+.k-column-body.drag-over {
+    background: rgba(var(--primary), 0.05);
+    box-shadow: inset 0 0 0 2px var(--primary);
+    border-radius: 0 0 16px 16px;
+}
+
+/* --- TARJETA (CARD) --- */
+.k-card {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: grab;
+    position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    user-select: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.k-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    border-color: var(--primary);
+}
+
+.k-card:active {
+    cursor: grabbing;
+}
+
+/* Clase añadida por JS al arrastrar */
+.k-card.dragging {
+    opacity: 0.4;
+    border: 1px dashed var(--primary);
+    background: var(--bg-card);
+    transform: scale(0.98);
+}
+
+/* Título Editable */
+.k-card-title {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-main);
+    line-height: 1.4;
+    word-break: break-word;
+    min-width: 0;
+}
+
+.k-card-title[contenteditable="true"] {
+    outline: none;
+    cursor: text;
+    padding: 2px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.k-card-title[contenteditable="true"]:focus {
+    background: var(--bg-input);
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+/* Botón Borrar */
+.btn-k-delete {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 4px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: -2px;
+}
+
+.k-card:hover .btn-k-delete {
+    opacity: 1;
+}
+
+.btn-k-delete:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+/* Botón Añadir en Columna */
+.btn-k-add {
+    background: transparent;
+    border: 3px dashed var(--border-color);
+    color: var(--text-muted);
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1.2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.btn-k-add:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--input-bg);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* --- RESPONSIVE KANBAN --- */
+@media (max-width: 768px) {
+    .kanban-board {
+        display: flex;
+        flex-direction: row;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 15px;
+        padding-bottom: 20px;
+        height: calc(100vh - 160px);
+    }
+
+    .k-column {
+        min-width: 85vw;
+        max-width: 85vw;
+        scroll-snap-align: center;
+    }
+}

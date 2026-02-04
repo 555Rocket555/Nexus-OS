@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus OS - Control total de tu vida</title>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/landing.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <nav class="navbar glass-effect">
+        <div class="container nav-container">
+            <div class="logo-area">
+                <div class="logo-box nexus-gradient">
+                    <i data-lucide="zap" class="icon-white"></i>
+                </div>
+                <span class="logo-text">Nexus OS</span>
+            </div>
+
+            <div class="desktop-menu">
+                <a href="#features">Características</a>
+                <a href="#modules">Módulos</a>
+                <a href="#pricing">Precios</a>
+            </div>
+
+            <div class="desktop-auth">
+                <a href="login.html" class="btn-ghost">Iniciar Sesión</a>
+                <a href="login.html?mode=register" class="btn-primary nexus-gradient">
+                    Comenzar Gratis <i data-lucide="arrow-right" class="icon-sm"></i>
+                </a>
+            </div>
+
+            <button id="mobileMenuBtn" class="mobile-toggle">
+                <i data-lucide="menu"></i>
+            </button>
+        </div>
+
+        <div id="mobileMenu" class="mobile-menu hidden">
+            <a href="#features">Características</a>
+            <a href="#modules">Módulos</a>
+            <a href="#pricing">Precios</a>
+            <div class="mobile-auth-btns">
+                <a href="login.html" class="btn-ghost full-width">Iniciar Sesión</a>
+                <a href="login.html?mode=register" class="btn-primary nexus-gradient full-width">Comenzar Gratis</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="bg-blobs">
+            <div class="blob blob-1"></div>
+            <div class="blob blob-2"></div>
+        </div>
+
+        <div class="container hero-content">
+            <span class="badge-pill">
+                <i data-lucide="sparkles" class="icon-xs"></i> Tu sistema operativo personal
+            </span>
+
+            <h1 class="hero-title">
+                <span class="gradient-text">Nexus OS</span><br>
+                Control total de tu vida
+            </h1>
+
+            <p class="hero-desc">
+                Centraliza tus ideas, proyectos, tiempo y dinero en un solo lugar.
+                Toma decisiones basadas en datos reales, no en intuición.
+            </p>
+
+            <div class="hero-btns">
+                <a href="login.html?mode=register" class="btn-lg nexus-gradient">
+                    Comenzar Gratis <i data-lucide="arrow-right"></i>
+                </a>
+                <a href="index.html" class="btn-lg btn-outline">
+                    <i data-lucide="layout"></i> Ver Demo
+                </a>
+            </div>
+
+            <div class="dashboard-preview">
+                <div class="preview-glow"></div>
+                <div class="preview-card">
+                    <div class="preview-header">
+                        <div class="dot dot-red"></div>
+                        <div class="dot dot-yellow"></div>
+                        <div class="dot dot-green"></div>
+                    </div>
+                    <div class="preview-stats">
+                        <div class="stat-box">
+                            <small>Carga Mental</small>
+                            <strong>42%</strong>
+                            <div class="progress-mini bg-success"></div>
+                        </div>
+                        <div class="stat-box">
+                            <small>Tareas Hoy</small>
+                            <strong>7</strong>
+                            <div class="progress-mini bg-primary"></div>
+                        </div>
+                        <div class="stat-box">
+                            <small>Proyectos</small>
+                            <strong>12</strong>
+                            <div class="progress-mini bg-purple"></div>
+                        </div>
+                        <div class="stat-box">
+                            <small>Presupuesto</small>
+                            <strong>$156</strong>
+                            <div class="progress-mini bg-info"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+    </section>
+    <section id="features" class="section-padding bg-muted">
+        <div class="container">
+            <div class="section-header">
+                <h2>¿Cansado del caos mental?</h2>
+                <p>Demasiadas apps, demasiadas pestañas, demasiado estrés.</p>
+            </div>
+
+            <div class="grid-4 max-w-5xl mx-auto">
+                <div class="nexus-card text-center group">
+                    <p class="text-strike">Apps dispersas</p>
+                    <p class="text-highlight">Todo centralizado</p>
+                </div>
+                <div class="nexus-card text-center group">
+                    <p class="text-strike">Caos mental</p>
+                    <p class="text-highlight">Claridad total</p>
+                </div>
+                <div class="nexus-card text-center group">
+                    <p class="text-strike">Tiempo perdido</p>
+                    <p class="text-highlight">Agenda visual</p>
+                </div>
+                <div class="nexus-card text-center group">
+                    <p class="text-strike">Gastos sin control</p>
+                    <p class="text-highlight">Presupuesto diario</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="modules" class="section-padding">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge-pill">Arquitectura Modular</span>
+                <h2>6 módulos. Un sistema.</h2>
+                <p>Cada módulo es independiente pero conectado. Activa solo lo que necesitas.</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="feature-card group">
+                    <div class="icon-square gradient-purple">
+                        <i data-lucide="brain" class="icon-white"></i>
+                    </div>
+                    <h3>Notes <span class="badge-outline">Inbox Mental</span></h3>
+                    <p>Captura ideas instantáneamente. Descarga tu mente sin fricción.</p>
+                </div>
+                <div class="feature-card group">
+                    <div class="icon-square gradient-blue">
+                        <i data-lucide="target" class="icon-white"></i>
+                    </div>
+                    <h3>Projects <span class="badge-outline">Gestión</span></h3>
+                    <p>Organiza objetivos complejos con subtareas, fechas y prioridades.</p>
+                </div>
+                <div class="feature-card group">
+                    <div class="icon-square gradient-green">
+                        <i data-lucide="layout-grid" class="icon-white"></i>
+                    </div>
+                    <h3>Kanban <span class="badge-outline">Ejecución</span></h3>
+                    <p>Arrastra y ejecuta. Visualiza tu progreso en tiempo real.</p>
+                </div>
+                <div class="feature-card group">
+                    <div class="icon-square gradient-orange">
+                        <i data-lucide="calendar" class="icon-white"></i>
+                    </div>
+                    <h3>Agenda <span class="badge-outline">Tiempo</span></h3>
+                    <p>Bloquea tiempo, planifica eventos y domina tu calendario.</p>
+                </div>
+                <div class="feature-card group">
+                    <div class="icon-square gradient-teal">
+                        <i data-lucide="wallet" class="icon-white"></i>
+                    </div>
+                    <h3>Wallet <span class="badge-outline">Finanzas</span></h3>
+                    <p>Conoce tu presupuesto diario real. Toma decisiones inteligentes.</p>
+                </div>
+                <div class="feature-card group">
+                    <div class="icon-square gradient-slate">
+                        <i data-lucide="settings" class="icon-white"></i>
+                    </div>
+                    <h3>System <span class="badge-outline">Ajustes</span></h3>
+                    <p>Personaliza cada aspecto. Tu OS, tus reglas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="section-padding bg-muted">
+        <div class="container">
+            <div class="section-header">
+                <span class="badge-pill">Precios</span>
+                <h2>Elige tu plan</h2>
+            </div>
+
+            <div class="grid-3 pricing-grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">$0</div>
+                    <p>Para empezar a organizar tu vida</p>
+                    <ul class="features-list">
+                        <li><i data-lucide="check-circle-2"></i> Hasta 3 proyectos</li>
+                        <li><i data-lucide="check-circle-2"></i> Notes ilimitadas</li>
+                        <li><i data-lucide="check-circle-2"></i> Kanban básico</li>
+                    </ul>
+                    <a href="login.html?mode=register" class="btn-outline full-width">Comenzar Gratis</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <div class="badge-popular nexus-gradient">Más Popular</div>
+                    <h3>Pro</h3>
+                    <div class="price">$9 <span class="period">/mes</span></div>
+                    <p>Para productividad seria</p>
+                    <ul class="features-list">
+                        <li><i data-lucide="check-circle-2"></i> Proyectos ilimitados</li>
+                        <li><i data-lucide="check-circle-2"></i> Wallet completo</li>
+                        <li><i data-lucide="check-circle-2"></i> Agenda avanzada</li>
+                        <li><i data-lucide="check-circle-2"></i> Temas personalizados</li>
+                    </ul>
+                    <a href="login.html?mode=register" class="btn-primary nexus-gradient full-width">Empezar Pro</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Team</h3>
+                    <div class="price">$29 <span class="period">/mes</span></div>
+                    <p>Para equipos que escalan</p>
+                    <ul class="features-list">
+                        <li><i data-lucide="check-circle-2"></i> Todo en Pro</li>
+                        <li><i data-lucide="check-circle-2"></i> Espacios compartidos</li>
+                        <li><i data-lucide="check-circle-2"></i> API Access</li>
+                    </ul>
+                    <a href="#" class="btn-outline full-width">Contactar Ventas</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="logo-box-sm">
+                <span class="font-bold">Nexus OS</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacidad</a>
+                <a href="#">Términos</a>
+                <a href="#">Contacto</a>
+            </div>
+            <p class="copyright">© 2026 Nexus OS. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="./js/landing.js"></script>
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

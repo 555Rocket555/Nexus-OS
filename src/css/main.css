@@ -1,0 +1,139 @@
+:root {
+    /* -- COLORES BASE -- */
+    --bg-body: #F3F4F6;
+    --bg-sidebar: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --text-main: #111827;
+    --text-muted: #6B7280;
+    --border-color: #E5E7EB;
+    --input-bg: #F9FAFB;
+
+    /* -- DINÁMICOS -- */
+    --primary: #4F46E5;
+    --secondary: #ec4899;
+    --radius: 12px;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --font-main: 'Segoe UI', system-ui, sans-serif;
+    --danger: #EF4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+
+    /* -- NEON VARIABLES (Default) -- */
+    --neon-color: var(--primary);
+    --neon-intensity: 0.3;
+    --neon-spread: 10px;
+    --neon-blur: 15px;
+}
+
+/* -- DEFINICIÓN DE TEMAS -- */
+
+/* Temas Oscuros: Mayor intensidad de neón */
+body.dark-mode,
+body.dark-mode2,
+body.dark-green,
+body.dark-purple,
+body.warm-mode {
+    --bg-body: #09090b;
+}
+
+body.dark-mode {
+    --bg-body: #09090b;
+    --bg-sidebar: #18181b;
+    --bg-card: #18181b;
+    --text-main: #fafafa;
+    --text-muted: #a1a1aa;
+    --border-color: #27272a;
+    --input-bg: #4d4d50;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode2 {
+    --bg-body: #0f172a;
+    --bg-sidebar: #1e293b;
+    --bg-card: #1e293b;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    --input-bg: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-green {
+    --bg-body: #052e16;
+    --bg-sidebar: #064e3b;
+    --bg-card: #064e3b;
+    --text-main: #ecfdf5;
+    --text-muted: #6ee7b7;
+    --border-color: #065f46;
+    --input-bg: #065f46;
+}
+
+body.dark-purple {
+    --bg-body: #2e1065;
+    --bg-sidebar: #4c1d95;
+    --bg-card: #4c1d95;
+    --text-main: #faf5ff;
+    --text-muted: #c4b5fd;
+    --border-color: #5b21b6;
+    --input-bg: #5b21b6;
+}
+
+body.warm-mode {
+    --bg-body: #451a03;
+    --bg-sidebar: #78350f;
+    --bg-card: #78350f;
+    --text-main: #fffbeb;
+    --text-muted: #fcd34d;
+    --border-color: #92400e;
+    --input-bg: #92400e;
+}
+
+/* Temas Claros */
+body.light-blue {
+    --bg-body: #eff6ff;
+    --bg-sidebar: #ffffff;
+    --bg-card: #ffffff;
+    --text-main: #172554;
+    --text-muted: #60a5fa;
+    --border-color: #bfdbfe;
+    --input-bg: #f0f9ff;
+}
+
+body.light-gray {
+    --bg-body: #f8fafc;
+    --bg-sidebar: #ffffff;
+    --bg-card: #ffffff;
+    --text-main: #334155;
+    --text-muted: #94a3b8;
+    --border-color: #e2e8f0;
+    --input-bg: #f1f5f9;
+}
+
+/* RESET y Utilidades */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: var(--font-main);
+}
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.iconInvert {
+    filter: invert(1);
+}
+
+.iconNoInvert {
+    filter: invert(0);
+}

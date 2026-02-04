@@ -1,0 +1,322 @@
+/* --- LAYOUT PRINCIPAL --- */
+.finance-dashboard-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    /* Izquierda más ancha */
+    gap: 25px;
+    height: calc(100vh - 140px);
+    min-height: 550px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Columna Izquierda */
+.finance-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.finance-right-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    overflow: hidden;
+}
+
+.f-card.f-diario-hero {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    border-left: 6px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.f-diario-hero.status-ok {
+    border-left-color: var(--success);
+    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), var(--bg-card));
+}
+
+.f-diario-hero.status-warning {
+    border-left-color: #f59e0b;
+    background: linear-gradient(to right, rgba(245, 158, 11, 0.05), var(--bg-card));
+}
+
+.f-diario-hero.status-danger {
+    border-left-color: var(--danger);
+    background: linear-gradient(to right, rgba(239, 68, 68, 0.05), var(--bg-card));
+}
+
+.diario-content .big {
+    font-size: 3.5rem;
+    margin: 10px 0;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.diario-content span {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.finance-mini-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.f-mini-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-shadow: var(--shadow);
+}
+
+.f-mini-card.highlight {
+    background: var(--input-bg);
+    border-color: var(--primary);
+}
+
+.mini-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+.mini-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.text-success {
+    color: var(--success);
+}
+
+.text-danger {
+    color: var(--danger);
+}
+
+.text-warning {
+    color: #f59e0b;
+}
+
+.f-panel-clean {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+    flex: 1;
+    min-height: 0;
+}
+
+.panel-header-clean {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-header-clean h3 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+/* Botón Circular (+) */
+.btn-plus-round {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.btn-plus-round:hover {
+    transform: rotate(90deg);
+}
+
+.form-fijo-row {
+    background: var(--input-bg);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid var(--primary);
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fijo-row-inputs {
+    display: flex;
+    gap: 8px;
+}
+
+.fijo-row-inputs input,
+.fijo-row-inputs select {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--text-main);
+    flex: 1;
+    outline: none;
+}
+
+.btn-check {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* --- NUEVO: INPUT RÁPIDO (Movimientos) --- */
+.quick-add-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    background: var(--input-bg);
+    padding: 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#in-mov-desc {
+    flex: 1;
+    min-width: 0;
+}
+
+#in-mov-amount {
+    width: 80px;
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/* Estilo general inputs */
+.quick-input {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px 10px;
+    color: var(--text-main);
+    outline: none;
+    font-size: 0.9rem;
+    height: 38px;
+}
+
+.quick-input::placeholder {
+    color: var(--text-muted);
+}
+
+.quick-input:focus {
+    border-color: var(--primary);
+}
+
+#btn-add-movement {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* --- RESPONSIVE WALLET --- */
+@media (max-width: 768px) {
+
+    /* 1. Layout vertical */
+    .finance-dashboard-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        height: auto;
+        /* Altura automática */
+    }
+
+    /* 2. Panel Izquierdo (Métricas) */
+    .finance-left-col {
+        width: 100%;
+    }
+
+    .f-diario-hero {
+        padding: 20px;
+    }
+
+    .diario-content .big {
+        font-size: 2.5rem;
+        /* Número más pequeño */
+    }
+
+    /* 3. Panel Derecho (Listas) */
+    .finance-right-col {
+        width: 100%;
+        height: auto;
+    }
+
+    .f-panel-clean {
+        height: auto !important;
+        /* Quitar altura fija */
+        min-height: 300px;
+        margin-bottom: 20px;
+    }
+
+    /* 4. Input rápido de gastos */
+    .quick-add-row {
+        flex-direction: row;
+        /* Mantener fila */
+        gap: 5px;
+    }
+
+    #in-mov-desc {
+        flex: 2;
+        min-width: 0;
+    }
+
+    #in-mov-amount {
+        flex: 1;
+        min-width: 60px;
+    }
+}

@@ -1,0 +1,129 @@
+/* =========================================
+   COMPONENTES REUTILIZABLES
+   ========================================= */
+/* Botones */
+button {
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    font-family: inherit;
+}
+
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    margin-bottom: 15px;
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 10px 20px;
+    border-radius: var(--radius);
+}
+
+.btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.btn-edit {
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--primary);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+
+.btn-plus {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--secondary);
+    color: white;
+    border-radius: 6px;
+}
+
+/* Grid Contenedor */
+.contenedor {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+/* Formulario Modal */
+.form-card-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    padding: 20px;
+}
+
+.form-card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--border-color);
+}
+
+.form-card h2 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--text-main);
+    font-weight: 600;
+}
+
+.form-card input[type="text"],
+.form-card select,
+.form-card textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-main);
+    outline: none;
+}
+
+.form-card input:focus {
+    border-color: var(--primary);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.form-actions button {
+    flex: 1;
+}
