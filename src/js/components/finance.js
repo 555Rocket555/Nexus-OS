@@ -1,39 +1,40 @@
+import { Utils } from "../utils.js";
 import { Storage } from "../services/storage.js";
 
-const DEFAULT_CONFIG = {
+const CONFIG_POR_DEFECTO = {
   ingreso: 0,
   diaInicio: new Date().toISOString().split("T")[0],
   ahorroPct: 10,
   periodo: "mensual",
 };
 
-let config = {};
-let fixedExpenses = [];
-let dailyMovements = [];
+let configuracion = {};
+let gastosFijos = [];
+let movimientosDiarios = [];
 
-export function initFinance() {
-  config = Storage.get("finance_config") || DEFAULT_CONFIG;
-  fixedExpenses = Storage.get("finance_fixed") || [];
-  dailyMovements = Storage.get("finance_movements") || [];
+export function iniciarFinanzas() {
+  configuracion = Storage.get("finance_config") || CONFIG_POR_DEFECTO;
+  gastosFijos = Storage.get("finance_fixed") || [];
+  movimientosDiarios = Storage.get("finance_movements") || [];
 
-  renderDashboard();
-  renderExpensesList();
-  renderMovementsList();
-  setupListeners();
+  renderizarDashboard();
+  renderizarGastosFijos();
+  renderizarMovimientos();
+  configurarListeners();
 }
 
-function renderDashboard() {
-  const ingreso = Number(config.ingreso) || 0;
-  const totalFijos = fixedExpenses.reduce(
-    (sum, item) => sum + Number(item.amount),
+function renderizarDashboard() {
+  const ingreso = Number(configuracion.ingreso) || 0;
+  const totalFijos = gastosFijos.reduce(
+    (suma, item) => suma + Number(item.amount),
     0,
   );
-  const totalVariables = dailyMovements.reduce(
-    (sum, item) => sum + Number(item.amount),
+  const totalVariables = movimientosDiarios.reduce(
+    (suma, item) => suma + Number(item.amount),
     0,
   );
 
-  const ahorro = ingreso * (config.ahorroPct / 100);
+  const ahorro = ingreso * (configuracion.ahorroPct / 100);
   const libreTotal = ingreso - totalFijos - ahorro;
 
   // Lo que realmente queda en el bolsillo
@@ -51,206 +52,235 @@ function renderDashboard() {
 
   const diario = disponibleReal / diasRestantes;
 
-  safeText("lblIngreso", formatMoney(ingreso));
-  safeText("lblGastosFijos", formatMoney(totalFijos));
-  safeText("lblAhorro", formatMoney(ahorro));
-  safeText("lblAhorroPct", config.ahorroPct);
-  safeText("lblDisponible", formatMoney(disponibleReal));
+  textoSeguro("val-ingreso", Utils.formatearMoneda(ingreso));
+  textoSeguro("val-gastos-fijos", Utils.formatearMoneda(totalFijos));
+  textoSeguro("val-ahorro", Utils.formatearMoneda(ahorro));
+  textoSeguro("val-ahorro-pct", configuracion.ahorroPct);
+  textoSeguro("val-disponible", Utils.formatearMoneda(disponibleReal));
 
-  safeText("lblDiario", formatMoney(diario));
-  safeText("lblDiasRestantes", `${diasRestantes} días restantes`);
+  textoSeguro("val-diario", Utils.formatearMoneda(diario));
+  textoSeguro("lbl-dias-restantes", `${diasRestantes} días restantes`);
 
   // Semáforo
-  const heroCard = document.querySelector(".f-diario-hero");
-  if (heroCard) {
-    heroCard.className = "f-card f-diario-hero";
-    if (diario < 0) heroCard.classList.add("status-danger");
-    else if (diario < 100) heroCard.classList.add("status-warning");
-    else heroCard.classList.add("status-ok");
+  const tarjetaHero = document.querySelector(".f-diario-hero");
+  if (tarjetaHero) {
+    tarjetaHero.className = "f-card f-diario-hero";
+    if (diario < 0) tarjetaHero.classList.add("status-danger");
+    else if (diario < 100) tarjetaHero.classList.add("status-warning");
+    else tarjetaHero.classList.add("status-ok");
   }
 }
 
-function renderMovementsList() {
-  const list = document.getElementById("listaMovimientos");
-  if (!list) return;
-  list.innerHTML = "";
+function renderizarMovimientos() {
+  const lista = document.getElementById("lista-movimientos");
+  if (!lista) return;
+  lista.innerHTML = "";
 
-  const recent = dailyMovements.slice().reverse();
+  const recientes = movimientosDiarios.slice().reverse();
 
-  if (recent.length === 0) {
-    list.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted)">No hay movimientos aún.</div>`;
+  if (recientes.length === 0) {
+    lista.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted)">No hay movimientos aún.</div>`;
     return;
   }
 
-  recent.forEach((mov) => {
+  const fragmento = document.createDocumentFragment();
+
+  recientes.forEach((mov) => {
     const div = document.createElement("div");
     div.className = "mov-item";
     div.innerHTML = `
             <div style="display:flex; gap:12px; align-items:center;">
                 <span style="font-size:1.2rem;">🛒</span>
                 <div style="display:flex; flex-direction:column;">
-                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main)">${mov.desc}</span>
-                    <span style="font-size:0.75rem; color:var(--text-muted)">${new Date(mov.date).toLocaleDateString()}</span>
+                    <span style="font-weight:600; font-size:0.9rem; color:var(--text-main)">${Utils.escaparHTML(mov.desc)}</span>
+                    <span style="font-size:0.75rem; color:var(--text-muted)">${Utils.formatearFecha(mov.date)}</span>
                 </div>
             </div>
             <div style="display:flex; align-items:center; gap:10px;">
-                <span style="font-weight:700; color:var(--danger)">-$${mov.amount}</span>
-                <button class="btn-delete-mini" onclick="window.deleteMovement(${mov.id})">×</button>
+                <span style="font-weight:700; color:var(--danger)">-${mov.amount}</span>
+                <button class="btn-delete-mini" data-accion="eliminar-mov" data-id="${mov.id}">×</button>
             </div>
         `;
-    list.appendChild(div);
+    fragmento.appendChild(div);
   });
+  lista.appendChild(fragmento);
+  adjuntarListenersMovimientos();
 }
 
-function renderExpensesList() {
-  const list = document.getElementById("listaGastosFijos");
-  if (!list) return;
-  list.innerHTML = "";
+function renderizarGastosFijos() {
+  const lista = document.getElementById("lista-gastos-fijos");
+  if (!lista) return;
+  lista.innerHTML = "";
 
-  if (fixedExpenses.length === 0) {
-    list.innerHTML = `<li style="padding:20px; text-align:center; color:var(--text-muted)">Sin gastos fijos</li>`;
+  if (gastosFijos.length === 0) {
+    lista.innerHTML = `<li style="padding:20px; text-align:center; color:var(--text-muted)">Sin gastos fijos</li>`;
     return;
   }
 
-  fixedExpenses.forEach((item) => {
+  const fragmento = document.createDocumentFragment();
+
+  gastosFijos.forEach((item) => {
     const li = document.createElement("li");
     li.innerHTML = `
             <div style="display:flex; align-items:center;">
                 <div class="fijo-icon-wrapper">${item.icon || "💸"}</div>
                 <div class="fijo-info-clean">
-                    <span class="fijo-name-clean">${item.name}</span>
+                    <span class="fijo-name-clean">${Utils.escaparHTML(item.name)}</span>
                 </div>
             </div>
             <div style="display:flex; align-items:center;">
-                <span class="fijo-amount-clean">-$${item.amount}</span>
-                <button class="btn-delete-mini" onclick="window.deleteExpense(${item.id})">×</button>
+                <span class="fijo-amount-clean">-${item.amount}</span>
+                <button class="btn-delete-mini" data-accion="eliminar-fijo" data-id="${item.id}">×</button>
             </div>
         `;
-    list.appendChild(li);
+    fragmento.appendChild(li);
   });
+  lista.appendChild(fragmento);
+  adjuntarListenersFijos();
 }
 
-function setupListeners() {
+function configurarListeners() {
   // 1. CONFIGURACIÓN
-  const btnConfig = document.getElementById("btnAbrirConfigFinanzas");
-  const modalConfig = document.getElementById("modalConfigFinanzas");
-  const btnCloseConfig = document.getElementById("btnCerrarConfigFinanzas");
-  const formConfig = document.getElementById("formFinanzasConfig");
+  const btnConfig = document.getElementById("btn-config-finanzas");
+  const modalConfig = document.getElementById("modal-config-finanzas");
+  const btnCerrarConfig = document.getElementById("btn-cerrar-config-finanzas");
+  const formConfig = document.getElementById("form-config-finanzas");
 
   if (btnConfig) {
     btnConfig.onclick = () => {
-      updateInputValue("inSalario", config.ingreso);
-      updateInputValue("inFechaInicio", config.diaInicio);
-      updateInputValue("inAhorroRange", config.ahorroPct);
-      safeText("valAhorroRange", config.ahorroPct + "%");
-      updateInputValue("selPeriodo", config.periodo || "mensual");
+      actualizarValorInput("input-salario", configuracion.ingreso);
+      actualizarValorInput("input-fecha-inicio", configuracion.diaInicio);
+      actualizarValorInput("input-rango-ahorro", configuracion.ahorroPct);
+      textoSeguro("val-rango-ahorro", configuracion.ahorroPct + "%");
+      actualizarValorInput("select-periodo", configuracion.periodo || "mensual");
       modalConfig.classList.remove("hidden");
     };
   }
 
-  if (btnCloseConfig)
-    btnCloseConfig.onclick = () => modalConfig.classList.add("hidden");
+  if (btnCerrarConfig)
+    btnCerrarConfig.onclick = () => modalConfig.classList.add("hidden");
 
   if (formConfig) {
     formConfig.onsubmit = (e) => {
       e.preventDefault(); // EVITAR RECARGA
-      config = {
-        ingreso: document.getElementById("inSalario").value,
-        diaInicio: document.getElementById("inFechaInicio").value,
-        ahorroPct: document.getElementById("inAhorroRange").value,
-        periodo: document.getElementById("selPeriodo").value,
+      configuracion = {
+        ingreso: document.getElementById("input-salario").value,
+        diaInicio: document.getElementById("input-fecha-inicio").value,
+        ahorroPct: document.getElementById("input-rango-ahorro").value,
+        periodo: document.getElementById("select-periodo").value,
       };
-      Storage.set("finance_config", config);
+      Storage.set("finance_config", configuracion);
       modalConfig.classList.add("hidden");
-      renderDashboard();
+      renderizarDashboard();
     };
   }
 
-  const range = document.getElementById("inAhorroRange");
-  if (range)
-    range.oninput = (e) => safeText("valAhorroRange", e.target.value + "%");
+  const rango = document.getElementById("input-rango-ahorro");
+  if (rango)
+    rango.oninput = (e) => textoSeguro("val-rango-ahorro", e.target.value + "%");
 
   // 2. GASTOS VARIABLES
-  const btnAddMov = document.getElementById("btn-add-movement");
-  if (btnAddMov) {
-    btnAddMov.onclick = () => {
-      const descInput = document.getElementById("in-mov-desc");
-      const amountInput = document.getElementById("in-mov-amount");
-      const desc = descInput.value.trim();
-      const amount = parseFloat(amountInput.value);
+  const btnAgregarMov = document.getElementById("btn-agregar-movimiento");
+  if (btnAgregarMov) {
+    btnAgregarMov.onclick = () => {
+      const inputDesc = document.getElementById("input-mov-desc");
+      const inputMonto = document.getElementById("input-mov-monto");
+      const descripcion = inputDesc.value.trim();
+      const monto = parseFloat(inputMonto.value);
 
-      if (desc && amount) {
-        dailyMovements.push({
-          id: Date.now(),
-          desc: desc,
-          amount: amount,
+      if (descripcion && monto) {
+        movimientosDiarios.push({
+          id: Utils.generarId(),
+          desc: descripcion,
+          amount: monto,
           date: new Date().toISOString(),
         });
-        Storage.set("finance_movements", dailyMovements);
+        Storage.set("finance_movements", movimientosDiarios);
 
-        descInput.value = "";
-        amountInput.value = "";
-        renderDashboard();
-        renderMovementsList();
+        inputDesc.value = "";
+        inputMonto.value = "";
+        renderizarDashboard();
+        renderizarMovimientos();
       }
     };
   }
 
   // 3. GASTOS FIJOS
-  const btnAddFijo = document.getElementById("btnAgregarFijo");
-  const formFijo = document.getElementById("formNuevoFijo");
-  if (btnAddFijo)
-    btnAddFijo.onclick = () => formFijo.classList.toggle("hidden");
+  const btnAgregarFijo = document.getElementById("btn-agregar-fijo");
+  const formFijo = document.getElementById("form-nuevo-fijo");
+  if (btnAgregarFijo)
+    btnAgregarFijo.onclick = () => formFijo.classList.toggle("hidden");
 
   if (formFijo) {
     formFijo.onsubmit = (e) => {
       e.preventDefault(); // EVITAR RECARGA
-      fixedExpenses.push({
-        id: Date.now(),
-        icon: document.getElementById("selCategoriaFijo").value,
-        name: document.getElementById("txtNombreFijo").value,
-        amount: document.getElementById("txtMontoFijo").value,
+      gastosFijos.push({
+        id: Utils.generarId(),
+        icon: document.getElementById("select-categoria-fijo").value,
+        name: document.getElementById("input-nombre-fijo").value,
+        amount: document.getElementById("input-monto-fijo").value,
         freq: 30,
       });
-      Storage.set("finance_fixed", fixedExpenses);
+      Storage.set("finance_fixed", gastosFijos);
       formFijo.reset();
       formFijo.classList.add("hidden");
-      renderDashboard();
-      renderExpensesList();
+      renderizarDashboard();
+      renderizarGastosFijos();
     };
   }
 
-  // EXPORTS GLOBALES
-  window.deleteExpense = (id) => {
-    if (confirm("¿Borrar?")) {
-      fixedExpenses = fixedExpenses.filter((e) => e.id !== id);
-      Storage.set("finance_fixed", fixedExpenses);
-      renderDashboard();
-      renderExpensesList();
+  // --- FUNCIONES GLOBALES PARA LISTENERS ---
+  window.eliminarGastoFijo = (id) => {
+    if (confirm("¿Borrar gasto fijo?")) {
+      gastosFijos = gastosFijos.filter((e) => e.id != id);
+      Storage.set("finance_fixed", gastosFijos);
+      renderizarDashboard();
+      renderizarGastosFijos();
     }
-  };
+  }
 
-  window.deleteMovement = (id) => {
+  window.eliminarMovimiento = (id) => {
     if (confirm("¿Borrar movimiento?")) {
-      dailyMovements = dailyMovements.filter((e) => e.id !== id);
-      Storage.set("finance_movements", dailyMovements);
-      renderDashboard();
-      renderMovementsList();
+      movimientosDiarios = movimientosDiarios.filter((e) => e.id != id);
+      Storage.set("finance_movements", movimientosDiarios);
+      renderizarDashboard();
+      renderizarMovimientos();
     }
-  };
+  }
 }
 
-function formatMoney(amount) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-  }).format(amount);
+function adjuntarListenersMovimientos() {
+  const lista = document.getElementById("lista-movimientos");
+  if (!lista.dataset.listening) {
+    lista.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (btn && btn.dataset.accion === 'eliminar-mov') {
+        window.eliminarMovimiento(btn.dataset.id);
+      }
+    });
+    lista.dataset.listening = "true";
+  }
 }
-function safeText(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
+
+function adjuntarListenersFijos() {
+  const lista = document.getElementById("lista-gastos-fijos");
+  if (!lista.dataset.listening) {
+    lista.addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (btn && btn.dataset.accion === 'eliminar-fijo') {
+        window.eliminarGastoFijo(btn.dataset.id);
+      }
+    });
+    lista.dataset.listening = "true";
+  }
 }
-function updateInputValue(id, value) {
+
+function textoSeguro(id, texto) {
   const el = document.getElementById(id);
-  if (el) el.value = value;
+  if (el) el.textContent = texto;
+}
+
+function actualizarValorInput(id, valor) {
+  const el = document.getElementById(id);
+  if (el) el.value = valor;
 }

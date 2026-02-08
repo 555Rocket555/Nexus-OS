@@ -1,62 +1,63 @@
 import { Storage } from "../services/storage.js";
+import { Utils } from "../utils.js";
 
-export function initDashboard() {
-  renderDashboard();
+export function iniciarDashboard() {
+  renderizarDashboard();
   // Evento para recargar si vuelves al dashboard desde el menú
-  document.addEventListener("reload-dashboard", renderDashboard);
+  document.addEventListener("reload-dashboard", renderizarDashboard);
   // Evento para actualizar saludo si cambias el perfil en Ajustes
-  document.addEventListener("profile-updated", updateHeader);
+  document.addEventListener("profile-updated", actualizarEncabezado);
 }
 
-export function renderDashboard() {
-  const container = document.getElementById("dashboard-content");
-  if (!container) return;
+export function renderizarDashboard() {
+  const contenedor = document.getElementById("contenido-dashboard");
+  if (!contenedor) return;
 
-  updateHeader();
-  container.innerHTML = "";
+  actualizarEncabezado();
+  contenedor.innerHTML = "";
 
   // 1. Clima
-  const weather = createWeatherWidget();
-  weather.classList.add("widget-wide", "glass-effect");
-  container.appendChild(weather);
+  const clima = crearWidgetClima();
+  clima.classList.add("widget-wide", "glass-effect");
+  contenedor.appendChild(clima);
 
   // 2. Calendario
-  const calendar = createCalendarWidget();
-  calendar.classList.add("widget-medium");
-  container.appendChild(calendar);
+  const calendario = crearWidgetCalendario();
+  calendario.classList.add("widget-medium");
+  contenedor.appendChild(calendario);
 
   // 3. Finanzas
-  const finance = createFinanceWidget();
-  container.appendChild(finance);
+  const finanzas = crearWidgetFinanzas();
+  contenedor.appendChild(finanzas);
 
-  // 4. Kanban
-  const kanban = createKanbanWidget();
-  container.appendChild(kanban);
+  // 4. Tablero (Kanban)
+  const tablero = crearWidgetTablero();
+  contenedor.appendChild(tablero);
 
   // 5. Proyectos
-  const projects = createProjectsWidget();
-  projects.classList.add("widget-medium");
-  container.appendChild(projects);
+  const proyectos = crearWidgetProyectos();
+  proyectos.classList.add("widget-medium");
+  contenedor.appendChild(proyectos);
 }
 
-function updateHeader() {
+function actualizarEncabezado() {
   // Fecha
-  const dateElem = document.getElementById("dashboard-date");
-  if (dateElem) {
-    const options = {
+  const elFecha = document.getElementById("fecha-dashboard");
+  if (elFecha) {
+    const opciones = {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     };
-    const fecha = new Date().toLocaleDateString("es-MX", options);
-    dateElem.textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
+    const fecha = new Date().toLocaleDateString("es-MX", opciones);
+    elFecha.textContent = fecha.charAt(0).toUpperCase() + fecha.slice(1);
   }
 
   // Saludo Personalizado
-  const greetingElem = document.getElementById("dashboard-greeting");
-  if (greetingElem) {
-    const profile = Storage.get("user_profile") || { name: "Usuario" };
+  const elSaludo = document.getElementById("saludo-dashboard");
+  if (elSaludo) {
+    const perfil = Storage.get("user_profile") || { name: "Usuario" };
 
     const hora = new Date().getHours();
     let saludo = "Hola";
@@ -64,54 +65,54 @@ function updateHeader() {
     else if (hora >= 12 && hora < 19) saludo = "Buenas tardes";
     else saludo = "Buenas noches";
 
-    greetingElem.textContent = `${saludo}, ${profile.name} 👋`;
+    elSaludo.textContent = `${saludo}, ${perfil.name} 👋`;
   }
 }
 
 // --- GENERADORES DE WIDGETS ---
 
-function createCardBase(title, targetSection) {
+function crearBaseTarjeta(titulo, seccionObjetivo) {
   const div = document.createElement("div");
   div.className = "dashboard-card";
 
-  if (targetSection) {
+  if (seccionObjetivo) {
     div.onclick = () => {
       const btn = document.querySelector(
-        `.menu-btn[data-target="${targetSection}"]`,
+        `.menu-btn[data-target="${seccionObjetivo}"]`,
       );
       if (btn) btn.click();
     };
   }
 
-  if (title) {
-    div.innerHTML = `<h3>${title}</h3>`;
+  if (titulo) {
+    div.innerHTML = `<h3>${titulo}</h3>`;
   }
   return div;
 }
 
 // WIDGET CLIMA
-function createWeatherWidget() {
-  const card = createCardBase(null, null);
-  card.classList.add("weather-card");
-  const content = document.createElement("div");
-  content.innerHTML = `<div style="text-align:center; color:white;">📍 Cargando clima...</div>`;
-  card.appendChild(content);
+function crearWidgetClima() {
+  const tarjeta = crearBaseTarjeta(null, null);
+  tarjeta.classList.add("weather-card");
+  const contenido = document.createElement("div");
+  contenido.innerHTML = `<div style="text-align:center; color:white;">📍 Cargando clima...</div>`;
+  tarjeta.appendChild(contenido);
 
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      (pos) => fetchWeather(pos.coords.latitude, pos.coords.longitude, content),
+      (pos) => obtenerClima(pos.coords.latitude, pos.coords.longitude, contenido),
       () =>
-        (content.innerHTML = `<div style="color:white; text-align:center">Ubicación desactivada</div>`),
+        (contenido.innerHTML = `<div style="color:white; text-align:center">Ubicación desactivada</div>`),
     );
   } else {
-    content.innerHTML = "No soportado";
+    contenido.innerHTML = "No soportado";
   }
-  return card;
+  return tarjeta;
 }
 
-async function fetchWeather(lat, lon, container) {
+async function obtenerClima(lat, lon, contenedor) {
   try {
-    const [wRes, gRes] = await Promise.all([
+    const [resClima, resGeo] = await Promise.all([
       fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,apparent_temperature&daily=temperature_2m_max,temperature_2m_min&timezone=auto`,
       ),
@@ -119,58 +120,58 @@ async function fetchWeather(lat, lon, container) {
         `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=es`,
       ),
     ]);
-    const wData = await wRes.json();
-    const gData = await gRes.json();
+    const datosClima = await resClima.json();
+    const datosGeo = await resGeo.json();
 
-    const ciudad = gData.locality || gData.city || "Tu Ubicación";
-    const temp = Math.round(wData.current.temperature_2m);
-    const icon = getWeatherIcon(wData.current.weather_code);
+    const ciudad = datosGeo.locality || datosGeo.city || "Tu Ubicación";
+    const temp = Math.round(datosClima.current.temperature_2m);
+    const icono = obtenerIconoClima(datosClima.current.weather_code);
 
-    container.innerHTML = `
+    contenedor.innerHTML = `
             <div class="weather-compact-layout">
-                <div class="wc-left"><span class="wc-icon">${icon}</span><span class="wc-temp">${temp}°</span></div>
-                <div class="wc-center"><span class="wc-city">📍 ${ciudad}</span><span class="wc-desc">Sensación ${Math.round(wData.current.apparent_temperature)}°</span></div>
-                <div class="wc-right"><div class="wc-pill">Min ${Math.round(wData.daily.temperature_2m_min[0])}°</div><div class="wc-pill">Max ${Math.round(wData.daily.temperature_2m_max[0])}°</div></div>
+                <div class="wc-left"><span class="wc-icon">${icono}</span><span class="wc-temp">${temp}°</span></div>
+                <div class="wc-center"><span class="wc-city">📍 ${ciudad}</span><span class="wc-desc">Sensación ${Math.round(datosClima.current.apparent_temperature)}°</span></div>
+                <div class="wc-right"><div class="wc-pill">Min ${Math.round(datosClima.daily.temperature_2m_min[0])}°</div><div class="wc-pill">Max ${Math.round(datosClima.daily.temperature_2m_max[0])}°</div></div>
             </div>`;
   } catch (e) {
-    container.innerHTML = "Error clima";
+    contenedor.innerHTML = "Error clima";
   }
 }
 
 // WIDGET PROYECTOS
-function createProjectsWidget() {
-  const card = createCardBase("Proyectos Activos", "seccion-proyectos");
-  const projects = Storage.get("projects") || [];
-  const activeProjects = projects
+function crearWidgetProyectos() {
+  const tarjeta = crearBaseTarjeta("Proyectos Activos", "seccion-proyectos");
+  const proyectos = Storage.get("projects") || [];
+  const proyectosActivos = proyectos
     .filter((p) => p.status === "active")
     .slice(0, 3);
 
-  if (activeProjects.length === 0) {
-    card.innerHTML += `<div class="empty-widget">No hay proyectos activos.</div>`;
+  if (proyectosActivos.length === 0) {
+    tarjeta.innerHTML += `<div class="empty-widget">No hay proyectos activos.</div>`;
   } else {
-    const list = document.createElement("div");
-    list.style.cssText =
+    const lista = document.createElement("div");
+    lista.style.cssText =
       "display:flex; flex-direction:column; gap:10px; width:100%";
 
-    activeProjects.forEach((p) => {
+    proyectosActivos.forEach((p) => {
       let total = 0,
-        done = 0;
+        hecho = 0;
       if (p.sections) {
         p.sections.forEach((s) => {
           total += s.tasks.length;
-          done += s.tasks.filter((t) => t.done).length;
+          hecho += s.tasks.filter((t) => t.done).length;
         });
       } else if (p.subtasks) {
         total = p.subtasks.length;
-        done = p.subtasks.filter((s) => s.done).length;
+        hecho = p.subtasks.filter((s) => s.done).length;
       }
 
-      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      const pct = total === 0 ? 0 : Math.round((hecho / total) * 100);
 
-      list.innerHTML += `
+      lista.innerHTML += `
                 <div class="dash-proj-item">
                     <div class="dash-proj-header">
-                        <span>${p.title}</span>
+                        <span>${Utils.escaparHTML(p.title)}</span>
                         <span>${pct}%</span>
                     </div>
                     <div class="dash-proj-bar-bg">
@@ -179,149 +180,97 @@ function createProjectsWidget() {
                 </div>
             `;
     });
-    card.appendChild(list);
+    tarjeta.appendChild(lista);
   }
-  return card;
+  return tarjeta;
 }
 
 // WIDGET FINANZAS
-function createFinanceWidget() {
-  const card = createCardBase(" $ Disponible Hoy", "seccion-finanzas");
-  const config = Storage.get("finance_config") || { ingreso: 0, ahorroPct: 0 };
+function crearWidgetFinanzas() {
+  const tarjeta = crearBaseTarjeta(" $ Disponible Hoy", "seccion-finanzas");
+  const configuracion = Storage.get("finance_config") || { ingreso: 0, ahorroPct: 0 };
   const fijos = Storage.get("finance_fixed") || [];
-  const movements = Storage.get("finance_movements") || [];
+  const movimientos = Storage.get("finance_movements") || [];
 
-  const ingreso = Number(config.ingreso);
-  const totalFijos = fijos.reduce((sum, i) => sum + Number(i.amount), 0);
-  const totalMovs = movements.reduce((sum, i) => sum + Number(i.amount), 0);
+  const ingreso = Number(configuracion.ingreso);
+  const totalFijos = fijos.reduce((suma, i) => suma + Number(i.amount), 0);
+  const totalMovs = movimientos.reduce((suma, i) => suma + Number(i.amount), 0);
 
-  const ahorro = ingreso * (config.ahorroPct / 100);
+  const ahorro = ingreso * (configuracion.ahorroPct / 100);
   const libreReal = ingreso - totalFijos - ahorro - totalMovs;
 
   const hoy = new Date();
-  const ultimoDia = new Date(
-    hoy.getFullYear(),
-    hoy.getMonth() + 1,
-    0,
-  ).getDate();
-  const restantes = Math.max(1, ultimoDia - hoy.getDate());
-  const diario = libreReal / restantes;
+  const ultimoDia = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate();
+  const diasRestantes = Math.max(1, ultimoDia - hoy.getDate());
+  const diario = libreReal / diasRestantes;
 
-  card.innerHTML += `
-        <div class="money-widget-content">
-            <span class="money-big">${formatMoney(diario)}</span>
-            <span class="money-desc">para gastar hoy</span>
+  const div = document.createElement("div");
+  div.className = "money-widget-content";
+  div.innerHTML = `
+        <div class="money-big ${diario < 0 ? 'text-danger' : 'text-success'}">${Utils.formatearMoneda(diario)}</div>
+        <div class="money-sub">quedan ${diasRestantes} días</div>
+    `;
+  tarjeta.appendChild(div);
+  return tarjeta;
+}
+
+// WIDGET TABLERO (KANBAN)
+function crearWidgetTablero() {
+  const tarjeta = crearBaseTarjeta("Tareas Pendientes", "seccion-planner");
+  const tareas = Storage.get("kanban_tasks") || [];
+  const pendientes = tareas.filter((t) => t.status === "todo").length;
+  const enProgreso = tareas.filter((t) => t.status === "doing").length;
+
+  const div = document.createElement("div");
+  div.style.cssText = "display:flex; justify-content:space-around; align-items:center; height:100%;";
+  div.innerHTML = `
+        <div style="text-align:center;">
+            <div style="font-size:1.5rem; font-weight:bold;">${pendientes}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Por hacer</div>
+        </div>
+        <div style="width:1px; height:30px; background:var(--border-color);"></div>
+        <div style="text-align:center;">
+            <div style="font-size:1.5rem; font-weight:bold; color:var(--primary);">${enProgreso}</div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">En curso</div>
         </div>
     `;
-  return card;
+  tarjeta.appendChild(div);
+  return tarjeta;
 }
 
-// WIDGET KANBAN
-function createKanbanWidget() {
-  const card = createCardBase("Tablero Kanban", "seccion-planner");
-  const items = Storage.get("nexus_kanban_data") || [];
-  const focusItems = items
-    .filter((i) => i.status === "doing")
-    .concat(items.filter((i) => i.status === "todo"))
-    .slice(0, 3);
+// WIDGET CALENDARIO
+function crearWidgetCalendario() {
+  const tarjeta = crearBaseTarjeta("Agenda Hoy", "seccion-calendario");
+  const eventos = Storage.get("calendar_events") || [];
+  const hoyStr = new Date().toISOString().split("T")[0];
+  const eventosHoy = eventos.filter((e) => e.date === hoyStr);
 
-  if (focusItems.length === 0) {
-    card.innerHTML += `<div class="empty-widget">Tablero limpio.</div>`;
+  if (eventosHoy.length === 0) {
+    tarjeta.innerHTML += `<div class="empty-widget">Nada programado para hoy 🎉</div>`;
   } else {
-    const ul = document.createElement("ul");
-    ul.className = "widget-list";
-    focusItems.forEach((item) => {
-      const icon = item.status === "doing" ? "🔥" : "📋";
-      ul.innerHTML += `
-                <li class="widget-item">
-                    <span>${icon}</span>
-                    <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</span>
-                </li>
+    const lista = document.createElement("div");
+    lista.className = "widget-list";
+    eventosHoy.forEach((e) => {
+      lista.innerHTML += `
+                <div class="widget-list-item">
+                    <span class="event-dot" style="background:${e.color || 'var(--primary)'}"></span>
+                    <span>${Utils.escaparHTML(e.title)}</span>
+                </div>
             `;
     });
-    card.appendChild(ul);
+    tarjeta.appendChild(lista);
   }
-  return card;
+  return tarjeta;
 }
 
-// --- WIDGET CALENDARIO (CORREGIDO PARA MÚLTIPLES EVENTOS) ---
-function createCalendarWidget() {
-  const card = createCardBase("Agenda", "seccion-calendario");
-  const eventsObj = Storage.get("eventosGuardados") || {};
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-
-  let allEvents = [];
-
-  // 1. Recorremos todas las fechas guardadas
-  Object.entries(eventsObj).forEach(([fechaStr, data]) => {
-    const [y, m, d] = fechaStr.split("-").map(Number);
-    const date = new Date(y, m, d);
-
-    // 2. Normalizamos: Si es array (nuevo) o objeto (viejo)
-    const dailyEvents = Array.isArray(data) ? data : [data];
-
-    // 3. Procesamos cada evento individualmente
-    dailyEvents.forEach((evt) => {
-      // Soporte para datos viejos (strings)
-      const texto = typeof evt === "string" ? evt : evt.titulo;
-      const colorIdx = evt.colorIdx || 1; // Default a color 1
-
-      // Convertimos índice de color a variable CSS
-      let colorVar = "var(--primary)";
-      if (colorIdx === 2) colorVar = "var(--secondary)";
-      if (colorIdx === 3) colorVar = "var(--success)";
-      if (colorIdx === 4) colorVar = "var(--danger)";
-      if (colorIdx === 5) colorVar = "var(--warning)";
-
-      allEvents.push({
-        date: date,
-        fechaStr: `${d}/${m + 1}`,
-        texto: texto,
-        color: colorVar,
-      });
-    });
-  });
-
-  // 4. Filtramos futuros, ordenamos por fecha y tomamos los 3 primeros
-  const proximos = allEvents
-    .filter((e) => e.date >= hoy)
-    .sort((a, b) => a.date - b.date)
-    .slice(0, 3);
-
-  if (proximos.length === 0) {
-    card.innerHTML += `<div class="empty-widget">Sin eventos próximos.</div>`;
-  } else {
-    const ul = document.createElement("ul");
-    ul.className = "event-list-compact";
-
-    proximos.forEach((evt) => {
-      ul.innerHTML += `
-                <li class="evt-item" style="border-left: 3px solid ${evt.color}; padding-left:8px;">
-                    <div class="evt-date-badge">${evt.fechaStr}</div>
-                    <div class="evt-details">
-                        <span class="evt-text">${evt.texto}</span>
-                    </div>
-                </li>
-            `;
-    });
-    card.appendChild(ul);
-  }
-  return card;
-}
-
-function getWeatherIcon(code) {
-  if (code === 0) return "☀️";
-  if (code <= 3) return "⛅";
-  if (code <= 67) return "🌧️";
-  if (code <= 99) return "⛈️";
-  return "🌡️";
-}
-
-function formatMoney(amount) {
-  return new Intl.NumberFormat("es-MX", {
-    style: "currency",
-    currency: "MXN",
-    maximumFractionDigits: 0,
-  }).format(amount);
+function obtenerIconoClima(codigo) {
+  // Simple mapping WMO Weather interpretation codes (WW)
+  if (codigo === 0) return "☀️";
+  if (codigo >= 1 && codigo <= 3) return "⛅";
+  if (codigo >= 45 && codigo <= 48) return "🌫";
+  if (codigo >= 51 && codigo <= 67) return "🌧";
+  if (codigo >= 71 && codigo <= 77) return "❄️";
+  if (codigo >= 80 && codigo <= 82) return "🌦";
+  if (codigo >= 95) return "⛈";
+  return "❓";
 }

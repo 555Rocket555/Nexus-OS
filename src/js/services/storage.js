@@ -117,7 +117,8 @@ export const Storage = {
   // Función auxiliar para inicializar datos si están vacíos
   init: (key, defaultValue) => {
     const existing = load(key);
-    if (!existing) {
+    // Cambiar !existing por check a null, para permitir valores falsy válidos (0, false, "")
+    if (existing === null || existing === undefined) {
       save(key, defaultValue);
       return defaultValue;
     }

@@ -57,14 +57,14 @@
 
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 16px;
+    border-radius: 24px;
     display: flex;
     flex-direction: column;
     height: 100%;
     max-height: 100%;
     transition: background 0.3s;
     flex-shrink: 0;
-    /* Evita que se aplasten demasiado si no quieres */
+    box-shadow: var(--shadow-sm);
 }
 
 .k-column-header {
@@ -77,8 +77,11 @@
     font-size: 0.95rem;
     color: var(--text-main);
     background: var(--bg-card);
-    /* Asegurar fondo */
-    border-radius: 16px 16px 0 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 12px 12px 0 0;
+    /* Match new radius */
+    z-index: 10;
 }
 
 .k-header-left {
@@ -146,12 +149,12 @@
 .k-card {
     background: var(--bg-body);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 12px 16px;
+    border-radius: 16px;
+    padding: 16px;
     cursor: grab;
     position: relative;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s, border-color 0.2s;
     user-select: none;
     display: flex;
     flex-direction: row;
@@ -161,7 +164,7 @@
 }
 
 .k-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.01);
     box-shadow: var(--shadow);
     border-color: var(--primary);
 }

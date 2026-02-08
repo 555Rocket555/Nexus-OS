@@ -1,247 +1,253 @@
+import { Utils } from "../utils.js";
 import { KanbanService } from "../services/storage.js";
 
 // Columnas
-const COLUMNS = [
+const COLUMNAS = [
   { id: "backlog", title: "Backlog", color: "dot-backlog" },
   { id: "todo", title: "Por Hacer", color: "dot-todo" },
   { id: "doing", title: "En Progreso", color: "dot-doing" },
   { id: "done", title: "Terminado", color: "dot-done" },
 ];
 
-let items = [];
+let itemsTablero = [];
 
-export function renderKanban() {
-  const container = document.getElementById("vistaKanban");
-  const section = container || document.getElementById("seccion-planner");
+export function renderizarTablero() {
+  const contenedor = document.getElementById("vista-tablero") || document.getElementById("vistaKanban");
+  const seccion = contenedor || document.getElementById("seccion-tablero") || document.getElementById("seccion-planner");
 
-  if (!section) return;
+  if (!seccion) return;
 
   // Cargar items en el orden guardado
-  items = KanbanService.getAll() || [];
+  itemsTablero = KanbanService.getAll() || [];
 
-  section.innerHTML = `
+  seccion.innerHTML = `
         <div class="kanban-layout">
             <div class="header-content" style="padding: 0 20px 20px 20px;">
                 <div class="seccion-header" style="justify-content: center; margin-bottom: 10px;">
-                    <h1>Kanban Board</h1>
+                    <h1>Tablero Kanban</h1>
                 </div>
             </div>
-            <div class="kanban-board" id="kanban-board-container"></div>
+            <div class="kanban-board" id="contenedor-tablero"></div>
         </div>
     `;
 
-  const boardContainer = document.getElementById("kanban-board-container");
+  const contenedorTablero = document.getElementById("contenedor-tablero");
 
-  COLUMNS.forEach((col) => {
+  COLUMNAS.forEach((col) => {
     // Filtrar items por columna manteniendo el orden del array principal
-    const colItems = items.filter((item) => item.status === col.id);
+    const itemsCol = itemsTablero.filter((item) => item.status === col.id);
 
-    const colDiv = document.createElement("div");
-    colDiv.className = "k-column";
+    const divCol = document.createElement("div");
+    divCol.className = "k-column";
 
-    colDiv.innerHTML = `
+    divCol.innerHTML = `
             <div class="k-column-header">
                 <div class="k-header-left">
                     <span class="dot-status ${col.color}"></span>
                     <span>${col.title}</span>
-                    <span class="k-count">${colItems.length}</span>
+                    <span class="k-count">${itemsCol.length}</span>
                 </div>
-                <button class="btn-k-add" id="btn-add-${col.id}"> + </button>
+                <button class="btn-k-add" id="btn-agregar-${col.id}"> + </button>
             </div> 
-            <div class="k-column-body" id="col-body-${col.id}" data-status="${col.id}"></div>
+            <div class="k-column-body" id="cuerpo-col-${col.id}" data-status="${col.id}"></div>
         `;
 
-    const body = colDiv.querySelector(".k-column-body");
+    const cuerpo = divCol.querySelector(".k-column-body");
 
     // Configurar la zona de drop avanzada
-    setupDropZone(body);
+    configurarZonaDrop(cuerpo);
 
-    colDiv.querySelector(`#btn-add-${col.id}`).addEventListener("click", () => {
-      addNewItem(col.id);
+    divCol.querySelector(`#btn-agregar-${col.id}`).addEventListener("click", () => {
+      agregarNuevoItem(col.id);
     });
 
-    colItems.forEach((item) => {
-      const card = createCard(item);
-      body.appendChild(card);
+    itemsCol.forEach((item) => {
+      const tarjeta = crearTarjeta(item);
+      cuerpo.appendChild(tarjeta);
     });
 
-    boardContainer.appendChild(colDiv);
+    contenedorTablero.appendChild(divCol);
   });
 }
 
-function createCard(item) {
-  const card = document.createElement("div");
-  card.className = "k-card";
-  card.draggable = true;
-  card.dataset.id = item.id; // Importante para recuperar ID
+function crearTarjeta(item) {
+  const tarjeta = document.createElement("div");
+  tarjeta.className = "k-card";
+  tarjeta.draggable = true;
+  tarjeta.dataset.id = item.id; // Importante para recuperar ID
 
-  card.innerHTML = `
-        <div class="k-card-title" contenteditable="true" title="Clic para editar">${item.title}</div>
+  tarjeta.innerHTML = `
+        <div class="k-card-title" contenteditable="true" title="Clic para editar">${Utils.escaparHTML(item.title)}</div>
         <button class="btn-k-delete" title="Eliminar">✕</button>
     `;
 
-  const titleDiv = card.querySelector(".k-card-title");
+  const divTitulo = tarjeta.querySelector(".k-card-title");
 
   // Evitar arrastre al editar
-  titleDiv.addEventListener("mousedown", (e) => {
+  divTitulo.addEventListener("mousedown", (e) => {
     e.stopPropagation();
-    card.setAttribute("draggable", "false");
+    tarjeta.setAttribute("draggable", "false");
   });
-  titleDiv.addEventListener("keydown", (e) => {
+  divTitulo.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      titleDiv.blur();
+      divTitulo.blur();
     }
   });
-  titleDiv.addEventListener("blur", () => {
-    card.setAttribute("draggable", "true");
-    const newText = titleDiv.innerText.trim();
-    if (newText && newText !== item.title) updateItemTitle(item.id, newText);
-    else if (!newText) titleDiv.innerText = item.title;
+  divTitulo.addEventListener("blur", () => {
+    tarjeta.setAttribute("draggable", "true");
+    const nuevoTexto = divTitulo.innerText.trim();
+    if (nuevoTexto && nuevoTexto !== item.title) actualizarTituloItem(item.id, nuevoTexto);
+    else if (!nuevoTexto) divTitulo.innerText = item.title;
   });
 
   // --- LOGICA DRAG & DROP MEJORADA ---
-  card.addEventListener("dragstart", (e) => {
-    card.classList.add("dragging"); // Clase CSS clave para identificar
+  tarjeta.addEventListener("dragstart", (e) => {
+    tarjeta.classList.add("dragging"); // Clase CSS clave para identificar
     e.dataTransfer.setData("text/plain", item.id);
     e.dataTransfer.effectAllowed = "move";
   });
 
-  card.addEventListener("dragend", () => {
-    card.classList.remove("dragging");
+  tarjeta.addEventListener("dragend", () => {
+    tarjeta.classList.remove("dragging");
     document
       .querySelectorAll(".k-column-body")
       .forEach((el) => el.classList.remove("drag-over"));
 
     // Al soltar, guardamos el estado visual actual como el nuevo orden
-    saveBoardState();
+    guardarEstadoTablero();
   });
 
-  card.querySelector(".btn-k-delete").addEventListener("click", (e) => {
+  tarjeta.querySelector(".btn-k-delete").addEventListener("click", (e) => {
     e.stopPropagation();
-    deleteItem(item.id);
+    eliminarItem(item.id);
   });
 
-  return card;
+  return tarjeta;
 }
 
-function updateItemTitle(id, newTitle) {
-  const item = items.find((i) => i.id === id);
+function actualizarTituloItem(id, nuevoTitulo) {
+  const item = itemsTablero.find((i) => i.id === id);
   if (item) {
-    item.title = newTitle;
-    KanbanService.saveAll(items);
+    item.title = nuevoTitulo;
+    KanbanService.saveAll(itemsTablero);
   }
 }
 
 // --- ZONA DE DROP INTELIGENTE ---
-function setupDropZone(columnBody) {
-  columnBody.addEventListener("dragover", (e) => {
+function configurarZonaDrop(cuerpoColumna) {
+  cuerpoColumna.addEventListener("dragover", (e) => {
     e.preventDefault(); // Necesario para permitir drop
-    columnBody.classList.add("drag-over");
+    cuerpoColumna.classList.add("drag-over");
 
     // Elemento que se está arrastrando
-    const draggable = document.querySelector(".dragging");
-    if (!draggable) return;
+    const arrastrable = document.querySelector(".dragging");
+    if (!arrastrable) return;
 
     // Calcular dónde insertar usando la posición del mouse (Y)
-    const afterElement = getDragAfterElement(columnBody, e.clientY);
+    const elementoDespues = obtenerElementoDespuesDeArrastre(cuerpoColumna, e.clientY);
 
-    if (afterElement == null) {
+    if (elementoDespues == null) {
       // Si no hay elemento después, añadir al final
-      columnBody.appendChild(draggable);
+      cuerpoColumna.appendChild(arrastrable);
     } else {
       // Si hay elemento, insertar antes de él
-      columnBody.insertBefore(draggable, afterElement);
+      cuerpoColumna.insertBefore(arrastrable, elementoDespues);
     }
   });
 
-  columnBody.addEventListener("dragleave", () => {
-    columnBody.classList.remove("drag-over");
+  cuerpoColumna.addEventListener("dragleave", () => {
+    cuerpoColumna.classList.remove("drag-over");
   });
 
   // El evento drop ya no mueve el elemento (lo hace dragover),
   // solo limpia estilos y actualiza contadores si es necesario.
-  columnBody.addEventListener("drop", (e) => {
+  cuerpoColumna.addEventListener("drop", (e) => {
     e.preventDefault();
-    columnBody.classList.remove("drag-over");
-    saveBoardState(); // Guardar cambios finales
+    cuerpoColumna.classList.remove("drag-over");
+    guardarEstadoTablero(); // Guardar cambios finales
   });
 }
 
 // Función auxiliar matemática para detectar posición
-function getDragAfterElement(container, y) {
+function obtenerElementoDespuesDeArrastre(contenedor, y) {
   // Seleccionar todos los elementos arrastrables que NO son el que estoy moviendo
-  const draggableElements = [
-    ...container.querySelectorAll(".k-card:not(.dragging)"),
+  const elementosArrastrables = [
+    ...contenedor.querySelectorAll(".k-card:not(.dragging)"),
   ];
 
-  return draggableElements.reduce(
-    (closest, child) => {
-      const box = child.getBoundingClientRect();
+  return elementosArrastrables.reduce(
+    (masCercano, hijo) => {
+      const box = hijo.getBoundingClientRect();
       // offset: distancia entre el mouse y el centro de la caja del elemento
       const offset = y - box.top - box.height / 2;
 
       // Buscamos el elemento donde el offset sea negativo (estamos arriba de su centro)
       // y que sea el más cercano a 0 (el más próximo inmediato)
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
+      if (offset < 0 && offset > masCercano.offset) {
+        return { offset: offset, element: hijo };
       } else {
-        return closest;
+        return masCercano;
       }
     },
     { offset: Number.NEGATIVE_INFINITY },
   ).element;
 }
 
-// --- GUARDADO BASADO EN DOM ---
-function saveBoardState() {
-  const newItemsOrder = [];
-  const boardContainer = document.getElementById("kanban-board-container");
+function agregarNuevoItem(status) {
+  const titulo = prompt("Nueva tarea:");
+  if (titulo) {
+    const nuevoItem = {
+      id: Utils.generarId(),
+      title: titulo,
+      status: status,
+      createdAt: new Date().toISOString(),
+    };
+    itemsTablero.push(nuevoItem);
+    KanbanService.saveAll(itemsTablero);
+    renderizarTablero();
+  }
+}
 
-  // Recorrer columnas en orden visual
-  const cols = boardContainer.querySelectorAll(".k-column");
+function eliminarItem(id) {
+  if (confirm("¿Eliminar tarea?")) {
+    itemsTablero = itemsTablero.filter((i) => i.id !== id);
+    KanbanService.saveAll(itemsTablero);
+    renderizarTablero();
+  }
+}
 
-  cols.forEach((col) => {
-    const status = col.querySelector(".k-column-body").dataset.status;
-    const cards = col.querySelectorAll(".k-card");
+function guardarEstadoTablero() {
+  // Reconstruir el array items en base al DOM para preservar el orden visual
+  const nuevoOrdenItems = [];
 
-    // Actualizar contador visualmente
-    col.querySelector(".k-count").textContent = cards.length;
+  const columnas = document.querySelectorAll(".k-column-body");
+  columnas.forEach(col => {
+    const status = col.dataset.status;
+    const tarjetas = col.querySelectorAll(".k-card");
 
-    // Recorrer tarjetas en el orden que quedaron
-    cards.forEach((card) => {
-      const id = Number(card.dataset.id);
-      const originalItem = items.find((i) => i.id === id);
-      if (originalItem) {
-        // Actualizar estado y agregar al nuevo array
-        originalItem.status = status;
-        newItemsOrder.push(originalItem);
+    tarjetas.forEach(tarjeta => {
+      const id = tarjeta.dataset.id;
+      // Buscar el item original para mantener otras propiedades si las hubiera
+      const itemOriginal = itemsTablero.find(i => i.id === id);
+      if (itemOriginal) {
+        nuevoOrdenItems.push({
+          ...itemOriginal,
+          status: status // Actualizar status basado en la columna actual
+        });
       }
     });
   });
 
-  // Actualizar array principal y guardar
-  items = newItemsOrder;
-  KanbanService.saveAll(items);
-}
+  itemsTablero = nuevoOrdenItems;
+  KanbanService.saveAll(itemsTablero);
 
-// --- ACCIONES DE DATOS ---
-function addNewItem(status) {
-  const newItem = {
-    id: Date.now(),
-    title: "",
-    status: status,
-    tag: "",
-  };
-  items.push(newItem);
-  KanbanService.saveAll(items);
-  renderKanban();
-}
-
-function deleteItem(id) {
-  if (confirm("¿Eliminar tarea?")) {
-    items = items.filter((i) => i.id !== id);
-    KanbanService.saveAll(items);
-    renderKanban();
-  }
+  // Actualizar contadores visuales
+  document.querySelectorAll(".k-column").forEach(col => {
+    const body = col.querySelector(".k-column-body");
+    const count = col.querySelector(".k-count");
+    if (body && count) {
+      count.innerText = body.children.length;
+    }
+  });
 }

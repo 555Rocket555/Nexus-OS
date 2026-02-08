@@ -1,112 +1,165 @@
 :root {
-    /* -- COLORES BASE -- */
-    --bg-body: #F3F4F6;
-    --bg-sidebar: #FFFFFF;
-    --bg-card: #FFFFFF;
-    --text-main: #111827;
-    --text-muted: #6B7280;
-    --border-color: #E5E7EB;
-    --input-bg: #F9FAFB;
+    /* -- COLORES BASE (Premium Palette) -- */
+    --bg-body: #f8fafc;
+    /* Slate 50 */
+    --bg-sidebar: rgba(255, 255, 255, 0.85);
+    --bg-card: #ffffff;
+    --text-main: #0f172a;
+    /* Slate 900 */
+    --text-muted: #64748b;
+    /* Slate 500 */
+    --border-color: #e2e8f0;
+    /* Slate 200 */
+    --input-bg: #f1f5f9;
+    /* Slate 100 */
 
-    /* -- DINÁMICOS -- */
-    --primary: #4F46E5;
+    /* -- DINÁMICOS & BRANDING -- */
+    --primary: #6366f1;
+    /* Indigo 500 */
+    --primary-hover: #4f46e5;
+    /* Indigo 600 */
     --secondary: #ec4899;
-    --radius: 12px;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --font-main: 'Segoe UI', system-ui, sans-serif;
-    --danger: #EF4444;
+    /* Pink 500 */
+
+    --radius: 8px;
+    /* Professional & clean */
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Soft Shadow */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+
+    --font-main: 'Outfit', system-ui, -apple-system, sans-serif;
+
+    /* -- ESTADOS -- */
+    --danger: #ef4444;
     --success: #10b981;
     --warning: #f59e0b;
 
-    /* -- NEON VARIABLES (Default) -- */
-    --neon-color: var(--primary);
-    --neon-intensity: 0.3;
-    --neon-spread: 10px;
-    --neon-blur: 15px;
+    /* -- GLASSMORPHISM VARIABLES -- */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.5);
+    --glass-blur: blur(20px);
 }
 
 /* -- DEFINICIÓN DE TEMAS -- */
 
-/* Temas Oscuros: Mayor intensidad de neón */
-body.dark-mode,
-body.dark-mode2,
-body.dark-green,
-body.dark-purple,
-body.warm-mode {
-    --bg-body: #09090b;
-}
-
+/* Dark Mode (Default Premium Dark) */
 body.dark-mode {
     --bg-body: #09090b;
-    --bg-sidebar: #18181b;
+    --bg-sidebar: rgba(18, 18, 18, 0.9);
     --bg-card: #18181b;
     --text-main: #fafafa;
     --text-muted: #a1a1aa;
     --border-color: #27272a;
-    --input-bg: #4d4d50;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    --input-bg: #27272a;
+    --glass-bg: rgba(24, 24, 27, 0.8);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.8), 0 4px 6px -2px rgba(0, 0, 0, 0.6);
 }
 
+/* Dark Mode 2 (Midnight) */
 body.dark-mode2 {
-    --bg-body: #0f172a;
-    --bg-sidebar: #1e293b;
+    --bg-body: #020617;
+    /* Slate 950 */
+    --bg-sidebar: rgba(15, 23, 42, 0.9);
     --bg-card: #1e293b;
-    --text-main: #f1f5f9;
+    --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --border-color: #334155;
     --input-bg: #334155;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(30, 41, 59, 0.8);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.08);
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
 }
 
+/* Dark Green (Forest Mint) */
 body.dark-green {
-    --bg-body: #052e16;
-    --bg-sidebar: #064e3b;
-    --bg-card: #064e3b;
-    --text-main: #ecfdf5;
-    --text-muted: #6ee7b7;
-    --border-color: #065f46;
-    --input-bg: #065f46;
+    --bg-body: #064e3b;
+    /* Deep Forest Green */
+    --bg-sidebar: rgba(2, 44, 34, 0.9);
+    --bg-card: #065f46;
+    --text-main: #f0fdf4;
+    --text-muted: #86efac;
+    --border-color: #047857;
+    --input-bg: #047857;
+    --glass-bg: rgba(6, 78, 59, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+
+    --primary: #059669;
+    --secondary: #84cc16;
+    /* Lime Accent */
 }
 
+/* Dark Purple (Synthwave / Modern SaaS) */
 body.dark-purple {
-    --bg-body: #2e1065;
-    --bg-sidebar: #4c1d95;
-    --bg-card: #4c1d95;
-    --text-main: #faf5ff;
-    --text-muted: #c4b5fd;
-    --border-color: #5b21b6;
-    --input-bg: #5b21b6;
+    --bg-body: #1e1b4b;
+    /* Deep Indigo */
+    --bg-sidebar: rgba(30, 27, 75, 0.9);
+    --bg-card: #312e81;
+    --text-main: #e0e7ff;
+    --text-muted: #a5b4fc;
+    --border-color: #4338ca;
+    --input-bg: #3730a3;
+    --glass-bg: rgba(49, 46, 129, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+
+    --primary: #7c3aed;
+    --secondary: #c026d3;
+    /* Fuchsia Accent */
 }
 
+/* Warm Mode (Sunset / Coffee) */
 body.warm-mode {
-    --bg-body: #451a03;
-    --bg-sidebar: #78350f;
-    --bg-card: #78350f;
-    --text-main: #fffbeb;
-    --text-muted: #fcd34d;
-    --border-color: #92400e;
-    --input-bg: #92400e;
+    --bg-body: #431407;
+    /* Deep Brown */
+    --bg-sidebar: rgba(67, 20, 7, 0.9);
+    --bg-card: #571c09;
+    --text-main: #ffedd5;
+    --text-muted: #fdba74;
+    --border-color: #7c2d12;
+    --input-bg: #7c2d12;
+    --glass-bg: rgba(87, 28, 9, 0.85);
+    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+
+    --primary: #ea580c;
+    --secondary: #f59e0b;
+    /* Amber Accent */
 }
 
-/* Temas Claros */
+/* Light Blue (Sky / Corporate) */
 body.light-blue {
-    --bg-body: #eff6ff;
-    --bg-sidebar: #ffffff;
+    --bg-body: #f0f9ff;
+    /* Sky 50 */
+    --bg-sidebar: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
-    --text-main: #172554;
-    --text-muted: #60a5fa;
-    --border-color: #bfdbfe;
-    --input-bg: #f0f9ff;
+    --text-main: #0c4a6e;
+    /* Sky 900 */
+    --text-muted: #0369a1;
+    /* Sky 700 */
+    --border-color: #bae6fd;
+    --input-bg: #e0f2fe;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+
+    --primary: #0284c7;
+    --secondary: #6366f1;
+    /* Indigo Accent */
 }
 
+/* Light Gray (Minimal / Mono) */
 body.light-gray {
     --bg-body: #f8fafc;
-    --bg-sidebar: #ffffff;
+    /* Slate 50 */
+    --bg-sidebar: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
-    --text-main: #334155;
-    --text-muted: #94a3b8;
+    --text-main: #0f172a;
+    /* Slate 900 */
+    --text-muted: #64748b;
+    /* Slate 500 */
     --border-color: #e2e8f0;
     --input-bg: #f1f5f9;
+
+    --primary: #334155;
+    --secondary: #cbd5e1;
+    /* Soft Accent */
 }
 
 /* RESET y Utilidades */
@@ -115,6 +168,17 @@ body.light-gray {
     padding: 0;
     box-sizing: border-box;
     font-family: var(--font-main);
+    -webkit-tap-highlight-color: transparent;
+    /* Mobile friendly */
+}
+
+.iconInvert {
+    filter: invert(1) brightness(2);
+    /* Brightness helps in dark mode */
+}
+
+.iconNoInvert {
+    filter: none;
 }
 
 body {
@@ -123,17 +187,30 @@ body {
     height: 100vh;
     display: flex;
     overflow: hidden;
-    transition: background-color 0.3s, color 0.3s;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-size: 16px;
+    /* Base size for mobile readability */
+}
+
+/* Scrollbar Personalizado */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
 }
 
 .hidden {
     display: none !important;
-}
-
-.iconInvert {
-    filter: invert(1);
-}
-
-.iconNoInvert {
-    filter: invert(0);
 }

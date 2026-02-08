@@ -13,10 +13,12 @@
     <link rel="stylesheet" href="./css/modules/dashboard.css">
     <link rel="stylesheet" href="./css/modules/kanban.css">
     <link rel="stylesheet" href="./css/modules/finance.css">
+    <link rel="stylesheet" href="./css/modules/taghub.css">
     <link rel="stylesheet" href="./css/modules/calendar.css">
     <link rel="stylesheet" href="./css/modules/projects.css">
     <link rel="stylesheet" href="./css/modules/settings.css">
     <link rel="stylesheet" href="./css/modules/notes.css">
+    <link rel="stylesheet" href="./css/modules/tags.css">
 </head>
 
 <body>
@@ -44,9 +46,9 @@
                     <span>Proyectos</span>
                 </button>
 
-                <button class="menu-btn" data-target="seccion-planner">
-                    <img src="./icons/planner.svg" class="icon" alt="Kanban">
-                    <span>Kanban</span>
+                <button class="menu-btn" data-target="seccion-tablero">
+                    <img src="./icons/planner.svg" class="icon" alt="Tablero">
+                    <span>Tablero</span>
                 </button>
 
                 <button class="menu-btn" data-target="seccion-calendario">
@@ -57,6 +59,12 @@
                 <button class="menu-btn" data-target="seccion-finanzas">
                     <img src="./icons/money.svg" class="icon" alt="Finanzas">
                     <span>Wallet</span>
+                </button>
+
+                <!-- Nuevo Botón Etiquetas -->
+                <button class="menu-btn" data-target="seccion-tags">
+                    <img src="./icons/tags.svg" class="icon" alt="Etiquetas">
+                    <span>Etiquetas</span>
                 </button>
 
                 <button class="menu-btn" data-target="seccion-configuracion">
@@ -79,24 +87,24 @@
                 <div id="dashboard" class="main-container">
                     <div id="header-dashboard" class="header-content">
                         <div class="dashboard-welcome">
-                            <h1 id="dashboard-greeting" class="dashboard-welcome">Hola, Usuario 😉</h1>
-                            <p id="dashboard-date">Cargando...</p>
+                            <h1 id="saludo-dashboard" class="dashboard-welcome">Hola, Usuario 😉</h1>
+                            <p id="fecha-dashboard">Cargando...</p>
                         </div>
                     </div>
-                    <div class="dashboard-grid" id="dashboard-content"></div>
+                    <div class="dashboard-grid" id="contenido-dashboard"></div>
                 </div>
             </section>
 
             <section id="seccion-notas" class="pagina hidden">
-                <div id="vistaNotas" style="height: 100%; width: 100%;"></div>
+                <div id="vista-notas" style="height: 100%; width: 100%;"></div>
             </section>
 
             <section id="seccion-proyectos" class="pagina hidden">
-                <div id="vistaProyectos" style="height: 100%; width: 100%;"></div>
+                <div id="vista-proyectos" style="height: 100%; width: 100%;"></div>
             </section>
 
-            <section id="seccion-planner" class="pagina hidden">
-                <div id="vistaKanban" style="height: 98%;"></div>
+            <section id="seccion-tablero" class="pagina hidden">
+                <div id="vista-tablero" style="height: 98%;"></div>
             </section>
 
             <section id="seccion-calendario" class="pagina hidden">
@@ -104,10 +112,10 @@
                     <div class="calendarioAndEventos">
                         <div class="calendar-container">
                             <div class="calendar-header">
-                                <h2 id="mesAnio">2026</h2>
+                                <h2 id="mes-anio">2026</h2>
                                 <div class="calendar-nav">
-                                    <button id="prevMonth">&lt;</button>
-                                    <button id="nextMonth">&gt;</button>
+                                    <button id="btn-mes-anterior">&lt;</button>
+                                    <button id="btn-mes-siguiente">&gt;</button>
                                 </div>
                             </div>
                             <div class="calendar-weekdays">
@@ -119,22 +127,22 @@
                                 <div>Vie</div>
                                 <div>Sáb</div>
                             </div>
-                            <div class="calendar-grid" id="calendarGrid"></div>
+                            <div class="calendar-grid" id="grid-calendario"></div>
                         </div>
 
                         <div class="eventos-container">
                             <div class="eventos-header">
                                 <h2>Eventos del Mes</h2>
                             </div>
-                            <div class="calendar-events" id="calendarEvents"></div>
+                            <div class="calendar-events" id="eventos-calendario"></div>
                         </div>
 
                         <div class="noDate-container">
                             <div class="eventos-header-noDate">
                                 <h2>Recordatorios</h2>
-                                <button id="btnNuevoEvento" class="btn-plus">+</button>
+                                <button id="btn-nuevo-evento" class="btn-plus">+</button>
                             </div>
-                            <div class="calendar-events" id="unassignedEvents"></div>
+                            <div class="calendar-events" id="eventos-sin-asignar"></div>
                         </div>
                     </div>
                 </div>
@@ -143,34 +151,36 @@
             <section id="seccion-finanzas" class="pagina hidden">
                 <div class="main-container">
                     <div class="seccion-header" style="justify-content: space-between;">
-                        <h1>Wallet</h1>
-                        <button id="btnAbrirConfigFinanzas" class="btn-icon" title="Ajustes">⚙️</button>
+                        <h1>Finanzas</h1>
+                        <button id="btn-config-finanzas" class="btn-secondary">
+                            ⚙️ Configuración
+                        </button>
                     </div>
                     <div class="finance-dashboard-layout">
                         <div class="finance-left-col">
                             <div class="f-card f-diario-hero">
                                 <div class="diario-content">
-                                    <small id="lblDiasRestantes">Calculando...</small>
-                                    <div class="money-display big" id="lblDiario">$0.00</div>
+                                    <small id="lbl-dias-restantes">Calculando...</small>
+                                    <div class="money-display big" id="val-diario">$0.00</div>
                                     <span>Diario Disponible</span>
                                 </div>
                             </div>
                             <div class="finance-mini-grid">
                                 <div class="f-mini-card">
                                     <span class="mini-label">Ingreso</span>
-                                    <span class="mini-value" id="lblIngreso">$0.00</span>
+                                    <span class="mini-value" id="val-ingreso">$0.00</span>
                                 </div>
                                 <div class="f-mini-card">
-                                    <span class="mini-label">Ahorro (<span id="lblAhorroPct">0</span>%)</span>
-                                    <span class="mini-value text-warning" id="lblAhorro">$0.00</span>
+                                    <span class="mini-label">Ahorro (<span id="val-ahorro-pct">0</span>%)</span>
+                                    <span class="mini-value text-warning" id="val-ahorro">$0.00</span>
                                 </div>
                                 <div class="f-mini-card">
                                     <span class="mini-label">Gastos Fijos</span>
-                                    <span class="mini-value text-danger" id="lblGastosFijos">$0.00</span>
+                                    <span class="mini-value text-danger" id="val-gastos-fijos">$0.00</span>
                                 </div>
                                 <div class="f-mini-card highlight">
                                     <span class="mini-label">Libre Real</span>
-                                    <span class="mini-value text-success" id="lblDisponible">$0.00</span>
+                                    <span class="mini-value text-success" id="val-disponible">$0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -178,11 +188,11 @@
                             <div class="f-panel-clean" style="height: 45%;">
                                 <div class="panel-header-clean">
                                     <h3>Gastos Fijos</h3>
-                                    <button id="btnAgregarFijo" class="btn-plus-round">＋</button>
+                                    <button id="btn-agregar-fijo" class="btn-plus-round">＋</button>
                                 </div>
-                                <form id="formNuevoFijo" class="form-fijo-row hidden">
+                                <form id="form-nuevo-fijo" class="form-fijo-row hidden">
                                     <div class="fijo-row-inputs">
-                                        <select id="selCategoriaFijo" class="input-mini-icon">
+                                        <select id="select-categoria-fijo" class="input-mini-icon">
                                             <option value="🏠">🏠</option>
                                             <option value="🍔">🍔</option>
                                             <option value="🚗">🚗</option>
@@ -190,15 +200,15 @@
                                             <option value="💳">💳</option>
                                             <option value="🍿">🍿</option>
                                         </select>
-                                        <input type="text" id="txtNombreFijo" placeholder="Concepto" required>
+                                        <input type="text" id="input-nombre-fijo" placeholder="Concepto" required>
                                     </div>
                                     <div class="fijo-row-inputs">
-                                        <input type="number" id="txtMontoFijo" placeholder="$" required>
+                                        <input type="number" id="input-monto-fijo" placeholder="$" required>
                                         <button type="submit" class="btn-check">✔</button>
                                     </div>
                                 </form>
                                 <div class="fijos-list-scroll">
-                                    <ul id="listaGastosFijos" class="list-clean"></ul>
+                                    <ul id="lista-gastos-fijos" class="list-clean"></ul>
                                 </div>
                             </div>
                             <div class="f-panel-clean" style="height: 55%;">
@@ -206,45 +216,45 @@
                                     <h3>Gastos Variables</h3>
                                 </div>
                                 <div class="quick-add-row">
-                                    <input type="text" id="in-mov-desc" class="quick-input"
+                                    <input type="text" id="input-mov-desc" class="quick-input"
                                         placeholder="Ej. Café, Uber..." style="flex:2;">
-                                    <input type="number" id="in-mov-amount" class="quick-input" placeholder="$"
+                                    <input type="number" id="input-mov-monto" class="quick-input" placeholder="$"
                                         style="flex:1;">
-                                    <button id="btn-add-movement" class="btn-plus-round"
+                                    <button id="btn-agregar-movimiento" class="btn-plus-round"
                                         style="width:38px; height:38px; border-radius:8px;">➜</button>
                                 </div>
-                                <div id="listaMovimientos" class="fijos-list-scroll">
+                                <div id="lista-movimientos" class="fijos-list-scroll">
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="modalConfigFinanzas" class="form-card-container hidden">
+                <div id="modal-config-finanzas" class="form-card-container hidden">
                     <div class="form-card">
                         <h2>⚙️ Configurar Billetera</h2>
-                        <form id="formFinanzasConfig">
+                        <form id="form-config-finanzas">
                             <div class="input-group">
                                 <label>Ingreso Neto:</label>
-                                <input type="number" id="inSalario" placeholder="Ej. 15000" required>
+                                <input type="number" id="input-salario" placeholder="Ej. 15000" required>
                             </div>
                             <div class="input-group">
                                 <label>Periodo:</label>
-                                <select id="selPeriodo">
+                                <select id="select-periodo">
                                     <option value="mensual">Mensual (30 días)</option>
                                     <option value="quincenal">Quincenal (15 días)</option>
                                 </select>
                             </div>
                             <div class="input-group">
                                 <label>Fecha de cobro (Inicio):</label>
-                                <input type="date" id="inFechaInicio" required>
+                                <input type="date" id="input-fecha-inicio" required>
                             </div>
                             <div class="input-group">
-                                <label>Meta Ahorro (%): <span id="valAhorroRange">10%</span></label>
-                                <input type="range" id="inAhorroRange" min="0" max="50" step="5" value="10">
+                                <label>Meta Ahorro (%): <span id="val-rango-ahorro">10%</span></label>
+                                <input type="range" id="input-rango-ahorro" min="0" max="50" step="5" value="10">
                             </div>
                             <div class="form-actions">
                                 <button type="submit" class="btn-primary">Guardar Cambios</button>
-                                <button type="button" id="btnCerrarConfigFinanzas"
+                                <button type="button" id="btn-cerrar-config-finanzas"
                                     class="btn-secondary">Cancelar</button>
                             </div>
                         </form>
@@ -252,48 +262,49 @@
                 </div>
             </section>
 
+            <!-- Sección de Etiquetas -->
+            <section id="seccion-tags" class="pagina hidden">
+                <div id="vistaTags" style="height: 100%; width: 100%;"></div>
+            </section>
+
             <section id="seccion-configuracion" class="pagina hidden">
                 <div class="main-container">
                     <div class="seccion-header" style="margin-bottom: 10px;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-size:1.8rem;">⚙️</span>
-                            <div>
-                                <h1 style="font-size:1.5rem; margin:0;">Preferencias</h1>
-                                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Personaliza tu
-                                    experiencia en Nexus OS</p>
+                        <div class="settings-container">
+                            <div class="settings-sidebar">
+                                <h2>Ajustes</h2>
+                                <button class="pestana-configuracion active" data-target="tab-apariencia">
+                                    <img src="./icons/view.svg" class="icon">Apariencia
+                                </button>
+                                <button class="pestana-configuracion" data-target="tab-modulos">
+                                    <img src="./icons/apps.svg" class="icon">Módulos
+                                </button>
+                                <button class="pestana-configuracion" data-target="tab-notificaciones">
+                                    <img src="./icons/noti.svg" class="icon">Notificaciones
+                                </button>
+                                <button class="pestana-configuracion" data-target="tab-cuenta">
+                                    <img src="./icons/user.svg" class="icon">Cuenta
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                    <div class="settings-tabs">
-                        <button class="settings-tab active" data-tab="tab-apariencia"><img src="./icons/palette.svg"
-                                class="icon">Apariencia</button>
-                        <button class="settings-tab" data-tab="tab-modulos"><img src="./icons/view.svg" class="icon">
-                            Módulos</button>
-                        <button class="settings-tab" data-tab="tab-notificaciones"><img src="./icons/noti.svg"
-                                class="icon">Notificaciones</button>
-                        <button class="settings-tab" data-tab="tab-cuenta"><img src="./icons/user.svg"
-                                class="icon">Cuenta</button>
-                    </div>
-                    <div class="settings-content-wrapper">
-                        <div id="tab-apariencia" class="settings-panel active">
-                            <div class="setting-group">
-                                <h3>Tema & Colores</h3>
-                                <div class="setting-row">
-                                    <div class="setting-desc">
-                                        <h4>Tema Base</h4>
-                                        <p>Elige el ambiente visual general.</p>
-                                    </div>
-                                    <select id="themeSelector" class="theme-selector">
-                                        <option value="">Claro (Default)</option>
-                                        <option value="dark-mode">Oscuro Elegante</option>
-                                        <option value="dark-mode2">Azul Medianoche</option>
-                                        <option value="dark-purple">Cyberpunk</option>
-                                        <option value="dark-green">Bosque Profundo</option>
-                                        <option value="warm-mode">Atardecer</option>
-                                    </select>
-                                </div>
-                                <div class="setting-row">
-                                    <div class="setting-desc">
+
+                            <div class="settings-content-wrapper">
+                                <!-- Tab Apariencia -->
+                                <div id="tab-apariencia" class="panel-configuracion">
+                                    <div class="setting-group">
+                                        <h3>Tema del Sistema</h3>
+                                        <div class="theme-selector-container">
+                                            <label>Preset de Tema</label>
+                                            <select id="selector-tema" class="theme-select">
+                                                <option value="">Por defecto (Índigo)</option>
+                                                <option value="dark-mode">Vampire (Rojo Oscuro)</option>
+                                                <option value="dark-green">Forest Mint (Verde)</option>
+                                                <option value="dark-purple">Cyber Punk (Morado)</option>
+                                                <option value="warm-mode">Sunset (Naranja)</option>
+                                                <option value="light-blue">Sky (Azul Claro)</option>
+                                                <option value="dark-mode2">Ocean (Azul Oscuro)</option>
+                                                <option value="light-gray">Slate (Gris)</option>
+                                            </select>
+                                        </div>
                                         <h4>Color Principal</h4>
                                         <p>Botones, enlaces y elementos activos.</p>
                                     </div>
@@ -312,19 +323,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="tab-modulos" class="settings-panel hidden">
+                        <div id="tab-modulos" class="panel-configuracion hidden">
                             <div class="setting-group">
-                                <h3>Módulos del Sistema</h3>
-                                <p style="color:var(--text-muted); margin-bottom:20px;">Activa o desactiva las
-                                    herramientas que necesitas.</p>
+                                <h3>Módulos Activos</h3>
+                                <p class="text-sm text-muted">Activa o desactiva secciones del menú.</p>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>📝 Notas</h4>
-                                        <p>Captura rápida de ideas.</p>
+                                        <p>Tomar notas rápidas y organizadas.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-notas" checked
-                                            onchange="window.toggleModule('seccion-notas', this.checked)">
+                                        <input type="checkbox" id="switch-modulo-notas" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -334,19 +343,17 @@
                                         <p>Gestión avanzada de Proyectos.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-proyectos" checked
-                                            onchange="window.toggleModule('seccion-proyectos', this.checked)">
+                                        <input type="checkbox" id="switch-modulo-proyectos" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
-                                        <h4>📋 Kanban</h4>
+                                        <h4>📋 Tablero</h4>
                                         <p>Tablero de flujo de trabajo.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-kanban" checked
-                                            onchange="window.toggleModule('seccion-planner', this.checked)">
+                                        <input type="checkbox" id="switch-modulo-kanban" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -356,25 +363,23 @@
                                         <p>Agenda y eventos.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-calendario" checked
-                                            onchange="window.toggleModule('seccion-calendario', this.checked)">
+                                        <input type="checkbox" id="switch-modulo-calendario" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
-                                        <h4>💳 Wallet</h4>
+                                        <h4>💳 Finanzas</h4>
                                         <p>Control de finanzas personales.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-finanzas" checked
-                                            onchange="window.toggleModule('seccion-finanzas', this.checked)">
+                                        <input type="checkbox" id="switch-modulo-finanzas" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
                             </div>
                         </div>
-                        <div id="tab-notificaciones" class="settings-panel hidden">
+                        <div id="tab-notificaciones" class="panel-configuracion hidden">
                             <div class="setting-group">
                                 <h3>Preferencias de Notificaciones</h3>
                                 <div class="module-toggle-item">
@@ -395,7 +400,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="tab-cuenta" class="settings-panel hidden">
+                        <div id="tab-cuenta" class="panel-configuracion hidden">
                             <div class="setting-group">
                                 <h3>Información Personal</h3>
                                 <div class="profile-edit-grid">
@@ -406,11 +411,11 @@
                                     <div class="profile-inputs">
                                         <div class="input-group">
                                             <label>Nombre</label>
-                                            <input type="text" id="user-name" value="Usuario">
+                                            <input type="text" id="input-nombre-usuario" value="Usuario">
                                         </div>
                                         <div class="input-group">
                                             <label>Apellido</label>
-                                            <input type="text" id="user-lastname" value="Demo">
+                                            <input type="text" id="input-apellido-usuario" value="Demo">
                                         </div>
                                         <div class="input-group full-width">
                                             <label>Email</label>
@@ -419,7 +424,7 @@
                                     </div>
                                 </div>
                                 <div style="margin-top:20px;">
-                                    <button id="btnSaveProfile" class="btn-primary">Guardar Cambios</button>
+                                    <button id="btn-guardar-perfil" class="btn-primary">Guardar Cambios</button>
                                 </div>
                             </div>
                         </div>

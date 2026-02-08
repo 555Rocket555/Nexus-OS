@@ -1,298 +1,362 @@
+import { Utils } from "../utils.js";
 import { Storage } from "../services/storage.js";
+// TagHub deleted
 
 // Estado local
-let state = {
-  notes: [],
-  selectedId: null,
-  searchQuery: "",
-  tagFilter: "",
+let estado = {
+  notas: [],
+  idSeleccionado: null,
+  busqueda: "",
+  etiquetaActiva: "Todas",
+  modoVista: Storage.get("notes_view_mode") || "grid", // "list" | "grid"
+  editorAbierto: false
 };
 
-export function initNotes() {
-  state.notes = Storage.get("notes") || [];
-  renderLayout();
+export function iniciarNotas() {
+  estado.notas = Storage.get("notes") || [];
+  renderizarInterfaz();
 }
 
-function save() {
-  Storage.set("notes", state.notes);
+function guardar() {
+  Storage.set("notes", estado.notas);
 }
 
-// Obtener todas las etiquetas únicas para el selector
-function getAllUniqueTags() {
-  const tags = new Set();
-  state.notes.forEach((note) => {
-    if (note.tags && Array.isArray(note.tags)) {
-      note.tags.forEach((t) => tags.add(t));
-    }
+// Obtener tags únicos
+function obtenerEtiquetasUnicas() {
+  const etiquetas = new Set();
+  estado.notas.forEach((nota) => {
+    nota.tags?.forEach((t) => etiquetas.add(t));
   });
-  return Array.from(tags);
+  return Array.from(etiquetas).sort();
 }
 
-function renderLayout() {
-  const container = document.getElementById("vistaNotas");
-  if (!container) return;
+function renderizarInterfaz() {
+  // Nota: El ID del contenedor principal en index.html debe coincidir.
+  // Se actualizará index.html a 'vista-notas' en el siguiente paso.
+  const contenedor = document.getElementById("vistaNotas") || document.getElementById("vista-notas");
+  if (!contenedor) return;
 
-  // Generar opciones del selector de filtro
-  const uniqueTags = getAllUniqueTags();
-  const optionsHTML = uniqueTags
-    .map((tag) => `<option value="${tag}">${tag}</option>`)
-    .join("");
+  const esCuadricula = estado.modoVista === "grid";
+  // Si el editor está abierto, forzamos la vista sidebar, sino usamos la preferencia
+  const claseEditor = estado.editorAbierto ? "editor-open" : "editor-closed";
 
-  container.innerHTML = `
-        <div class="notes-layout">
+  contenedor.innerHTML = `
+        <div class="notes-layout ${claseEditor}">
             <aside class="notes-sidebar">
                 <div class="notes-header">
                     <h2>Notas</h2>
-                    <button id="btn-create-note" class="btn-icon-soft" title="Nueva Nota">＋</button>
+                    <div class="notes-actions">
+                        <button id="btn-cambiar-vista" class="btn-icon-soft" title="Cambiar Vista">
+                            ${esCuadricula ? "≣" : "☷"}
+                        </button>
+                        <button id="btn-crear-nota" class="btn-icon-soft" title="Nueva Nota">＋</button>
+                    </div>
                 </div>
 
-                <div class="search-combo">
-                    <input type="text" id="notes-search" placeholder="Buscar título...">
-                    <select id="notes-filter-select">
-                        <option value="">Todas</option>
-                        ${optionsHTML}
-                    </select>
+                <div class="search-bar-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="input-busqueda-notas" placeholder="Buscar en notas...">
                 </div>
 
-                <div class="notes-list" id="notes-list-container"></div>
+                <!-- Tabs de Etiquetas -->
+                <div class="tags-tabs-container" id="tabs-etiquetas"></div>
+
+                <div class="notes-list ${estado.modoVista}" id="contenedor-lista-notas">
+                    <!-- Lista de notas -->
+                </div>
             </aside>
 
-            <main class="note-editor-area" id="note-editor">
-                <div class="empty-editor">
-                    <div style="font-size:3rem; opacity:0.3; margin-bottom:10px;">📝</div>
-                    <p>Selecciona una nota para editar</p>
-                </div>
+            <main class="note-editor-area" id="editor-nota">
+                <!-- Editor dinámico -->
             </main>
         </div>
     `;
 
-  // Eventos Sidebar
-  document
-    .getElementById("btn-create-note")
-    .addEventListener("click", createNote);
+  // Eventos
+  document.getElementById("btn-crear-nota").addEventListener("click", crearNota);
 
-  document.getElementById("notes-search").addEventListener("input", (e) => {
-    state.searchQuery = e.target.value.toLowerCase();
-    renderList();
+  document.getElementById("btn-cambiar-vista").addEventListener("click", () => {
+    // Toggle
+    estado.modoVista = estado.modoVista === "grid" ? "list" : "grid";
+    Storage.set("notes_view_mode", estado.modoVista);
+    renderizarInterfaz();
+    // Si el editor está abierto, mantenerlo abierto
+    if (estado.editorAbierto) renderizarEditor();
   });
 
-  document
-    .getElementById("notes-filter-select")
-    .addEventListener("change", (e) => {
-      state.tagFilter = e.target.value;
-      renderList();
-    });
+  document.getElementById("input-busqueda-notas").addEventListener("input", (e) => {
+    estado.busqueda = e.target.value.toLowerCase();
+    renderizarLista();
+  });
 
-  renderList();
+  renderizarTabsEtiquetas();
+  renderizarLista();
+
+  if (estado.editorAbierto) {
+    renderizarEditor();
+  } else {
+    document.getElementById("editor-nota").innerHTML = ""; // Limpiar si cerrado
+  }
 }
 
-function renderList() {
-  const listContainer = document.getElementById("notes-list-container");
-  listContainer.innerHTML = "";
+function renderizarTabsEtiquetas() {
+  const contenedor = document.getElementById('tabs-etiquetas');
+  if (!contenedor) return;
 
-  // Filtrar por texto Y por etiqueta
-  const filtered = state.notes.filter((n) => {
-    const matchesText =
-      (n.title || "").toLowerCase().includes(state.searchQuery) ||
-      (n.content || "").toLowerCase().includes(state.searchQuery);
+  const etiquetasUnicas = obtenerEtiquetasUnicas();
+  const todasEtiquetas = ["Todas", ...etiquetasUnicas];
 
-    const matchesTag =
-      state.tagFilter === "" || (n.tags && n.tags.includes(state.tagFilter));
+  contenedor.innerHTML = todasEtiquetas.map(etiqueta => `
+        <button class="tag-tab ${estado.etiquetaActiva === etiqueta ? 'active' : ''}" 
+                data-tag="${etiqueta}">
+            ${etiqueta === 'Todas' ? '📂' : '#'} ${etiqueta}
+        </button>
+    `).join('');
 
-    return matchesText && matchesTag;
-  });
-
-  // Ordenar (Recientes primero)
-  filtered.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-
-  filtered.forEach((note) => {
-    const card = document.createElement("div");
-    card.className = `note-item-card ${state.selectedId === note.id ? "active" : ""}`;
-
-    // Renderizar etiquetas mini
-    const tagsHTML = (note.tags || [])
-      .map((t) => `<span class="mini-tag">#${t}</span>`)
-      .join("");
-
-    card.innerHTML = `
-            <div class="card-title">${note.title || "Sin Título"}</div>
-            <div class="card-preview">${note.content || "Texto vacío..."}</div>
-            <div class="card-tags-preview">${tagsHTML}</div>
-        `;
-
-    card.addEventListener("click", () => {
-      state.selectedId = note.id;
-      renderList();
-      renderEditor();
-    });
-
-    listContainer.appendChild(card);
+  contenedor.querySelectorAll('.tag-tab').forEach(btn => {
+    btn.onclick = () => {
+      estado.etiquetaActiva = btn.dataset.tag;
+      renderizarTabsEtiquetas();
+      renderizarLista();
+    };
   });
 }
 
-function createNote() {
-  const newNote = {
-    id: Date.now(),
-    title: "",
-    content: "",
-    tags: [],
-    updatedAt: new Date().toISOString(),
-  };
-  state.notes.unshift(newNote);
-  save();
-  state.selectedId = newNote.id;
+function renderizarLista() {
+  const contenedorLista = document.getElementById("contenedor-lista-notas");
+  if (!contenedorLista) return;
+  contenedorLista.innerHTML = "";
 
-  renderLayout();
-  renderEditor();
-}
-function renderEditor() {
-  const editor = document.getElementById("note-editor");
-  const note = state.notes.find((n) => n.id === state.selectedId);
+  // Actualizar clases de vista
+  contenedorLista.className = `notes-list ${estado.modoVista}`;
 
-  if (!note) {
-    editor.innerHTML = `
-            <div class="empty-editor">
-                <div style="font-size:3rem; opacity:0.3; margin-bottom:10px;">📝</div>
-                <p>Selecciona o crea una nota</p>
-            </div>`;
+  const filtradas = estado.notas.filter((n) => {
+    const coincideTexto =
+      (n.title || "").toLowerCase().includes(estado.busqueda) ||
+      (n.content || "").toLowerCase().includes(estado.busqueda);
+    const coincideEtiqueta = estado.etiquetaActiva === "Todas" || (n.tags && n.tags.includes(estado.etiquetaActiva));
+    return coincideTexto && coincideEtiqueta;
+  });
+
+  if (filtradas.length === 0) {
+    contenedorLista.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted); width:100%;">No se encontraron notas</div>`;
     return;
   }
 
-  const dateStr = new Date(note.updatedAt).toLocaleString("es-MX", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  filtradas.sort((a, b) => new Date(b.updatedAt || b.id) - new Date(a.updatedAt || a.id));
 
-  editor.innerHTML = `
+  filtradas.forEach((nota) => {
+    const tarjeta = document.createElement("div");
+    tarjeta.className = `note-item-card ${estado.idSeleccionado === nota.id ? "active" : ""}`;
+
+    const htmlEtiquetas = (nota.tags || []).slice(0, 3).map(t => `<span class="mini-tag">#${t}</span>`).join('');
+
+    // Contenido condicional para Grid vs List
+    // En Grid queremos ver más preview
+    const longitudPreview = estado.modoVista === 'grid' && !estado.editorAbierto ? 100 : 50;
+    const vistaPreviaContenido = (nota.content || "").substring(0, longitudPreview) + "...";
+
+    tarjeta.innerHTML = `
+            <div class="card-title">${Utils.escaparHTML(nota.title || "Sin título")}</div>
+            <div class="card-preview">${Utils.escaparHTML(vistaPreviaContenido)}</div>
+            <div class="card-tags-preview">${htmlEtiquetas}</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:auto; text-align:right;">
+                ${Utils.formatearFecha(nota.updatedAt || nota.id).split(',')[0]}
+            </div>
+        `;
+
+    tarjeta.addEventListener("click", () => {
+      estado.editorAbierto = true;
+      seleccionarNota(nota.id);
+      renderizarInterfaz(); // Re-render para aplicar layout abierto
+      // Mobile scroll
+      if (window.innerWidth <= 768) {
+        document.getElementById('editor-nota').classList.add('mobile-visible');
+      }
+    });
+    contenedorLista.appendChild(tarjeta);
+  });
+}
+
+function seleccionarNota(id) {
+  estado.idSeleccionado = id;
+  renderizarEditor();
+}
+
+function crearNota() {
+  const nuevaNota = {
+    id: Utils.generarId(),
+    title: "",
+    content: "",
+    tags: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (estado.etiquetaActiva !== "Todas") nuevaNota.tags.push(estado.etiquetaActiva);
+
+  estado.notas.unshift(nuevaNota);
+  guardar();
+  estado.editorAbierto = true; // Abrir editor al crear
+  estado.idSeleccionado = nuevaNota.id;
+  renderizarInterfaz();
+  setTimeout(() => document.getElementById("input-titulo-editor")?.focus(), 100);
+}
+
+function renderizarEditor() {
+  const contenedor = document.getElementById("editor-nota");
+  if (!contenedor) return;
+
+  const nota = estado.notas.find((n) => n.id === estado.idSeleccionado);
+
+  if (!nota) {
+    if (estado.editorAbierto) {
+      estado.editorAbierto = false;
+      renderizarInterfaz();
+    }
+    return;
+  }
+
+  // Lógica Botón Cerrar
+  const btnCerrar = `<button class="btn-icon-soft" id="btn-cerrar-editor" title="Cerrar Editor" style="background:var(--bg-input); color:var(--text-main);">✕</button>`;
+  const btnVolver = window.innerWidth <= 768 ?
+    `<button class="btn-icon-soft" id="btn-volver-lista" style="margin-right:auto;">←</button>` : btnCerrar;
+
+  contenedor.innerHTML = `
         <div class="editor-top-bar">
-            <span class="editor-date">${dateStr}</span>
+            ${window.innerWidth <= 768 ? btnVolver : ''}
+            ${window.innerWidth > 768 ? btnVolver : ''} <!-- Desktop Close Btn -->
+            
+            <span class="editor-date" style="margin-right:auto; margin-left:10px;">
+                ${Utils.formatearFecha(nota.updatedAt)}
+            </span>
+            
             <div class="menu-container">
-                <button id="btn-menu-dots" class="btn-menu-dots" title="Opciones">•••</button>
-                <div id="dropdown-menu" class="dropdown-menu">
-                    <button id="btn-delete-note" class="menu-item danger">Eliminar</button>
+                <button class="btn-menu-dots" id="btn-menu-nota">⋮</button>
+                <div class="dropdown-menu" id="dropdown-nota">
+                    <button class="menu-item" id="btn-eliminar-nota">🗑️ Eliminar</button>
                 </div>
             </div>
         </div>
 
-        <input type="text" id="input-title" class="editor-title" placeholder="Título..." value="${note.title}">
+        <input type="text" id="input-titulo-editor" class="editor-title" placeholder="Título" value="${Utils.escaparHTML(nota.title)}">
         
-        <textarea id="input-content" class="editor-content" placeholder="Escribe aquí...">${note.content}</textarea>
+        <textarea id="textarea-contenido" class="editor-content" placeholder="Escribe...">${nota.content}</textarea>
 
         <div class="tags-input-area">
-            <small style="color:var(--text-muted); display:block; margin-bottom:5px;">Etiquetas (Máx 5) - Presiona Enter</small>
-            <div class="tags-wrapper" id="tags-wrapper">
-                <input type="text" id="input-tag-new" class="input-new-tag" placeholder="+ Añadir etiqueta">
+            <div class="tags-wrapper" id="lista-etiquetas-editor"></div>
+            <div style="position:relative; margin-top:10px;">
+                 <input type="text" id="input-nueva-etiqueta" class="input-new-tag" placeholder="+ Añadir etiqueta (Enter hace match)">
+                 <div id="sugerencias-etiquetas" class="dropdown-menu" style="width:100%; top:100%;"></div>
             </div>
         </div>
     `;
 
-  // --- LOGICA DE EVENTOS ---
+  // Listeners Cerrar / Volver
+  const domBtnCerrar = document.getElementById('btn-cerrar-editor');
+  if (domBtnCerrar) {
+    domBtnCerrar.onclick = () => {
+      estado.editorAbierto = false;
+      renderizarInterfaz();
+    };
+  }
 
-  // 1. Abrir/Cerrar Menú (CORREGIDO)
-  const btnMenu = document.getElementById("btn-menu-dots");
-  const dropdown = document.getElementById("dropdown-menu");
+  const domBtnVolver = document.getElementById('btn-volver-lista');
+  if (domBtnVolver) {
+    domBtnVolver.onclick = () => {
+      document.getElementById('editor-nota').classList.remove('mobile-visible');
+    }
+  }
 
-  // Al hacer clic en los 3 puntos
-  btnMenu.onclick = (e) => {
+  // Auto-guardado listeners
+  const inputTitulo = document.getElementById("input-titulo-editor");
+  const areaContenido = document.getElementById("textarea-contenido");
+
+  const autoGuardar = () => {
+    nota.title = inputTitulo.value;
+    nota.content = areaContenido.value;
+    nota.updatedAt = new Date().toISOString();
+    guardar();
+    renderizarLista();
+  };
+
+  inputTitulo.addEventListener("input", autoGuardar);
+  areaContenido.addEventListener("input", autoGuardar);
+
+  // Menú dropdown
+  const btnMenu = document.getElementById("btn-menu-nota");
+  const dropdown = document.getElementById("dropdown-nota");
+
+  btnMenu.addEventListener("click", (e) => {
     e.stopPropagation();
-    const isVisible = dropdown.classList.contains("show");
-
-    document
-      .querySelectorAll(".dropdown-menu")
-      .forEach((m) => m.classList.remove("show"));
-
-    if (!isVisible) {
-      dropdown.classList.add("show");
-    }
-  };
-
-  // Cerrar menú al hacer clic en cualquier otro lado (Listener Global Único)
-  window.onclick = (e) => {
-    if (!e.target.closest(".menu-container")) {
-      dropdown.classList.remove("show");
-    }
-  };
-
-  // 2. Eliminar Nota
-  document.getElementById("btn-delete-note").onclick = () => {
-    if (confirm("¿Eliminar esta nota permanentemente?")) {
-      state.notes = state.notes.filter((n) => n.id !== note.id);
-      save(); // Guardar cambios en localStorage
-      state.selectedId = null; // Deseleccionar
-      renderLayout(); // Recargar layout (cierra el editor y actualiza la lista)
-    }
-  };
-
-  // 3. Auto-Guardado
-  const titleInput = document.getElementById("input-title");
-  const contentInput = document.getElementById("input-content");
-
-  const autoSave = () => {
-    note.title = titleInput.value;
-    note.content = contentInput.value;
-    note.updatedAt = new Date().toISOString();
-    save();
-    renderList();
-  };
-
-  titleInput.oninput = autoSave;
-  contentInput.oninput = autoSave;
-
-  // 4. Renderizar Etiquetas
-  renderTags(note);
-}
-function renderTags(note) {
-  const wrapper = document.getElementById("tags-wrapper");
-  const input = document.getElementById("input-tag-new");
-
-  // Limpiar chips existentes (dejar el input)
-
-  const existingChips = wrapper.querySelectorAll(".tag-chip");
-  existingChips.forEach((chip) => chip.remove());
-
-  // Crear Chips
-  (note.tags || []).forEach((tag) => {
-    const chip = document.createElement("span");
-    chip.className = "tag-chip";
-    chip.innerHTML = `${tag} <span class="tag-remove" data-tag="${tag}">×</span>`;
-
-    // Evento borrar etiqueta
-    chip.querySelector(".tag-remove").addEventListener("click", () => {
-      note.tags = note.tags.filter((t) => t !== tag);
-      save();
-      renderTags(note); // Re-renderizar zona de tags
-      renderList(); // Actualizar lista lateral
-    });
-
-    // Insertar antes del input
-    wrapper.insertBefore(chip, input);
+    dropdown.classList.toggle("show");
   });
 
-  // Evento Añadir Etiqueta (Enter)
+  document.addEventListener("click", () => dropdown.classList.remove("show"));
 
-  const newInput = input.cloneNode(true);
-  input.parentNode.replaceChild(newInput, input);
+  document.getElementById("btn-eliminar-nota").addEventListener("click", () => {
+    if (confirm("¿Eliminar?")) {
+      estado.notas = estado.notas.filter(n => n.id !== nota.id);
+      guardar();
+      estado.idSeleccionado = null;
+      estado.editorAbierto = false;
+      renderizarInterfaz();
+    }
+  });
 
-  newInput.addEventListener("keydown", (e) => {
+  // Lógica Etiquetas
+  renderizarEtiquetasEditor(nota);
+  configurarInputEtiquetas(nota);
+}
+
+function renderizarEtiquetasEditor(nota) {
+  const contenedor = document.getElementById("lista-etiquetas-editor");
+  contenedor.innerHTML = nota.tags.map(etiqueta => `
+        <span class="tag-chip" style="cursor:default;" title="Etiqueta: ${etiqueta}">
+            #${etiqueta}
+            <span class="tag-remove" data-tag="${etiqueta}">×</span>
+        </span>
+    `).join('');
+
+  contenedor.querySelectorAll(".tag-remove").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const etiquetaAEliminar = e.target.dataset.tag;
+      nota.tags = nota.tags.filter(t => t !== etiquetaAEliminar);
+      guardar();
+      renderizarEtiquetasEditor(nota);
+      renderizarLista();
+    });
+  });
+}
+
+function configurarInputEtiquetas(nota) {
+  const input = document.getElementById("input-nueva-etiqueta");
+  const cajaSugerencias = document.getElementById("sugerencias-etiquetas");
+
+  // Solo escuchar Enter para agregar tag directo
+  input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      const val = newInput.value.trim().toLowerCase();
-
-      if (val && !note.tags.includes(val)) {
-        if (note.tags.length >= 5) {
-          alert("Máximo 5 etiquetas por nota");
-          return;
-        }
-        if (!note.tags) note.tags = [];
-        note.tags.push(val);
-        save();
-        newInput.value = "";
-        renderTags(note);
-        renderList();
+      const val = input.value.trim();
+      if (val) {
+        agregarEtiquetaNota(nota, val);
+        input.value = "";
+        if (cajaSugerencias) cajaSugerencias.classList.remove("show");
       }
     }
   });
 }
+
+function agregarEtiquetaNota(nota, etiqueta) {
+  if (!nota.tags) nota.tags = [];
+  if (!nota.tags.includes(etiqueta)) {
+    nota.tags.push(etiqueta);
+    guardar();
+    renderizarEtiquetasEditor(nota);
+    renderizarLista();
+    renderizarTabsEtiquetas();
+  }
+}
+
+// TagHub removed

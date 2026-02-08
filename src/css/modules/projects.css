@@ -187,9 +187,9 @@
 }
 
 .st-active {
-    background: rgba(99, 102, 241, 0.15);
-    color: var(--success);
-    border-color: rgba(99, 102, 241, 0.2);
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
+    border-color: rgba(var(--primary-rgb), 0.3);
 }
 
 .st-paused {
