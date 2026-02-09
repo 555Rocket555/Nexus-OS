@@ -1,35 +1,42 @@
+/* src/css/modules/settings.css */
+
 /* --- TABS DE NAVEGACIÓN --- */
 .settings-tabs {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 5px;
     background: var(--bg-card);
-    padding: 10px;
+    padding: 5px;
     border-radius: 12px;
+    margin-bottom: 25px;
     border: 1px solid var(--border-color);
-    overflow-x: auto;
 }
 
-.settings-tab {
-    background: transparent;
-    border: none;
-    padding: 10px 20px;
+.pestana-configuracion {
+    flex: 1;
+    padding: 12px;
     border-radius: 8px;
+    border: none;
+    background: transparent;
     color: var(--text-muted);
-    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: 0.2s;
 }
 
-.settings-tab:hover {
+.pestana-configuracion img { width: 18px; filter: brightness(0) invert(1); }
+
+
+.pestana-configuracion:hover {
     background: var(--bg-body);
     color: var(--text-main);
 }
 
-.settings-tab.active {
-    background: rgba(99, 102, 241, 0.1);
-    color: var(--primary);
+.pestana-configuracion.active {
+    background: var(--primary);
+    color: white;
 }
 
 /* --- CONTENEDORES --- */
@@ -39,21 +46,17 @@
     border-radius: 16px;
     padding: 30px;
     min-height: 400px;
+    animation: fadeIn 0.3s ease-out;
 }
 
-.settings-panel.hidden {
-    display: none;
+.panel-configuracion.hidden {
+    display: none !important;
 }
 
 .setting-group {
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
-}
-
-
-.settings-tabs {
-    justify-content: center;
 }
 
 .setting-group h3 {
@@ -65,11 +68,12 @@
 }
 
 /* --- FILAS DE CONFIGURACIÓN --- */
+
 .setting-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 0;
+    padding: 20px 0;
     border-bottom: 1px solid var(--border-color);
 }
 
@@ -97,6 +101,7 @@
     background: var(--bg-body);
     color: var(--text-main);
     min-width: 150px;
+    outline: none;
 }
 
 .color-picker-input {
@@ -110,14 +115,8 @@
     background: none;
 }
 
-.color-picker-input::-webkit-color-swatch-wrapper {
-    padding: 0;
-}
-
-.color-picker-input::-webkit-color-swatch {
-    border: none;
-    border-radius: 50%;
-}
+.color-picker-input::-webkit-color-swatch-wrapper { padding: 0; }
+.color-picker-input::-webkit-color-swatch { border: none; border-radius: 50%; }
 
 /* --- TOGGLE SWITCH (Interruptor) --- */
 .switch {
@@ -127,22 +126,16 @@
     height: 26px;
 }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+.switch input { opacity: 0; width: 0; height: 0; }
 
 .slider {
     position: absolute;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: 0; left: 0; right: 0; bottom: 0;
     background-color: var(--bg-body);
     border: 1px solid var(--border-color);
     transition: .4s;
+    border-radius: 34px;
 }
 
 .slider:before {
@@ -154,6 +147,7 @@
     bottom: 3px;
     background-color: var(--text-muted);
     transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked+.slider {
@@ -166,14 +160,6 @@ input:checked+.slider:before {
     background-color: white;
 }
 
-.slider.round {
-    border-radius: 34px;
-}
-
-.slider.round:before {
-    border-radius: 50%;
-}
-
 /* Items Módulos */
 .module-toggle-item {
     display: flex;
@@ -183,17 +169,8 @@ input:checked+.slider:before {
     border-bottom: 1px solid var(--border-color);
 }
 
-.mod-info h4 {
-    margin: 0 0 4px 0;
-    font-size: 0.9rem;
-    color: var(--text-main);
-}
-
-.mod-info p {
-    margin: 0;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-}
+.mod-info h4 { margin: 0 0 4px 0; font-size: 0.9rem; color: var(--text-main); }
+.mod-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
 
 /* --- PERFIL --- */
 .profile-edit-grid {
@@ -220,6 +197,7 @@ input:checked+.slider:before {
     justify-content: center;
     font-size: 2rem;
     font-weight: bold;
+    box-shadow: var(--shadow);
 }
 
 .profile-inputs {
@@ -229,63 +207,20 @@ input:checked+.slider:before {
     gap: 15px;
 }
 
-.full-width {
-    grid-column: span 2;
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
+
+.full-width { grid-column: span 2; }
 
 @media (max-width: 700px) {
-    .profile-edit-grid {
-        flex-direction: column;
-    }
-
-    .settings-tabs {
-        padding-bottom: 10px;
-    }
+    .profile-edit-grid { flex-direction: column; }
+    .settings-tabs { justify-content: flex-start; }
 }
 
-/* --- RESPONSIVE PREFERENCIAS --- */
-@media (max-width: 768px) {
-
-    /* 1. Scroll en las pestañas */
-    .settings-tabs {
-        justify-content: flex-start;
-        /* Alinear al inicio */
-        overflow-x: auto;
-        /* Scroll horizontal */
-        white-space: nowrap;
-        /* No saltar línea */
-        padding-bottom: 5px;
-    }
-
-    .settings-tabs::-webkit-scrollbar {
-        height: 4px;
-        /* Barra fina */
-    }
-
-    .settings-tab {
-        flex-shrink: 0;
-        /* No encoger botones */
-    }
-
-    /* 2. Contenedor principal */
-    .settings-content-wrapper {
-        padding: 15px;
-    }
-
-    /* 3. Filas de configuración apiladas */
-    .setting-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    /* Inputs ocupan todo el ancho */
-    .theme-selector {
-        width: 100%;
-    }
-
-    /* 4. Switch alineado a la derecha */
-    .module-toggle-item {
-        gap: 15px;
-    }
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }

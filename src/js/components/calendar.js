@@ -1,201 +1,317 @@
-import { ServicioCalendario } from "../services/storage.js";
-import { Utils } from "../utils.js"; // Para Utils.escaparHTML si fuera necesario
+import { ServicioCalendario, ServicioEtiquetas } from "../services/storage.js";
 
 let eventos = {};
 let eventosSinFecha = {};
 let fechaActual = new Date();
+let tagsTemporales = [];
+let fechaSeleccionada = null;
+let eventoEditandoIndex = null;
+let eventoEditandoId = null;
 
 const dom = {
-  grid: document.getElementById("grid-calendario"),
-  mesAnio: document.getElementById("mes-anio"),
-  listaEventos: document.getElementById("eventos-calendario"),
-  listaSinFecha: document.getElementById("eventos-sin-asignar"),
-  btnAnterior: document.getElementById("btn-mes-anterior"),
-  btnSiguiente: document.getElementById("btn-mes-siguiente"),
-  btnNuevoEvento: document.getElementById("btn-nuevo-evento"),
+    grid: document.getElementById("grid-calendario"),
+    mesAnio: document.getElementById("mes-anio"),
+    listaEventos: document.getElementById("eventos-calendario"),
+    listaSinFecha: document.getElementById("eventos-sin-asignar"),
+    btnAnterior: document.getElementById("btn-mes-anterior"),
+    btnSiguiente: document.getElementById("btn-mes-siguiente"),
+    btnNuevoEvento: document.getElementById("btn-nuevo-evento"),
+    modal: document.getElementById("modal-evento"),
+    inputTitulo: document.getElementById("input-evento-titulo"),
+    inputFecha: document.getElementById("input-evento-fecha"),
+    inputTag: document.getElementById("input-evento-tag"),
+    listaTagsModal: document.getElementById("lista-etiquetas-modal"),
+    btnGuardar: document.getElementById("btn-guardar-evento"),
+    btnCancelar: document.getElementById("btn-cancelar-evento")
 };
 
 export function iniciarCalendario() {
-  const eventosRaw = ServicioCalendario.obtenerEventos() || {};
-  eventos = migrarEventosAArray(eventosRaw);
-  eventosSinFecha = ServicioCalendario.obtenerEventosSinFecha() || {};
+    const raw = ServicioCalendario.obtenerEventos() || {};
+    eventos = migrarDatos(raw);
+    eventosSinFecha = ServicioCalendario.obtenerEventosSinFecha() || {};
 
-  if (dom.btnAnterior) dom.btnAnterior.onclick = () => cambiarMes(-1);
-  if (dom.btnSiguiente) dom.btnSiguiente.onclick = () => cambiarMes(1);
-  if (dom.btnNuevoEvento) dom.btnNuevoEvento.onclick = agregarEventoSinFecha;
+    if (dom.btnAnterior) dom.btnAnterior.onclick = () => cambiarMes(-1);
+    if (dom.btnSiguiente) dom.btnSiguiente.onclick = () => cambiarMes(1);
+    if (dom.btnNuevoEvento) dom.btnNuevoEvento.onclick = () => abrirModal(null, true);
+    if (dom.btnCancelar) dom.btnCancelar.onclick = cerrarModal;
+    if (dom.btnGuardar) dom.btnGuardar.onclick = guardarEvento;
 
-  renderizarCalendario();
-  renderizarEventosSinFecha();
+    if (dom.inputTag) {
+        dom.inputTag.addEventListener("keydown", (e) => {
+            if(e.key === "Enter") {
+                e.preventDefault();
+                agregarTag(dom.inputTag.value.trim());
+            }
+        });
+    }
+
+    renderizarCalendario();
+    renderizarRecordatorios();
 }
 
-function migrarEventosAArray(data) {
-  const newData = {};
-  for (const [key, val] of Object.entries(data)) {
-    if (Array.isArray(val)) {
-      newData[key] = val;
-    } else {
-      let evt = val;
-      if (typeof val === "string")
-        evt = { titulo: val, etiqueta: "Evento", colorIdx: 1 };
-      else if (!val.colorIdx) {
-        let cIdx = 1;
-        if (val.categoria === "trabajo") cIdx = 1;
-        else if (val.categoria === "personal") cIdx = 2;
-        else if (val.categoria === "importante") cIdx = 4;
-        else cIdx = 3;
-        evt = {
-          titulo: val.titulo,
-          etiqueta: val.categoria || "Evento",
-          colorIdx: cIdx,
-        };
-      }
-      newData[key] = [evt];
+function migrarDatos(data) {
+    const nuevo = {};
+    for (const [k, v] of Object.entries(data)) {
+        nuevo[k] = Array.isArray(v) ? v : [v];
     }
-  }
-  return newData;
+    return nuevo;
+}
+
+function formatearKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
 }
 
 function renderizarCalendario() {
-  if (!dom.grid) return;
+    if (!dom.grid) return;
+    const year = fechaActual.getFullYear();
+    const month = fechaActual.getMonth();
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+    
+    dom.mesAnio.textContent = `${meses[month]} ${year}`;
+    dom.grid.innerHTML = "";
 
-  const anio = fechaActual.getFullYear();
-  const mes = fechaActual.getMonth();
-  const meses = [
-    "Enero",
-    "Febrero",
-    "Marzo",
-    "Abril",
-    "Mayo",
-    "Junio",
-    "Julio",
-    "Agosto",
-    "Septiembre",
-    "Octubre",
-    "Noviembre",
-    "Diciembre",
-  ];
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  dom.mesAnio.textContent = `${meses[mes]} ${anio}`;
-  dom.grid.innerHTML = "";
-  dom.listaEventos.innerHTML = "";
+    for (let i = 0; i < firstDay; i++) dom.grid.appendChild(document.createElement("div"));
 
-  const primerDia = new Date(anio, mes, 1).getDay();
-  const diasEnMes = new Date(anio, mes + 1, 0).getDate();
+    for (let i = 1; i <= daysInMonth; i++) {
+        const div = document.createElement("div");
+        div.className = "day-cell";
+        
+        const fecha = new Date(year, month, i);
+        const key = formatearKey(fecha);
+        
+        div.innerHTML = `<div class="day-label">${i}</div>`;
+        div.onclick = (e) => {
+            // Si el clic fue en un evento, no abrir modal vacío
+            if (e.target.classList.contains('evento-mark')) return;
+            abrirModal(fecha, false);
+        };
 
-  // Espacios vacíos
-  for (let i = 0; i < primerDia; i++) {
-    dom.grid.appendChild(document.createElement("div"));
-  }
+        if (eventos[key]) {
+            eventos[key].forEach((evt, idx) => {
+                const pill = document.createElement("div");
+                const colorIdx = ServicioEtiquetas.asignarColor(evt.tags?.[0] || "General");
+                pill.className = `evento-mark bg-c${colorIdx}`;
+                pill.textContent = evt.titulo;
+                pill.title = evt.titulo;
+                pill.onclick = (e) => {
+                    e.stopPropagation();
+                    abrirModal(fecha, false, evt, idx);
+                };
+                div.appendChild(pill);
+            });
+        }
 
-  // Días
-  for (let i = 1; i <= diasEnMes; i++) {
-    const div = document.createElement("div");
-    div.className = "day-cell";
-
-    // Header del día
-    const headerDia = document.createElement("div");
-    headerDia.className = "day-header";
-    headerDia.textContent = i;
-    div.appendChild(headerDia);
-
-    // Click para agregar evento
-    div.onclick = () => agregarEventoEnFecha(anio, mes, i);
-
-    // Buscar eventos
-    const fechaKey = `${anio}-${String(mes + 1).padStart(2, "0")}-${String(
-      i,
-    ).padStart(2, "0")}`;
-    const evtsDia = eventos[fechaKey];
-
-    if (evtsDia && evtsDia.length > 0) {
-      if (
-        fechaKey === new Date().toISOString().split("T")[0] // Si es hoy
-      ) {
-        renderizarListaEventos(evtsDia, fechaKey);
-      }
-
-      // Mostrar indicador en celda
-      evtsDia.forEach((e) => {
-        const dot = document.createElement("div");
-        dot.className = "event-dot-marker";
-        // Colores hardcodeados por simplicidad o mapeo
-        const colores = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b"]; // Azul, Rojo, Verde, Amarillo
-        const color = colores[(e.colorIdx || 1) - 1] || colores[0];
-        dot.style.backgroundColor = color;
-        dot.title = e.titulo;
-        div.appendChild(dot);
-      });
+        if (key === formatearKey(new Date())) div.classList.add("today");
+        dom.grid.appendChild(div);
     }
-
-    if (
-      i === new Date().getDate() &&
-      mes === new Date().getMonth() &&
-      anio === new Date().getFullYear()
-    ) {
-      div.classList.add("today");
-    }
-
-    dom.grid.appendChild(div);
-  }
+    renderizarListaLateral();
 }
 
-function renderizarListaEventos(listaEventos, fecha) {
-  dom.listaEventos.innerHTML = `<h3>Eventos del ${fecha}</h3>`;
-  listaEventos.forEach((evt, index) => {
-    const div = document.createElement("div");
-    div.className = "event-item";
-    div.innerHTML = `
-            <span>${evt.titulo}</span>
-            <button class="btn-delete-mini">×</button>
-        `;
-    div.querySelector("button").onclick = () => eliminarEvento(fecha, index);
-    dom.listaEventos.appendChild(div);
-  });
-}
+function renderizarListaLateral() {
+    if(!dom.listaEventos) return;
+    dom.listaEventos.innerHTML = "";
+    
+    const year = fechaActual.getFullYear();
+    const month = fechaActual.getMonth();
+    let hayEventos = false;
 
-function renderizarEventosSinFecha() {
-  if (!dom.listaSinFecha) return;
-  dom.listaSinFecha.innerHTML = "";
-  // Implementación similar si fuera necesario
-}
-
-function agregarEventoEnFecha(anio, mes, dia) {
-  const titulo = prompt(`Evento para el ${dia}/${mes + 1}:`);
-  if (titulo) {
-    const fechaKey = `${anio}-${String(mes + 1).padStart(2, "0")}-${String(
-      dia,
-    ).padStart(2, "0")}`;
-    if (!eventos[fechaKey]) eventos[fechaKey] = [];
-
-    eventos[fechaKey].push({
-      titulo: titulo,
-      etiqueta: "General",
-      colorIdx: 1
+    // Ordenar fechas
+    Object.keys(eventos).sort().forEach(key => {
+        const [y, m, d] = key.split('-').map(Number);
+        if (y === year && m === (month + 1)) {
+            eventos[key].forEach((evt, idx) => {
+                hayEventos = true;
+                const card = crearTarjetaEvento(evt, d, key, idx);
+                dom.listaEventos.appendChild(card);
+            });
+        }
     });
 
-    ServicioCalendario.guardarEventos(eventos);
+    if (!hayEventos) {
+        dom.listaEventos.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.9rem;">No hay eventos este mes.</div>`;
+    }
+}
+
+function crearTarjetaEvento(evt, dia, key, idx) {
+    const div = document.createElement("div");
+    // Si no hay tags, mostrar algo genérico visualmente, pero no agregar el tag al dato
+    const tagVisual = evt.tags?.[0] || ""; 
+    const colorIdx = ServicioEtiquetas.asignarColor(tagVisual || "General");
+    
+    div.className = `agenda-item evt-type-${colorIdx}`;
+    div.innerHTML = `
+        <div class="agenda-date-box"><span class="dia-num">${dia}</span></div>
+        <div class="agenda-content">
+            <span>${evt.titulo}</span>
+            ${tagVisual ? `<small>#${tagVisual}</small>` : ''}
+        </div>
+        <button class="btn-delete-event">×</button>
+    `;
+
+    div.querySelector(".btn-delete-event").onclick = (e) => {
+        e.stopPropagation();
+        if(confirm("¿Eliminar evento?")) {
+            eventos[key].splice(idx, 1);
+            if(eventos[key].length === 0) delete eventos[key];
+            ServicioCalendario.guardarEventos(eventos);
+            renderizarCalendario();
+        }
+    };
+
+    // Parsear fecha correctamente para evitar problemas de zona horaria
+    const [yy, mm, dd] = key.split('-').map(Number);
+    const fechaObj = new Date(yy, mm - 1, dd);
+    div.onclick = () => abrirModal(fechaObj, false, evt, idx);
+    
+    return div;
+}
+
+function renderizarRecordatorios() {
+    if(!dom.listaSinFecha) return;
+    dom.listaSinFecha.innerHTML = "";
+    
+    const ids = Object.keys(eventosSinFecha);
+    if (ids.length === 0) {
+        dom.listaSinFecha.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted); font-size:0.9rem;">Sin recordatorios.</div>`;
+        return;
+    }
+
+    ids.forEach(id => {
+        const item = eventosSinFecha[id];
+        const div = document.createElement("div");
+        const tagVisual = item.tags?.[0] || "";
+        const colorIdx = ServicioEtiquetas.asignarColor(tagVisual || "Recordatorio");
+
+        div.className = `agenda-item evt-type-${colorIdx}`;
+        div.innerHTML = `
+            <div class="agenda-icon-box">📌</div>
+            <div class="agenda-content">
+                <span>${item.titulo}</span>
+                ${tagVisual ? `<small>#${tagVisual}</small>` : ''}
+            </div>
+            <button class="btn-delete-event">×</button>
+        `;
+
+        div.onclick = () => { item.id = id; abrirModal(null, true, item); };
+        div.querySelector(".btn-delete-event").onclick = (e) => {
+            e.stopPropagation();
+            if(confirm("¿Borrar?")) {
+                delete eventosSinFecha[id];
+                ServicioCalendario.guardarEventosSinFecha(eventosSinFecha);
+                renderizarRecordatorios();
+            }
+        };
+        dom.listaSinFecha.appendChild(div);
+    });
+}
+
+// --- MODAL ---
+function abrirModal(fecha, esRecordatorio, data = null, index = null) {
+    // 1. Limpiar Tags: Si hay datos, úsalos; si no, array vacío.
+    tagsTemporales = data?.tags ? [...data.tags] : []; 
+    dom.inputTitulo.value = data?.titulo || "";
+    
+    fechaSeleccionada = fecha;
+    eventoEditandoIndex = index;
+    eventoEditandoId = data?.id || null;
+
+    const esEdicion = data !== null;
+    dom.modal.querySelector("h3").textContent = esRecordatorio ? "⏰ Recordatorio" : (esEdicion ? "✏️ Editar Evento" : "📅 Nuevo Evento");
+    
+    // 2. Lógica del Input de Fecha
+    if (esRecordatorio) {
+        dom.inputFecha.style.display = "none";
+    } else {
+        dom.inputFecha.style.display = "block";
+        if (fecha) {
+            dom.inputFecha.value = formatearKey(fecha);
+            // 3. BLOQUEAR INPUT: Si abrimos desde una celda (fecha existe) y NO es recordatorio
+            // Si es edición desde la lista lateral, tal vez quieras permitir cambiar fecha, pero
+            // si el usuario hizo click en el día 20, bloqueamos para que sea el 20.
+            dom.inputFecha.disabled = true; 
+        } else {
+            // Caso botón flotante (+) o error
+            dom.inputFecha.disabled = false;
+        }
+    }
+    
+    // Si estamos editando un evento existente desde la lista, permitimos cambiar la fecha si se desea (opcional)
+    // Pero tu requerimiento fue "no tiene logica cambiar fecha si selecciona recuadro".
+    // La lógica de arriba cumple eso.
+
+    renderizarTagsModal();
+    dom.modal.classList.remove("hidden");
+    setTimeout(() => dom.inputTitulo.focus(), 100);
+}
+
+function cerrarModal() {
+    dom.modal.classList.add("hidden");
+}
+
+function guardarEvento() {
+    const titulo = dom.inputTitulo.value.trim();
+    if(!titulo) return alert("Falta el título");
+
+    // 4. Guardar sin forzar "General"
+    const nuevo = { titulo, tags: tagsTemporales, createdAt: new Date().toISOString() };
+    const esRecordatorio = dom.inputFecha.style.display === "none";
+
+    if (esRecordatorio) {
+        const id = eventoEditandoId || Date.now().toString();
+        eventosSinFecha[id] = nuevo;
+        ServicioCalendario.guardarEventosSinFecha(eventosSinFecha);
+        renderizarRecordatorios();
+    } else {
+        const key = dom.inputFecha.value;
+        // Lógica de Edición vs Creación
+        if (eventoEditandoIndex !== null && fechaSeleccionada) {
+            // Es edición
+            const oldKey = formatearKey(fechaSeleccionada);
+            // Si la fecha es la misma (que debe serlo si está disabled), reemplazamos
+            if (oldKey === key && eventos[key]) {
+                eventos[key][eventoEditandoIndex] = nuevo;
+            } else {
+                // Si por alguna razón cambió (ej. desbloqueo futuro), movemos
+                if (eventos[oldKey]) {
+                    eventos[oldKey].splice(eventoEditandoIndex, 1);
+                    if(eventos[oldKey].length===0) delete eventos[oldKey];
+                }
+                if (!eventos[key]) eventos[key] = [];
+                eventos[key].push(nuevo);
+            }
+        } else {
+            // Es nuevo
+            if (!eventos[key]) eventos[key] = [];
+            eventos[key].push(nuevo);
+        }
+        
+        ServicioCalendario.guardarEventos(eventos);
+        renderizarCalendario();
+    }
+    cerrarModal();
+}
+
+function agregarTag(val) {
+    if(val && !tagsTemporales.includes(val)) {
+        tagsTemporales.push(val);
+        renderizarTagsModal();
+        dom.inputTag.value = "";
+    }
+}
+
+function renderizarTagsModal() {
+    dom.listaTagsModal.innerHTML = tagsTemporales.map(t => `
+        <span class="tag-chip bg-c${ServicioEtiquetas.asignarColor(t)}">#${t} <span style="cursor:pointer;margin-left:4px;" onclick="this.parentElement.remove()">×</span></span>
+    `).join("");
+}
+
+function cambiarMes(d) {
+    fechaActual.setMonth(fechaActual.getMonth() + d);
     renderizarCalendario();
-  }
-}
-
-function eliminarEvento(fechaKey, index) {
-  if (eventos[fechaKey]) {
-    eventos[fechaKey].splice(index, 1);
-    if (eventos[fechaKey].length === 0) delete eventos[fechaKey];
-    ServicioCalendario.guardarEventos(eventos);
-    renderizarCalendario();
-  }
-}
-
-function agregarEventoSinFecha() {
-  const titulo = prompt("Recordatorio sin fecha:");
-  if (titulo) {
-    // Lógica para eventos sin fecha
-    alert("Función en desarrollo por refactorización.");
-  }
-}
-
-function cambiarMes(delta) {
-  fechaActual.setMonth(fechaActual.getMonth() + delta);
-  renderizarCalendario();
 }

@@ -1,8 +1,7 @@
-import { Utils } from "../utils.js";
 import { Almacenamiento } from "../services/storage.js";
+import { Utils } from "../utils.js";
 
-// Configuración inicial de colores
-const COLORES_POR_DEFECTO = {
+const DEFAULT_COLORS = {
   primary: "#4F46E5",
   secondary: "#ec4899",
   neonColor: "#4F46E5",
@@ -11,8 +10,8 @@ const COLORES_POR_DEFECTO = {
   neonBlur: "15px",
 };
 
-const PRESETS_TEMAS = {
-  "": COLORES_POR_DEFECTO,
+const THEME_PRESETS = {
+  "": DEFAULT_COLORS,
   "dark-mode": {
     primary: "#710014",
     secondary: "#F2F1ED",
@@ -30,26 +29,26 @@ const PRESETS_TEMAS = {
     neonBlur: "15px",
   },
   "dark-green": {
-    primary: "#059669",
-    secondary: "#84cc16",
-    neonColor: "#059669",
-    neonIntensity: "0.4",
-    neonSpread: "10px",
+    primary: "#22c55e",
+    secondary: "#86efac",
+    neonColor: "#22c55e",
+    neonIntensity: "0.5",
+    neonSpread: "12px",
     neonBlur: "15px",
   },
   "dark-purple": {
-    primary: "#7c3aed",
-    secondary: "#c026d3",
-    neonColor: "#7c3aed",
-    neonIntensity: "0.5",
-    neonSpread: "15px",
-    neonBlur: "20px",
+    primary: "#8b5cf6",
+    secondary: "#d8b4fe",
+    neonColor: "#8b5cf6",
+    neonIntensity: "0.7",
+    neonSpread: "18px",
+    neonBlur: "25px",
   },
   "warm-mode": {
-    primary: "#ea580c",
-    secondary: "#f59e0b",
-    neonColor: "#ea580c",
-    neonIntensity: "0.4",
+    primary: "#f59e0b",
+    secondary: "#fb923c",
+    neonColor: "#f59e0b",
+    neonIntensity: "0.5",
     neonSpread: "12px",
     neonBlur: "15px",
   },
@@ -71,178 +70,237 @@ const PRESETS_TEMAS = {
   },
 };
 
-// DOM Cache
 const dom = {
-  root: document.body,
-  selectorTema: document.getElementById("selector-tema"),
-  pickerPrimario: document.getElementById("picker-color-primario"),
-  pickerSecundario: document.getElementById("picker-color-secundario"),
+  root: document.documentElement,
+  selector: document.getElementById("selector-tema"),
+  pickerPri: document.getElementById("picker-color-primario"),
+  pickerSec: document.getElementById("picker-color-secundario"),
   btnReset: document.getElementById("btn-reset-colores"),
-  pestanas: document.querySelectorAll(".pestana-configuracion"),
-  paneles: document.querySelectorAll(".panel-configuracion"),
-
-  // Elementos de Perfil
-  nombreUsuario: document.getElementById("input-nombre-usuario"),
-  apellidoUsuario: document.getElementById("input-apellido-usuario"),
-  btnGuardarPerfil: document.getElementById("btn-guardar-perfil"),
-  textoAvatar: document.querySelector(".avatar-preview"),
+  tabs: document.querySelectorAll(".pestana-configuracion"),
+  panels: document.querySelectorAll(".panel-configuracion"),
+  userName: document.getElementById("input-nombre-usuario"),
+  userLastname: document.getElementById("input-apellido-usuario"),
+  btnSaveProfile: document.getElementById("btn-guardar-perfil"),
+  avatarText: document.querySelector(".avatar-preview"),
 };
 
 export function iniciarConfiguracion() {
-  // 1. Cargar Preferencias desde Storage
-  const temaGuardado = localStorage.getItem("app-theme") || "";
-  const primarioGuardado = localStorage.getItem("app-primary");
-  const secundarioGuardado = localStorage.getItem("app-secondary");
+  const savedTheme = localStorage.getItem("app-theme") || "";
+  const savedPrimary = localStorage.getItem("app-primary");
+  const savedSecondary = localStorage.getItem("app-secondary");
+  const modulesConfig = Almacenamiento.obtener("app_modules") || {};
 
-  // 2. Aplicar Tema y Colores
-  aplicarTema(temaGuardado);
-  const coloresTema = PRESETS_TEMAS[temaGuardado] || COLORES_POR_DEFECTO;
+  applyThemeClass(savedTheme);
+  const themeColors = THEME_PRESETS[savedTheme] || DEFAULT_COLORS;
+  const finalPri = savedPrimary || themeColors.primary;
+  const finalSec = savedSecondary || themeColors.secondary;
+  const finalNeon = savedPrimary ? savedPrimary : themeColors.neonColor;
 
-  // Si hay colores personalizados guardados y NO es un preset (o queremos sobreescribir),
-  // la lógica original priorizaba localStorage 'app-primary'.
-  // Mantenemos esa lógica.
-  if (primarioGuardado) {
-    aplicarVariablesCSS({
-      primary: primarioGuardado,
-      secondary: secundarioGuardado || coloresTema.secondary
-    });
-    // Actualizar pickers
-    if (dom.pickerPrimario) dom.pickerPrimario.value = primarioGuardado;
-    if (dom.pickerSecundario) dom.pickerSecundario.value = secundarioGuardado || coloresTema.secondary;
-  } else {
-    // Aplicar colores del tema
-    aplicarVariablesCSS(coloresTema);
-    if (dom.pickerPrimario) dom.pickerPrimario.value = coloresTema.primary;
-    if (dom.pickerSecundario) dom.pickerSecundario.value = coloresTema.secondary;
-  }
-
-  // Sincronizar select
-  if (dom.selectorTema) dom.selectorTema.value = temaGuardado;
-
-  // 3. Listeners
-  configurarListeners();
-
-  // 4. Cargar datos de perfil
-  cargarPerfil();
-}
-
-function configurarListeners() {
-  // Selector de Tema
-  if (dom.selectorTema) {
-    dom.selectorTema.addEventListener("change", (e) => {
-      const nuevoTema = e.target.value;
-      localStorage.setItem("app-theme", nuevoTema);
-
-      // Limpiar colores custom al cambiar tema para adoptar los del preset
-      localStorage.removeItem("app-primary");
-      localStorage.removeItem("app-secondary");
-
-      aplicarTema(nuevoTema);
-      const colores = PRESETS_TEMAS[nuevoTema] || COLORES_POR_DEFECTO;
-      aplicarVariablesCSS(colores);
-
-      // Actualizar inputs de color
-      if (dom.pickerPrimario) dom.pickerPrimario.value = colores.primary;
-      if (dom.pickerSecundario) dom.pickerSecundario.value = colores.secondary;
-    });
-  }
-
-  // Pickers de Color (Customización manual)
-  const manejarCambioColor = () => {
-    const primario = dom.pickerPrimario.value;
-    const secundario = dom.pickerSecundario.value;
-
-    aplicarVariablesCSS({ primary: primario, secondary: secundario });
-    localStorage.setItem("app-primary", primario);
-    localStorage.setItem("app-secondary", secundario);
-  };
-
-  if (dom.pickerPrimario) dom.pickerPrimario.addEventListener("input", manejarCambioColor);
-  if (dom.pickerSecundario) dom.pickerSecundario.addEventListener("input", manejarCambioColor);
-
-  // Reset
-  if (dom.btnReset) {
-    dom.btnReset.addEventListener("click", () => {
-      const temaActual = localStorage.getItem("app-theme") || "";
-      const coloresPorDefecto = PRESETS_TEMAS[temaActual] || COLORES_POR_DEFECTO;
-
-      localStorage.removeItem("app-primary");
-      localStorage.removeItem("app-secondary");
-
-      aplicarVariablesCSS(coloresPorDefecto);
-      if (dom.pickerPrimario) dom.pickerPrimario.value = coloresPorDefecto.primary;
-      if (dom.pickerSecundario) dom.pickerSecundario.value = coloresPorDefecto.secondary;
-    });
-  }
-
-  // Tabs de Configuración
-  dom.pestanas.forEach(tab => {
-    tab.addEventListener("click", () => {
-      // Remover activo de todos
-      dom.pestanas.forEach(t => t.classList.remove("active"));
-      dom.paneles.forEach(p => p.classList.add("hidden"));
-
-      // Activar clickeado
-      tab.classList.add("active");
-      const targetId = tab.dataset.target; // "tab-general", etc.
-      document.getElementById(targetId)?.classList.remove("hidden");
-    });
+  applyCssVars(finalPri, finalSec, {
+    color: finalNeon,
+    intensity: themeColors.neonIntensity,
+    spread: themeColors.neonSpread,
+    blur: themeColors.neonBlur,
   });
 
-  // Guardar Perfil
-  if (dom.btnGuardarPerfil) {
-    dom.btnGuardarPerfil.addEventListener("click", () => {
-      const perfil = {
-        name: dom.nombreUsuario.value,
-        lastname: dom.apellidoUsuario.value
+  if (dom.selector) dom.selector.value = savedTheme;
+  if (dom.pickerPri) dom.pickerPri.value = finalPri;
+  if (dom.pickerSec) dom.pickerSec.value = finalSec;
+
+  applyModulesVisibility(modulesConfig);
+  loadProfile();
+  setupListeners();
+  setupTabs();
+}
+
+function setupTabs() {
+  dom.tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      dom.tabs.forEach((t) => t.classList.remove("active"));
+      dom.panels.forEach((p) => p.classList.add("hidden"));
+      tab.classList.add("active");
+      const target = tab.dataset.target;
+      const panel = document.getElementById(target);
+      if (panel) panel.classList.remove("hidden");
+    });
+  });
+}
+
+function setupListeners() {
+  // A) CAMBIO DE TEMA
+  if (dom.selector) {
+    dom.selector.addEventListener("change", (e) => {
+      const theme = e.target.value;
+      applyThemeClass(theme);
+      localStorage.setItem("app-theme", theme);
+      const preset = THEME_PRESETS[theme] || DEFAULT_COLORS;
+      applyCssVars(preset.primary, preset.secondary, {
+        color: preset.neonColor,
+        intensity: preset.neonIntensity,
+        spread: preset.neonSpread,
+        blur: preset.neonBlur,
+      });
+      dom.pickerPri.value = preset.primary;
+      dom.pickerSec.value = preset.secondary;
+      localStorage.removeItem("app-primary");
+      localStorage.removeItem("app-secondary");
+    });
+  }
+
+  // B) PICKERS MANUALES
+  if (dom.pickerPri) {
+    dom.pickerPri.addEventListener("input", (e) => {
+      applyCssVars(e.target.value, null, { color: e.target.value });
+      localStorage.setItem("app-primary", e.target.value);
+    });
+  }
+
+  if (dom.pickerSec) {
+    dom.pickerSec.addEventListener("input", (e) => {
+      applyCssVars(null, e.target.value);
+      localStorage.setItem("app-secondary", e.target.value);
+    });
+  }
+
+  // C) RESET COLORES
+  if (dom.btnReset) {
+    dom.btnReset.addEventListener("click", () => {
+      applyThemeClass("");
+      applyCssVars(DEFAULT_COLORS.primary, DEFAULT_COLORS.secondary, {
+        color: DEFAULT_COLORS.neonColor,
+        intensity: DEFAULT_COLORS.neonIntensity,
+        spread: DEFAULT_COLORS.neonSpread,
+        blur: DEFAULT_COLORS.neonBlur,
+      });
+      dom.selector.value = "";
+      dom.pickerPri.value = DEFAULT_COLORS.primary;
+      dom.pickerSec.value = DEFAULT_COLORS.secondary;
+      localStorage.removeItem("app-theme");
+      localStorage.removeItem("app-primary");
+      localStorage.removeItem("app-secondary");
+    });
+  }
+
+  // D) TOGGLES DE MÓDULOS (CORREGIDO)
+  // El mapeo debe coincidir con el ID del interruptor en HTML y el data-target del menú
+  const modulesMap = [
+    { key: "notas", id: "seccion-notas" },
+    { key: "proyectos", id: "seccion-proyectos" },
+    { key: "kanban", id: "seccion-tablero" }, // 'kanban' en el toggle, 'tablero' en el menú
+    { key: "calendario", id: "seccion-calendario" },
+    { key: "finanzas", id: "seccion-finanzas" },
+  ];
+
+  modulesMap.forEach((mod) => {
+    const toggle = document.getElementById(`toggle-mod-${mod.key}`);
+    if (toggle) {
+      toggle.addEventListener("change", (e) => {
+        window.toggleModule(mod.id, e.target.checked);
+      });
+    }
+  });
+
+  // E) DEFINICIÓN GLOBAL DE TOGGLE (Asegura que Almacenamiento funcione)
+  window.toggleModule = (moduleId, isChecked) => {
+    const currentConfig = Almacenamiento.obtener("app_modules") || {};
+    currentConfig[moduleId] = isChecked;
+    Almacenamiento.guardar("app_modules", currentConfig);
+
+    const menuBtn = document.querySelector(
+      `.menu-btn[data-target="${moduleId}"]`,
+    );
+    if (menuBtn) {
+      menuBtn.style.display = isChecked ? "flex" : "none";
+    }
+  };
+
+  // F) PERFIL
+  if (dom.btnSaveProfile) {
+    dom.btnSaveProfile.addEventListener("click", () => {
+      const profile = {
+        name: dom.userName.value.trim() || "Usuario",
+        lastname: dom.userLastname.value.trim() || "",
       };
-      Almacenamiento.guardar("user_profile", perfil);
-      cargarPerfil(); // Actualizar avatar
-      document.dispatchEvent(new Event("profile-updated")); // Avisar a dashboard
-      alert("Perfil actualizado correctamente");
+      Almacenamiento.guardar("user_profile", profile);
+      updateAvatar(profile.name, profile.lastname);
+      document.dispatchEvent(new Event("profile-updated"));
+
+      const originalText = dom.btnSaveProfile.textContent;
+      dom.btnSaveProfile.textContent = "¡Guardado!";
+      setTimeout(() => (dom.btnSaveProfile.textContent = originalText), 1500);
     });
   }
 }
 
-function cargarPerfil() {
-  /* 
-     Nota: Las operaciones de localStorage en este archivo están usando la API nativa localStorage 
-     por diseño (para ajustes de tema críticos al inicio), excepto quizás el perfil.
-     Si hay uso de Storage.get/set, reemplazar aquí.
-     Revisando el archivo...
-  */
-  // Línea 218: Storage.get("user_profile") -> Almacenamiento.obtener("user_profile")
-  const perfil = Almacenamiento.obtener("user_profile") || { name: "Usuario", lastname: "Demo" };
-  if (dom.nombreUsuario) dom.nombreUsuario.value = perfil.name;
-  if (dom.apellidoUsuario) dom.apellidoUsuario.value = perfil.lastname;
+function loadProfile() {
+  const profile = Almacenamiento.obtener("user_profile") || {
+    name: "Usuario",
+    lastname: "",
+  };
+  if (dom.userName) dom.userName.value = profile.name;
+  if (dom.userLastname) dom.userLastname.value = profile.lastname;
+  updateAvatar(profile.name, profile.lastname);
+}
 
-  if (dom.textoAvatar) {
-    const iniciales = (perfil.name[0] || "") + (perfil.lastname[0] || "");
-    dom.textoAvatar.textContent = iniciales.toUpperCase();
+function updateAvatar(name, lastname) {
+  if (dom.avatarText) {
+    const initials = (
+      name.charAt(0) + (lastname ? lastname.charAt(0) : "")
+    ).toUpperCase();
+    dom.avatarText.textContent = initials || "UD";
   }
 }
 
-function aplicarTema(nombreTema) {
-  // Remover clases de temas previos
-  dom.root.classList.remove(...Object.keys(PRESETS_TEMAS).filter(t => t));
-  if (nombreTema) dom.root.classList.add(nombreTema);
+function applyModulesVisibility(config) {
+  const modules = [
+    "seccion-notas",
+    "seccion-proyectos",
+    "seccion-tablero",
+    "seccion-calendario",
+    "seccion-finanzas",
+  ];
+  modules.forEach((modId) => {
+    const isVisible = config.hasOwnProperty(modId) ? config[modId] : true;
+
+    // Mapeo inverso para encontrar el checkbox correcto
+    let key = modId.replace("seccion-", "");
+    if (modId === "seccion-tablero") key = "kanban";
+
+    const checkbox = document.getElementById(`toggle-mod-${key}`);
+    if (checkbox) checkbox.checked = isVisible;
+
+    const menuBtn = document.querySelector(`.menu-btn[data-target="${modId}"]`);
+    if (menuBtn) {
+      menuBtn.style.display = isVisible ? "flex" : "none";
+    }
+  });
 }
 
-function aplicarVariablesCSS(colores) {
-  if (!colores) return;
-  const rootStyle = dom.root.style;
-
-  if (colores.primary) {
-    rootStyle.setProperty("--primary", colores.primary);
-    const rgbP = Utils.hexToRgb(colores.primary);
-    if (rgbP) rootStyle.setProperty("--primary-rgb", rgbP);
+function applyThemeClass(theme) {
+  document.body.className = "";
+  const icons = document.querySelectorAll(".icon");
+  icons.forEach((icon) => icon.classList.remove("iconInvert", "iconNoInvert"));
+  if (theme && !["", "light-blue", "light-gray"].includes(theme)) {
+    icons.forEach((icon) => icon.classList.add("iconInvert"));
+  } else {
+    icons.forEach((icon) => icon.classList.add("iconNoInvert"));
   }
+  if (theme) document.body.classList.add(theme);
+}
 
-  if (colores.secondary) {
-    rootStyle.setProperty("--secondary", colores.secondary);
+function applyCssVars(primary, secondary, neonOptions = {}) {
+  if (primary) {
+    dom.root.style.setProperty("--primary", primary);
+    const rgb = Utils.hexToRgb(primary);
+    if (rgb) dom.root.style.setProperty("--primary-rgb", rgb);
   }
-
-  // Variables Neon (Opcional, si vienen en el objeto)
-  if (colores.neonColor) rootStyle.setProperty("--neon-color", colores.neonColor);
-  if (colores.neonIntensity) rootStyle.setProperty("--neon-intensity", colores.neonIntensity);
+  if (secondary) dom.root.style.setProperty("--secondary", secondary);
+  if (neonOptions.color)
+    dom.root.style.setProperty("--neon-color", neonOptions.color);
+  if (neonOptions.intensity)
+    dom.root.style.setProperty("--neon-intensity", neonOptions.intensity);
+  if (neonOptions.spread)
+    dom.root.style.setProperty("--neon-spread", neonOptions.spread);
+  if (neonOptions.blur)
+    dom.root.style.setProperty("--neon-blur", neonOptions.blur);
 }

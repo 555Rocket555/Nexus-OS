@@ -1,4 +1,4 @@
-/* Tags Module Styles */
+/* src/css/modules/tags.css */
 
 .tags-header {
     padding: 20px 30px;
@@ -16,7 +16,7 @@
     margin-top: 5px;
 }
 
-/* GRID DE ETIQUETAS (CLOUD) */
+/* GRID DE ETIQUETAS */
 .tags-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -38,7 +38,7 @@
 
 .tag-card:hover {
     transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow);
     border-color: var(--primary);
 }
 
@@ -51,13 +51,13 @@
 .tag-card-header h3 {
     margin: 0;
     font-size: 1.1rem;
-    color: var(--primary);
+    font-weight: 700;
 }
 
 .tag-count {
     font-size: 0.8rem;
     color: var(--text-muted);
-    background: var(--bg-input);
+    background: var(--input-bg);
     padding: 2px 8px;
     border-radius: 10px;
 }
@@ -69,7 +69,7 @@
 }
 
 .mini-item-icon {
-    font-size: 0.9rem;
+    font-size: 1rem;
     opacity: 0.7;
 }
 
@@ -90,36 +90,22 @@
     font-size: 0.9rem;
 }
 
-.btn-back:hover {
-    background: var(--bg-input);
-}
-
-.tag-count-badge {
-    margin-left: auto;
-    background: var(--primary);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-}
-
 .tag-detail-content {
     padding: 30px;
     display: flex;
     flex-direction: column;
     gap: 30px;
     overflow-y: auto;
-    height: calc(100vh - 100px);
-    /* Ajuste de scroll */
+    /* Ajuste para que no se salga de la pantalla si hay scroll */
+    max-height: calc(100vh - 200px); 
 }
 
 .detail-section h3 {
     font-size: 1.2rem;
     color: var(--text-main);
     margin-bottom: 15px;
-    border-bottom: 2px solid var(--bg-input);
+    border-bottom: 2px solid var(--input-bg);
     padding-bottom: 5px;
-    display: inline-block;
 }
 
 .detail-list {
@@ -138,24 +124,20 @@
 .detail-card h4 {
     margin: 0 0 5px 0;
     color: var(--text-main);
+    font-size: 1rem;
 }
 
 .detail-card p {
     font-size: 0.9rem;
     color: var(--text-muted);
-    margin: 0 0 10px 0;
-}
-
-.detail-card .date {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    display: block;
-    text-align: right;
+    margin: 0;
 }
 
 .status-badge {
     font-size: 0.75rem;
     padding: 2px 6px;
     border-radius: 4px;
-    background: var(--bg-input);
+    background: var(--input-bg);
+    display: inline-block;
+    margin-top: 5px;
 }

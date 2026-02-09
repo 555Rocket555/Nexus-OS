@@ -40,33 +40,26 @@
                     <img src="./icons/notes.svg" class="icon" alt="Notas">
                     <span>Notas</span>
                 </button>
-
                 <button class="menu-btn" data-target="seccion-proyectos">
                     <img src="./icons/rocket.svg" class="icon" alt="Proyectos">
                     <span>Proyectos</span>
                 </button>
-
                 <button class="menu-btn" data-target="seccion-tablero">
                     <img src="./icons/planner.svg" class="icon" alt="Tablero">
                     <span>Tablero</span>
                 </button>
-
                 <button class="menu-btn" data-target="seccion-calendario">
                     <img src="./icons/date.svg" class="icon" alt="Calendario">
-                    <span>Calendario</span>
+                    <span>Agenda</span>
                 </button>
-
                 <button class="menu-btn" data-target="seccion-finanzas">
                     <img src="./icons/money.svg" class="icon" alt="Finanzas">
                     <span>Wallet</span>
                 </button>
-
-                <!-- Nuevo Botón Etiquetas -->
                 <button class="menu-btn" data-target="seccion-tags">
                     <img src="./icons/tags.svg" class="icon" alt="Etiquetas">
                     <span>Etiquetas</span>
                 </button>
-
                 <button class="menu-btn" data-target="seccion-configuracion">
                     <img src="./icons/settings.svg" class="icon" alt="Config">
                     <span>Preferencias</span>
@@ -78,11 +71,11 @@
         </aside>
 
         <main class="main-content">
-
             <div class="mobile-header-bar">
                 <button id="btnMobileMenu">☰</button>
                 <h2 style="margin:0; font-size:1.2rem; color:var(--primary);">Nexus OS</h2>
             </div>
+
             <section id="seccion-dashboard" class="pagina active">
                 <div id="dashboard" class="main-container">
                     <div id="header-dashboard" class="header-content">
@@ -96,57 +89,67 @@
             </section>
 
             <section id="seccion-notas" class="pagina hidden">
-                <div id="vista-notas" style="height: 100%; width: 100%;"></div>
+                <div id="vista-notas" class="main-container" style="height: 100%;"></div>
             </section>
 
             <section id="seccion-proyectos" class="pagina hidden">
-                <div id="vista-proyectos" style="height: 100%; width: 100%;"></div>
+                <div id="vista-proyectos" class="main-container" style="height: 100%;"></div>
             </section>
 
             <section id="seccion-tablero" class="pagina hidden">
-                <div id="vista-tablero" style="height: 98%;"></div>
+                <div id="vista-tablero" class="main-container" style="height: 100%;"></div>
             </section>
 
-            <section id="seccion-calendario" class="pagina hidden">
-                <div class="main-container">
-                    <div class="calendarioAndEventos">
-                        <div class="calendar-container">
-                            <div class="calendar-header">
-                                <h2 id="mes-anio">2026</h2>
-                                <div class="calendar-nav">
-                                    <button id="btn-mes-anterior">&lt;</button>
-                                    <button id="btn-mes-siguiente">&gt;</button>
-                                </div>
-                            </div>
-                            <div class="calendar-weekdays">
-                                <div>Dom</div>
-                                <div>Lun</div>
-                                <div>Mar</div>
-                                <div>Mié</div>
-                                <div>Jue</div>
-                                <div>Vie</div>
-                                <div>Sáb</div>
-                            </div>
-                            <div class="calendar-grid" id="grid-calendario"></div>
-                        </div>
+          <section id="seccion-calendario" class="pagina hidden">
+    <div class="main-container">
+        <div class="calendario-layout">
+            <div class="header-content">
+                <div class="seccion-header">
+                    <h1>Agenda</h1>
+                    <p style="color: var(--text-muted); margin-top: 5px;">Eventos y recordatorios</p>
+                </div>
+            </div>
 
-                        <div class="eventos-container">
-                            <div class="eventos-header">
-                                <h2>Eventos del Mes</h2>
-                            </div>
-                            <div class="calendar-events" id="eventos-calendario"></div>
-                        </div>
-
-                        <div class="noDate-container">
-                            <div class="eventos-header-noDate">
-                                <h2>Recordatorios</h2>
-                                <button id="btn-nuevo-evento" class="btn-plus">+</button>
-                            </div>
-                            <div class="calendar-events" id="eventos-sin-asignar"></div>
+            <div class="agenda-main-grid">
+                <div class="calendar-card">
+                    <div class="calendar-header">
+                        <h2 id="mes-anio">Cargando...</h2>
+                        <div class="calendar-nav">
+                            <button id="btn-mes-anterior" title="Mes Anterior">‹</button>
+                            <button id="btn-mes-siguiente" title="Mes Siguiente">›</button>
                         </div>
                     </div>
+                    
+                    <div class="calendar-weekdays">
+                        <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                    </div>
+                    
+                    <div class="calendar-grid" id="grid-calendario">
+                        </div>
                 </div>
-            </section>
+
+                <div class="agenda-sidebar">
+                    <div class="sidebar-panel">
+                        <div class="panel-header">
+                            <h3>Eventos del Mes</h3>
+                        </div>
+                        <div id="eventos-calendario">
+                            </div>
+                    </div>
+
+                    <div class="sidebar-panel">
+                        <div class="panel-header">
+                            <h3>Recordatorios</h3>
+                            <button id="btn-nuevo-evento" class="btn-plus-round" style="width: 32px; height: 32px; font-size: 1.2rem;">+</button>
+                        </div>
+                        <div id="eventos-sin-asignar">
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
             <section id="seccion-finanzas" class="pagina hidden">
                 <div class="main-container">
@@ -185,7 +188,7 @@
                             </div>
                         </div>
                         <div class="finance-right-col">
-                            <div class="f-panel-clean" style="height: 45%;">
+                            <div class="f-panel-clean" style="flex: 1;">
                                 <div class="panel-header-clean">
                                     <h3>Gastos Fijos</h3>
                                     <button id="btn-agregar-fijo" class="btn-plus-round">＋</button>
@@ -211,60 +214,24 @@
                                     <ul id="lista-gastos-fijos" class="list-clean"></ul>
                                 </div>
                             </div>
-                            <div class="f-panel-clean" style="height: 55%;">
+                            <div class="f-panel-clean" style="flex: 1;">
                                 <div class="panel-header-clean">
                                     <h3>Gastos Variables</h3>
                                 </div>
                                 <div class="quick-add-row">
-                                    <input type="text" id="input-mov-desc" class="quick-input"
-                                        placeholder="Ej. Café, Uber..." style="flex:2;">
-                                    <input type="number" id="input-mov-monto" class="quick-input" placeholder="$"
-                                        style="flex:1;">
-                                    <button id="btn-agregar-movimiento" class="btn-plus-round"
-                                        style="width:38px; height:38px; border-radius:8px;">➜</button>
+                                    <input type="text" id="input-mov-desc" class="quick-input" placeholder="Ej. Café, Uber..." style="flex:2;">
+                                    <input type="number" id="input-mov-monto" class="quick-input" placeholder="$" style="flex:1;">
+                                    <button id="btn-agregar-movimiento" class="btn-plus-round" style="width:38px; height:38px; border-radius:8px;">➜</button>
                                 </div>
-                                <div id="lista-movimientos" class="fijos-list-scroll">
-                                </div>
+                                <div id="lista-movimientos" class="fijos-list-scroll"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="modal-config-finanzas" class="form-card-container hidden">
-                    <div class="form-card">
-                        <h2>⚙️ Configurar Billetera</h2>
-                        <form id="form-config-finanzas">
-                            <div class="input-group">
-                                <label>Ingreso Neto:</label>
-                                <input type="number" id="input-salario" placeholder="Ej. 15000" required>
-                            </div>
-                            <div class="input-group">
-                                <label>Periodo:</label>
-                                <select id="select-periodo">
-                                    <option value="mensual">Mensual (30 días)</option>
-                                    <option value="quincenal">Quincenal (15 días)</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label>Fecha de cobro (Inicio):</label>
-                                <input type="date" id="input-fecha-inicio" required>
-                            </div>
-                            <div class="input-group">
-                                <label>Meta Ahorro (%): <span id="val-rango-ahorro">10%</span></label>
-                                <input type="range" id="input-rango-ahorro" min="0" max="50" step="5" value="10">
-                            </div>
-                            <div class="form-actions">
-                                <button type="submit" class="btn-primary">Guardar Cambios</button>
-                                <button type="button" id="btn-cerrar-config-finanzas"
-                                    class="btn-secondary">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
             </section>
 
-            <!-- Sección de Etiquetas -->
             <section id="seccion-tags" class="pagina hidden">
-                <div id="vista-etiquetas" style="height: 100%; width: 100%;"></div>
+                <div id="vista-etiquetas" class="main-container" style="height: 100%;"></div>
             </section>
 
             <section id="seccion-configuracion" class="pagina hidden">
@@ -274,24 +241,25 @@
                             <span style="font-size:1.8rem;">⚙️</span>
                             <div>
                                 <h1 style="font-size:1.5rem; margin:0;">Preferencias</h1>
-                                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Personaliza tu
-                                    experiencia en Nexus OS</p>
+                                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Personaliza tu experiencia en Nexus OS</p>
                             </div>
                         </div>
                     </div>
                     <div class="settings-tabs">
-                        <button class="pestana-configuracion active" data-target="tab-general"><img
-                                src="./icons/palette.svg" class="icon">Apariencia</button>
-                        <button class="pestana-configuracion" data-target="tab-modulos"><img src="./icons/view.svg"
-                                class="icon">
-                            Módulos</button>
-                        <button class="pestana-configuracion" data-target="tab-notificaciones"><img
-                                src="./icons/noti.svg" class="icon">Notificaciones</button>
-                        <button class="pestana-configuracion" data-target="tab-cuenta"><img src="./icons/user.svg"
-                                class="icon">Cuenta</button>
+                        <button class="pestana-configuracion active" data-target="tab-general">
+                            <img src="./icons/palette.svg" class="icon">Apariencia
+                        </button>
+                        <button class="pestana-configuracion" data-target="tab-modulos">
+                            <img src="./icons/view.svg" class="icon">Módulos
+                        </button>
+                        <button class="pestana-configuracion" data-target="tab-notificaciones">
+                            <img src="./icons/noti.svg" class="icon">Notificaciones
+                        </button>
+                        <button class="pestana-configuracion" data-target="tab-cuenta">
+                            <img src="./icons/user.svg" class="icon">Cuenta
+                        </button>
                     </div>
                     <div class="settings-content-wrapper">
-                        <!-- TAB GENERAL (Antes Apariencia) -->
                         <div id="tab-general" class="panel-configuracion active">
                             <div class="setting-group">
                                 <h3>Tema & Colores</h3>
@@ -330,17 +298,14 @@
                                     <input type="color" id="picker-color-secundario" class="color-picker-input">
                                 </div>
                                 <div class="setting-row" style="justify-content: flex-end;">
-                                    <button id="btn-reset-colores" class="btn-secondary danger-hover">Restaurar Valores
-                                        por
-                                        Defecto</button>
+                                    <button id="btn-reset-colores" class="btn-secondary danger-hover">Restaurar Valores por Defecto</button>
                                 </div>
                             </div>
                         </div>
                         <div id="tab-modulos" class="panel-configuracion hidden">
                             <div class="setting-group">
                                 <h3>Módulos del Sistema</h3>
-                                <p style="color:var(--text-muted); margin-bottom:20px;">Activa o desactiva las
-                                    herramientas que necesitas.</p>
+                                <p style="color:var(--text-muted); margin-bottom:20px;">Activa o desactiva las herramientas que necesitas.</p>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>📝 Notas</h4>
@@ -356,40 +321,28 @@
                                         <h4>🚀 Proyectos</h4>
                                         <p>Gestión avanzada de Proyectos.</p>
                                     </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-proyectos" checked>
-                                        <span class="slider round"></span>
-                                    </label>
+                                    <label class="switch"><input type="checkbox" id="toggle-mod-proyectos" checked><span class="slider round"></span></label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>📋 Tablero</h4>
                                         <p>Tablero de flujo de trabajo.</p>
                                     </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-kanban" checked>
-                                        <span class="slider round"></span>
-                                    </label>
+                                    <label class="switch"><input type="checkbox" id="toggle-mod-kanban" checked><span class="slider round"></span></label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
-                                        <h4>📅 Calendario</h4>
+                                        <h4>📅 Agenda</h4>
                                         <p>Agenda y eventos.</p>
                                     </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-calendario" checked>
-                                        <span class="slider round"></span>
-                                    </label>
+                                    <label class="switch"><input type="checkbox" id="toggle-mod-calendario" checked><span class="slider round"></span></label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>💳 Finanzas</h4>
                                         <p>Control de finanzas personales.</p>
                                     </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-finanzas" checked>
-                                        <span class="slider round"></span>
-                                    </label>
+                                    <label class="switch"><input type="checkbox" id="toggle-mod-finanzas" checked><span class="slider round"></span></label>
                                 </div>
                             </div>
                         </div>
@@ -401,16 +354,14 @@
                                         <h4>Recordatorio de tareas</h4>
                                         <p>Notificaciones de tareas pendientes.</p>
                                     </div>
-                                    <label class="switch"><input type="checkbox" checked><span
-                                            class="slider round"></span></label>
+                                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
                                 </div>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>Próximos eventos</h4>
                                         <p>Alertas de calendario.</p>
                                     </div>
-                                    <label class="switch"><input type="checkbox" checked><span
-                                            class="slider round"></span></label>
+                                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
                                 </div>
                             </div>
                         </div>
@@ -445,13 +396,61 @@
                     </div>
                 </div>
             </section>
-
         </main>
+    </div> <div id="modal-evento" class="modal-event-overlay hidden">
+        <div class="modal-event-card">
+            <h3>📅 Nuevo Evento</h3>
+            <input type="text" id="input-evento-titulo" placeholder="Título del evento" autofocus>
+            <input type="date" id="input-evento-fecha">
+
+            <div class="tags-input-area" style="margin-bottom: 20px;">
+                <label style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px; display:block;">Etiquetas (Enter para agregar)</label>
+                <div class="tags-wrapper" id="lista-etiquetas-modal"></div>
+                <div style="position:relative;">
+                    <input type="text" id="input-evento-tag" placeholder="Ej. Trabajo, Importante..." autocomplete="off">
+                    <div id="sugerencias-modal" class="dropdown-menu"></div>
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button id="btn-cancelar-evento" class="btn-modal btn-cancel">Cancelar</button>
+                <button id="btn-guardar-evento" class="btn-modal btn-save">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-config-finanzas" class="form-card-container hidden">
+        <div class="form-card">
+            <h2>⚙️ Configurar Billetera</h2>
+            <form id="form-config-finanzas">
+                <div class="input-group">
+                    <label>Ingreso Neto:</label>
+                    <input type="number" id="input-salario" placeholder="Ej. 15000" required>
+                </div>
+                <div class="input-group">
+                    <label>Periodo:</label>
+                    <select id="select-periodo">
+                        <option value="mensual">Mensual (30 días)</option>
+                        <option value="quincenal">Quincenal (15 días)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Fecha de cobro (Inicio):</label>
+                    <input type="date" id="input-fecha-inicio" required>
+                </div>
+                <div class="input-group">
+                    <label>Meta Ahorro (%): <span id="val-rango-ahorro">10%</span></label>
+                    <input type="range" id="input-rango-ahorro" min="0" max="50" step="5" value="10">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    <button type="button" id="btn-cerrar-config-finanzas" class="btn-secondary">Cancelar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
-
     <script type="module" src="./js/app.js"></script>
 </body>
-
 </html>

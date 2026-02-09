@@ -27,21 +27,12 @@
     flex-shrink: 0;
 }
 
-/* Estado Colapsado (Desktop) */
-.sidebar.collapsed {
-    width: 80px;
-}
-
+.sidebar.collapsed { width: 80px; }
 .sidebar.collapsed .logo h2,
 .sidebar.collapsed .menu-btn span,
-.sidebar.collapsed .user-info p {
-    display: none;
-}
-
+.sidebar.collapsed .user-info p { display: none; }
 .sidebar.collapsed .sidebar-header,
-.sidebar.collapsed .menu-btn {
-    justify-content: center;
-}
+.sidebar.collapsed .menu-btn { justify-content: center; }
 
 .sidebar-header {
     display: flex;
@@ -96,24 +87,17 @@
 
 .menu-btn:hover {
     background-color: rgba(99, 102, 241, 0.1);
-    /* Primary tint */
     color: var(--primary);
 }
 
 .menu-btn.active {
     background-color: var(--primary);
-    /* Solid color to respect user choice */
     color: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    /* Neutral shadow */
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.icon {
-    width: 20px;
-    height: 20px;
-    min-width: 20px;
-}
+.icon { width: 20px; height: 20px; min-width: 20px; }
 
 .user-info {
     border-top: 1px solid var(--border-color);
@@ -128,25 +112,18 @@
 .main-content {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden; /* Evita scroll horizontal indeseado */
     padding: 30px;
     position: relative;
     background-color: var(--bg-body);
     width: 100%;
     transition: all 0.3s ease;
-    /* Smooth fading entry */
     animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .seccion-header {
@@ -155,6 +132,7 @@
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Mejora responsive */
 }
 
 .seccion-header h1 {
@@ -163,11 +141,8 @@
 }
 
 /* --- RESPONSIVE MOBILE --- */
-
-/* Barra Superior Móvil */
 .mobile-header-bar {
     display: none;
-    /* Oculto en PC */
     align-items: center;
     gap: 15px;
     margin-bottom: 20px;
@@ -188,7 +163,6 @@
     justify-content: center;
 }
 
-/* Overlay para fondo oscuro */
 .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -197,7 +171,6 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 900;
-    /* Debajo del sidebar (1000) */
     opacity: 0;
     visibility: hidden;
     transition: all 0.3s;
@@ -205,89 +178,31 @@
     -webkit-backdrop-filter: blur(4px);
 }
 
-.sidebar-overlay.show {
-    opacity: 1;
-    visibility: visible;
-}
+.sidebar-overlay.show { opacity: 1; visibility: visible; }
 
-/* MEDIA QUERY PRINCIPAL */
 @media (max-width: 768px) {
-
-    /* 1. Mostrar Header Móvil */
-    .mobile-header-bar {
-        display: flex !important;
-    }
-
-    /* 2. Sidebar Flotante (Escondido) */
-    /* 2. Sidebar Flotante (Escondido) para Móvil - Glassmorphism iOS style */
+    .mobile-header-bar { display: flex !important; }
+    
     .sidebar {
         position: fixed;
         top: 0;
         left: -100%;
         height: 100%;
         width: 280px;
-        background-color: rgba(255, 255, 255, 0.85);
-        /* Fallback */
         background-color: var(--bg-sidebar);
-        /* Variable with transparency */
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         box-shadow: 20px 0 40px rgba(0, 0, 0, 0.1);
         border-right: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Clase para mostrar Sidebar */
-    .sidebar.mobile-open {
-        left: 0;
-    }
+    .sidebar.mobile-open { left: 0; }
+    .sidebar-header { justify-content: flex-end; }
+    .sidebar-header .logo { display: none; }
+    
+    .main-content { padding: 15px !important; }
+    
+    .menu-btn, button, input, select { min-height: 48px; }
 
-    /* 3. Ajustes Sidebar */
-    .sidebar-header {
-        justify-content: flex-end;
-        /* Botón a la derecha */
-    }
-
-    .sidebar-header .logo {
-        display: none;
-        /* Ya está en el header móvil */
-    }
-
-    /* 4. Ajustes Generales */
-    .main-content {
-        padding: 15px;
-    }
-
-    /* Touch Friendly */
-    .menu-btn,
-    button,
-    input,
-    select {
-        min-height: 48px;
-        /* Better touch target */
-    }
-}
-
-/* --- AJUSTES GLOBALES MÓVIL --- */
-@media (max-width: 768px) {
-    .main-content {
-        padding: 15px !important;
-        /* Menos padding para ganar espacio */
-    }
-
-    /* Ajustar cabeceras de sección */
-    .seccion-header {
-        flex-direction: row;
-        /* Mantener en fila */
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .seccion-header h1 {
-        font-size: 1.5rem;
-    }
-
-    /* Ocultar texto de botones en header si es necesario */
-    .seccion-header .btn-icon span {
-        display: none;
-    }
+    .seccion-header h1 { font-size: 1.5rem; }
 }

@@ -1,10 +1,9 @@
-import { Almacenamiento } from "../services/storage.js";
+import { Almacenamiento, ServicioEtiquetas } from "../services/storage.js";
 import { Utils } from "../utils.js";
 
-// Estado local del módulo
 let estado = {
-    etiquetaActiva: null, // Si es null, muestra la lista de tags. Si tiene valor, muestra el detalle.
-    modoVista: 'cloud' // 'cloud' | 'detail'
+    etiquetaActiva: null,
+    modoVista: 'cloud'
 };
 
 export function iniciarEtiquetas() {
@@ -15,12 +14,12 @@ function obtenerDatosEtiquetas() {
     const datos = {
         notas: Almacenamiento.obtener("quickNotes") || [],
         proyectos: Almacenamiento.obtener("projects") || [],
-        tareas: Almacenamiento.obtener("nexus_kanban_data") || [] // Asumiendo que las tareas pueden tener tags
+        tareas: Almacenamiento.obtener("nexus_kanban_data") || [] 
     };
 
-    const mapaEtiquetas = new Map(); // tagName -> { count, items: [] }
+    const mapaEtiquetas = new Map();
 
-    // Procesar Notas
+    // Notas
     datos.notas.forEach(nota => {
         if (nota.tags && Array.isArray(nota.tags)) {
             nota.tags.forEach(tag => {
@@ -32,7 +31,7 @@ function obtenerDatosEtiquetas() {
         }
     });
 
-    // Procesar Proyectos
+    // Proyectos
     datos.proyectos.forEach(proy => {
         if (proy.tags && Array.isArray(proy.tags)) {
             proy.tags.forEach(tag => {
@@ -48,7 +47,8 @@ function obtenerDatosEtiquetas() {
 }
 
 function renderizarVistaEtiquetas() {
-    const contenedor = document.getElementById("vista-etiquetas") || document.getElementById("vistaTags");
+    // FIX: Selector correcto según index.html
+    const contenedor = document.getElementById("vista-etiquetas");
     if (!contenedor) return;
 
     if (estado.etiquetaActiva) {
@@ -60,7 +60,7 @@ function renderizarVistaEtiquetas() {
 
 function renderizarNubeEtiquetas(contenedor) {
     const mapaEtiquetas = obtenerDatosEtiquetas();
-    const etiquetas = Array.from(mapaEtiquetas.entries()).sort((a, b) => b[1].count - a[1].count); // Más frecuentes primero
+    const etiquetas = Array.from(mapaEtiquetas.entries()).sort((a, b) => b[1].count - a[1].count);
 
     let html = `
         <div class="tags-header">
@@ -71,20 +71,20 @@ function renderizarNubeEtiquetas(contenedor) {
     `;
 
     if (etiquetas.length === 0) {
-        html += `<div class="empty-state">No hay etiquetas creadas aún. Agrega etiquetas a tus Notas o Proyectos.</div>`;
+        html += `<div class="empty-state" style="grid-column: 1/-1; text-align:center; padding:40px;">No hay etiquetas creadas aún.</div>`;
     } else {
         etiquetas.forEach(([nombreEtiqueta, data]) => {
+            const colorIdx = ServicioEtiquetas.asignarColor(nombreEtiqueta);
             html += `
                 <div class="tag-card" onclick="window.ModuloEtiquetas.abrirEtiqueta('${nombreEtiqueta}')">
                     <div class="tag-card-header">
-                        <h3>#${nombreEtiqueta}</h3>
+                        <h3 class="bg-c${colorIdx}" style="background:transparent; color:var(--primary);">#${nombreEtiqueta}</h3>
                         <span class="tag-count">${data.count} items</span>
                     </div>
                     <div class="tag-card-preview">
                         ${data.items.slice(0, 3).map(item => `
-                            <span class="mini-item-icon">${obtenerIconoPorTipo(item.type)}</span>
+                            <span class="mini-item-icon" title="${item.type}">${obtenerIconoPorTipo(item.type)}</span>
                         `).join('')}
-                        ${data.items.length > 3 ? '<span class="more-dots">...</span>' : ''}
                     </div>
                 </div>
             `;
@@ -105,17 +105,15 @@ function renderizarDetalleEtiqueta(contenedor, nombreEtiqueta) {
         return;
     }
 
+    const colorIdx = ServicioEtiquetas.asignarColor(nombreEtiqueta);
     let html = `
-        <div class="tags-header detail-header">
-            <button class="btn-back" onclick="window.ModuloEtiquetas.cerrarEtiqueta()">← Volver</button>
-            <h2>#${nombreEtiqueta}</h2>
-            <span class="tag-count-badge">${data.count} Elementos encontrados</span>
+        <div class="tags-header detail-header bg-c${colorIdx}" style="padding: 20px; border-radius: 12px; margin-bottom: 20px; color: white;">
+            <button class="btn-back" onclick="window.ModuloEtiquetas.cerrarEtiqueta()" style="color: white; border-color: white;">← Volver</button>
+            <h2 style="color: white;">#${nombreEtiqueta}</h2>
         </div>
-        
         <div class="tag-detail-content">
     `;
 
-    // Agrupar por tipo
     const notas = data.items.filter(i => i.type === 'note');
     const proyectos = data.items.filter(i => i.type === 'project');
 
@@ -128,7 +126,6 @@ function renderizarDetalleEtiqueta(contenedor, nombreEtiqueta) {
                         <div class="detail-card note-card">
                             <h4>${Utils.escaparHTML(n.title || 'Sin título')}</h4>
                             <p>${Utils.escaparHTML((n.content || '').substring(0, 60))}...</p>
-                            <span class="date">${Utils.formatearFecha(n.updatedAt)}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -144,8 +141,7 @@ function renderizarDetalleEtiqueta(contenedor, nombreEtiqueta) {
                     ${proyectos.map(p => `
                         <div class="detail-card project-card">
                             <h4>${Utils.escaparHTML(p.title)}</h4>
-                            <p>${Utils.escaparHTML(p.description || '')}</p>
-                            <span class="status-badge ${p.status}">${p.status}</span>
+                            <span class="status-badge">${p.status}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -160,13 +156,13 @@ function renderizarDetalleEtiqueta(contenedor, nombreEtiqueta) {
 function obtenerIconoPorTipo(tipo) {
     if (tipo === 'note') return '📝';
     if (tipo === 'project') return '🚀';
-    return '📄';
+    return '📌';
 }
 
-// Global API
+// Global API para onclicks HTML
 window.ModuloEtiquetas = {
-    abrirEtiqueta: (nombreEtiqueta) => {
-        estado.etiquetaActiva = nombreEtiqueta;
+    abrirEtiqueta: (nombre) => {
+        estado.etiquetaActiva = nombre;
         renderizarVistaEtiquetas();
     },
     cerrarEtiqueta: () => {
