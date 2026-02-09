@@ -1,4 +1,4 @@
-import { CalendarService } from "../services/storage.js";
+import { ServicioCalendario } from "../services/storage.js";
 import { Utils } from "../utils.js"; // Para Utils.escaparHTML si fuera necesario
 
 let eventos = {};
@@ -16,9 +16,9 @@ const dom = {
 };
 
 export function iniciarCalendario() {
-  const eventosRaw = CalendarService.getEvents() || {};
+  const eventosRaw = ServicioCalendario.obtenerEventos() || {};
   eventos = migrarEventosAArray(eventosRaw);
-  eventosSinFecha = CalendarService.getNoDateEvents() || {};
+  eventosSinFecha = ServicioCalendario.obtenerEventosSinFecha() || {};
 
   if (dom.btnAnterior) dom.btnAnterior.onclick = () => cambiarMes(-1);
   if (dom.btnSiguiente) dom.btnSiguiente.onclick = () => cambiarMes(1);
@@ -173,7 +173,7 @@ function agregarEventoEnFecha(anio, mes, dia) {
       colorIdx: 1
     });
 
-    CalendarService.saveEvents(eventos);
+    ServicioCalendario.guardarEventos(eventos);
     renderizarCalendario();
   }
 }
@@ -182,7 +182,7 @@ function eliminarEvento(fechaKey, index) {
   if (eventos[fechaKey]) {
     eventos[fechaKey].splice(index, 1);
     if (eventos[fechaKey].length === 0) delete eventos[fechaKey];
-    CalendarService.saveEvents(eventos);
+    ServicioCalendario.guardarEventos(eventos);
     renderizarCalendario();
   }
 }

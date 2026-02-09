@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nexus OS</title>
+    <link rel="icon" type="image/svg+xml" href="./icons/rocket.svg">
 
     <link rel="stylesheet" href="./css/main.css">
     <link rel="stylesheet" href="./css/layout.css">
@@ -13,7 +14,6 @@
     <link rel="stylesheet" href="./css/modules/dashboard.css">
     <link rel="stylesheet" href="./css/modules/kanban.css">
     <link rel="stylesheet" href="./css/modules/finance.css">
-    <link rel="stylesheet" href="./css/modules/taghub.css">
     <link rel="stylesheet" href="./css/modules/calendar.css">
     <link rel="stylesheet" href="./css/modules/projects.css">
     <link rel="stylesheet" href="./css/modules/settings.css">
@@ -264,76 +264,90 @@
 
             <!-- Sección de Etiquetas -->
             <section id="seccion-tags" class="pagina hidden">
-                <div id="vistaTags" style="height: 100%; width: 100%;"></div>
+                <div id="vista-etiquetas" style="height: 100%; width: 100%;"></div>
             </section>
 
             <section id="seccion-configuracion" class="pagina hidden">
                 <div class="main-container">
                     <div class="seccion-header" style="margin-bottom: 10px;">
-                        <div class="settings-container">
-                            <div class="settings-sidebar">
-                                <h2>Ajustes</h2>
-                                <button class="pestana-configuracion active" data-target="tab-apariencia">
-                                    <img src="./icons/view.svg" class="icon">Apariencia
-                                </button>
-                                <button class="pestana-configuracion" data-target="tab-modulos">
-                                    <img src="./icons/apps.svg" class="icon">Módulos
-                                </button>
-                                <button class="pestana-configuracion" data-target="tab-notificaciones">
-                                    <img src="./icons/noti.svg" class="icon">Notificaciones
-                                </button>
-                                <button class="pestana-configuracion" data-target="tab-cuenta">
-                                    <img src="./icons/user.svg" class="icon">Cuenta
-                                </button>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.8rem;">⚙️</span>
+                            <div>
+                                <h1 style="font-size:1.5rem; margin:0;">Preferencias</h1>
+                                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Personaliza tu
+                                    experiencia en Nexus OS</p>
                             </div>
-
-                            <div class="settings-content-wrapper">
-                                <!-- Tab Apariencia -->
-                                <div id="tab-apariencia" class="panel-configuracion">
-                                    <div class="setting-group">
-                                        <h3>Tema del Sistema</h3>
-                                        <div class="theme-selector-container">
-                                            <label>Preset de Tema</label>
-                                            <select id="selector-tema" class="theme-select">
-                                                <option value="">Por defecto (Índigo)</option>
-                                                <option value="dark-mode">Vampire (Rojo Oscuro)</option>
-                                                <option value="dark-green">Forest Mint (Verde)</option>
-                                                <option value="dark-purple">Cyber Punk (Morado)</option>
-                                                <option value="warm-mode">Sunset (Naranja)</option>
-                                                <option value="light-blue">Sky (Azul Claro)</option>
-                                                <option value="dark-mode2">Ocean (Azul Oscuro)</option>
-                                                <option value="light-gray">Slate (Gris)</option>
-                                            </select>
-                                        </div>
+                        </div>
+                    </div>
+                    <div class="settings-tabs">
+                        <button class="pestana-configuracion active" data-target="tab-general"><img
+                                src="./icons/palette.svg" class="icon">Apariencia</button>
+                        <button class="pestana-configuracion" data-target="tab-modulos"><img src="./icons/view.svg"
+                                class="icon">
+                            Módulos</button>
+                        <button class="pestana-configuracion" data-target="tab-notificaciones"><img
+                                src="./icons/noti.svg" class="icon">Notificaciones</button>
+                        <button class="pestana-configuracion" data-target="tab-cuenta"><img src="./icons/user.svg"
+                                class="icon">Cuenta</button>
+                    </div>
+                    <div class="settings-content-wrapper">
+                        <!-- TAB GENERAL (Antes Apariencia) -->
+                        <div id="tab-general" class="panel-configuracion active">
+                            <div class="setting-group">
+                                <h3>Tema & Colores</h3>
+                                <div class="setting-row">
+                                    <div class="setting-desc">
+                                        <h4>Tema Base</h4>
+                                        <p>Elige el ambiente visual general.</p>
+                                    </div>
+                                    <select id="selector-tema" class="theme-selector">
+                                        <option value="">Claro (Default)</option>
+                                        <optgroup label="Temas Claros">
+                                            <option value="light-blue">Cielo (Azul)</option>
+                                            <option value="light-gray">Minimalista (Gris)</option>
+                                        </optgroup>
+                                        <optgroup label="Temas Oscuros">
+                                            <option value="dark-mode">Elegante (Default)</option>
+                                            <option value="dark-mode2">Medianoche (Azul)</option>
+                                            <option value="dark-green">Bosque (Verde)</option>
+                                            <option value="dark-purple">Neón (Violeta)</option>
+                                            <option value="warm-mode">Café (Cálido)</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="setting-row">
+                                    <div class="setting-desc">
                                         <h4>Color Principal</h4>
                                         <p>Botones, enlaces y elementos activos.</p>
                                     </div>
-                                    <input type="color" id="colorPickerPrimary" class="color-picker-input">
+                                    <input type="color" id="picker-color-primario" class="color-picker-input">
                                 </div>
                                 <div class="setting-row">
                                     <div class="setting-desc">
                                         <h4>Color Secundario</h4>
                                         <p>Detalles, bordes y acentos sutiles.</p>
                                     </div>
-                                    <input type="color" id="colorPickerSecondary" class="color-picker-input">
+                                    <input type="color" id="picker-color-secundario" class="color-picker-input">
                                 </div>
                                 <div class="setting-row" style="justify-content: flex-end;">
-                                    <button id="btnResetColors" class="btn-secondary danger-hover">Restaurar Valores por
+                                    <button id="btn-reset-colores" class="btn-secondary danger-hover">Restaurar Valores
+                                        por
                                         Defecto</button>
                                 </div>
                             </div>
                         </div>
                         <div id="tab-modulos" class="panel-configuracion hidden">
                             <div class="setting-group">
-                                <h3>Módulos Activos</h3>
-                                <p class="text-sm text-muted">Activa o desactiva secciones del menú.</p>
+                                <h3>Módulos del Sistema</h3>
+                                <p style="color:var(--text-muted); margin-bottom:20px;">Activa o desactiva las
+                                    herramientas que necesitas.</p>
                                 <div class="module-toggle-item">
                                     <div class="mod-info">
                                         <h4>📝 Notas</h4>
-                                        <p>Tomar notas rápidas y organizadas.</p>
+                                        <p>Captura rápida de ideas.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="switch-modulo-notas" checked>
+                                        <input type="checkbox" id="toggle-mod-notas" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -343,7 +357,7 @@
                                         <p>Gestión avanzada de Proyectos.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="switch-modulo-proyectos" checked>
+                                        <input type="checkbox" id="toggle-mod-proyectos" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -353,7 +367,7 @@
                                         <p>Tablero de flujo de trabajo.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="switch-modulo-kanban" checked>
+                                        <input type="checkbox" id="toggle-mod-kanban" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -363,7 +377,7 @@
                                         <p>Agenda y eventos.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="switch-modulo-calendario" checked>
+                                        <input type="checkbox" id="toggle-mod-calendario" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -373,7 +387,7 @@
                                         <p>Control de finanzas personales.</p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" id="switch-modulo-finanzas" checked>
+                                        <input type="checkbox" id="toggle-mod-finanzas" checked>
                                         <span class="slider round"></span>
                                     </label>
                                 </div>

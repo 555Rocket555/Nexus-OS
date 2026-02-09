@@ -3,7 +3,7 @@ import { iniciarProyectos } from "./components/projects.js";
 import { renderizarTablero } from "./components/kanban.js";
 import { iniciarCalendario } from "./components/calendar.js";
 import { iniciarConfiguracion } from "./components/settings.js";
-import { iniciarDashboard, renderizarDashboard } from "./components/dashboard.js";
+import { iniciarDashboard } from "./components/dashboard.js";
 import { iniciarNotas } from "./components/notes.js";
 import { iniciarFinanzas } from "./components/finance.js";
 import { iniciarEtiquetas } from "./components/tags.js";
@@ -124,6 +124,8 @@ function configurarBarraLateral() {
         iniciarNotas();
       } else if (idObjetivo === "seccion-tags") {
         iniciarEtiquetas();
+      } else if (idObjetivo === "seccion-configuracion") {
+        iniciarConfiguracion();
       }
 
       // D. Cerrar menú automáticamente si estamos en móvil

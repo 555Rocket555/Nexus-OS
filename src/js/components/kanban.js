@@ -1,5 +1,5 @@
 import { Utils } from "../utils.js";
-import { KanbanService } from "../services/storage.js";
+import { ServicioKanban } from "../services/storage.js";
 
 // Columnas
 const COLUMNAS = [
@@ -18,7 +18,7 @@ export function renderizarTablero() {
   if (!seccion) return;
 
   // Cargar items en el orden guardado
-  itemsTablero = KanbanService.getAll() || [];
+  itemsTablero = ServicioKanban.obtenerTodos() || [];
 
   seccion.innerHTML = `
         <div class="kanban-layout">
@@ -130,7 +130,7 @@ function actualizarTituloItem(id, nuevoTitulo) {
   const item = itemsTablero.find((i) => i.id === id);
   if (item) {
     item.title = nuevoTitulo;
-    KanbanService.saveAll(itemsTablero);
+    ServicioKanban.guardarTodos(itemsTablero);
   }
 }
 
@@ -204,7 +204,7 @@ function agregarNuevoItem(status) {
       createdAt: new Date().toISOString(),
     };
     itemsTablero.push(nuevoItem);
-    KanbanService.saveAll(itemsTablero);
+    ServicioKanban.guardarTodos(itemsTablero);
     renderizarTablero();
   }
 }
@@ -212,7 +212,7 @@ function agregarNuevoItem(status) {
 function eliminarItem(id) {
   if (confirm("¿Eliminar tarea?")) {
     itemsTablero = itemsTablero.filter((i) => i.id !== id);
-    KanbanService.saveAll(itemsTablero);
+    ServicioKanban.guardarTodos(itemsTablero);
     renderizarTablero();
   }
 }
@@ -240,7 +240,7 @@ function guardarEstadoTablero() {
   });
 
   itemsTablero = nuevoOrdenItems;
-  KanbanService.saveAll(itemsTablero);
+  ServicioKanban.guardarTodos(itemsTablero);
 
   // Actualizar contadores visuales
   document.querySelectorAll(".k-column").forEach(col => {

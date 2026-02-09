@@ -1,5 +1,5 @@
 import { Utils } from "../utils.js";
-import { TaskService } from "../services/storage.js";
+import { ServicioTareas } from "../services/storage.js";
 
 let tareas = [];
 
@@ -16,7 +16,7 @@ const dom = {
 };
 
 export function iniciarTareas() {
-  tareas = TaskService.getAll();
+  tareas = ServicioTareas.obtenerTodas();
   renderizarTareas();
   configurarListeners();
 }
@@ -90,7 +90,7 @@ function renderizarTareas() {
 
         cb.onclick = () => {
           sub.completada = !sub.completada;
-          TaskService.saveAll(tareas);
+          ServicioTareas.guardarTodas(tareas);
           renderizarTareas();
         };
 
@@ -122,7 +122,7 @@ function alternarCompletada(id) {
   const tarea = tareas.find((t) => t.id === id);
   if (tarea) {
     tarea.completada = !tarea.completada;
-    TaskService.saveAll(tareas);
+    ServicioTareas.guardarTodas(tareas);
     renderizarTareas();
   }
 }
@@ -130,7 +130,7 @@ function alternarCompletada(id) {
 function eliminarTarea(id) {
   if (confirm("¿Estás seguro de eliminar esta tarea?")) {
     tareas = tareas.filter((t) => t.id !== id);
-    TaskService.saveAll(tareas);
+    ServicioTareas.guardarTodas(tareas);
     renderizarTareas();
   }
 }
@@ -150,5 +150,23 @@ function pedirSubtarea() {
   }
 }
 function guardarTarea() {
-  // lógica de guardado
+  const inputTitulo = document.getElementById("input-titulo-tarea");
+  const inputDesc = document.getElementById("textarea-descripcion-tarea");
+
+  if (!inputTitulo || !inputTitulo.value.trim()) return;
+
+  const nuevaTarea = {
+    id: Date.now(),
+    titulo: inputTitulo.value.trim(),
+    descripcion: inputDesc ? inputDesc.value.trim() : "",
+    completada: false,
+    createdAt: new Date().toISOString(),
+    subtareas: []
+  };
+
+  tareas.unshift(nuevaTarea);
+  ServicioTareas.guardarTodas(tareas);
+  renderizarTareas();
+  cerrarModal();
+  dom.form.reset();
 }

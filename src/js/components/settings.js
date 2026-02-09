@@ -1,5 +1,5 @@
 import { Utils } from "../utils.js";
-import { Storage } from "../services/storage.js";
+import { Almacenamiento } from "../services/storage.js";
 
 // Configuración inicial de colores
 const COLORES_POR_DEFECTO = {
@@ -72,26 +72,23 @@ const PRESETS_TEMAS = {
 };
 
 // DOM Cache
-let dom = {};
+const dom = {
+  root: document.body,
+  selectorTema: document.getElementById("selector-tema"),
+  pickerPrimario: document.getElementById("picker-color-primario"),
+  pickerSecundario: document.getElementById("picker-color-secundario"),
+  btnReset: document.getElementById("btn-reset-colores"),
+  pestanas: document.querySelectorAll(".pestana-configuracion"),
+  paneles: document.querySelectorAll(".panel-configuracion"),
+
+  // Elementos de Perfil
+  nombreUsuario: document.getElementById("input-nombre-usuario"),
+  apellidoUsuario: document.getElementById("input-apellido-usuario"),
+  btnGuardarPerfil: document.getElementById("btn-guardar-perfil"),
+  textoAvatar: document.querySelector(".avatar-preview"),
+};
 
 export function iniciarConfiguracion() {
-  // 0. Inicializar Referencias DOM
-  dom = {
-    root: document.body,
-    selectorTema: document.getElementById("selector-tema"),
-    pickerPrimario: document.getElementById("picker-color-primario"),
-    pickerSecundario: document.getElementById("picker-color-secundario"),
-    btnReset: document.getElementById("btn-reset-colores"),
-    pestanas: document.querySelectorAll(".pestana-configuracion"),
-    paneles: document.querySelectorAll(".panel-configuracion"),
-    nombreUsuario: document.getElementById("input-nombre-usuario"),
-    apellidoUsuario: document.getElementById("input-apellido-usuario"),
-    btnGuardarPerfil: document.getElementById("btn-guardar-perfil"),
-    textoAvatar: document.querySelector(".avatar-preview"),
-  };
-
-  console.log("Configuración: DOM inicializado", dom);
-
   // 1. Cargar Preferencias desde Storage
   const temaGuardado = localStorage.getItem("app-theme") || "";
   const primarioGuardado = localStorage.getItem("app-primary");
@@ -127,26 +124,6 @@ export function iniciarConfiguracion() {
 
   // 4. Cargar datos de perfil
   cargarPerfil();
-
-  // Toggles de Módulos
-  const modulos = ["notas", "proyectos", "kanban", "calendario", "finanzas"];
-  modulos.forEach(mod => {
-    const idSwitch = `switch-modulo-${mod}`;
-    const elSwitch = document.getElementById(idSwitch);
-
-    // Cargar estado inicial
-    const estadoGuardado = localStorage.getItem(`mod_${mod}`) !== "false"; // Default true
-    if (elSwitch) {
-      elSwitch.checked = estadoGuardado;
-      actualizarVisibilidadModulo(mod, estadoGuardado);
-
-      elSwitch.addEventListener("change", (e) => {
-        const activo = e.target.checked;
-        localStorage.setItem(`mod_${mod}`, activo);
-        actualizarVisibilidadModulo(mod, activo);
-      });
-    }
-  });
 }
 
 function configurarListeners() {
@@ -212,45 +189,30 @@ function configurarListeners() {
     });
   });
 
-  // Toggles de Módulos
-  const modulos = ["notas", "proyectos", "kanban", "calendario", "finanzas"];
-  modulos.forEach(mod => {
-    const idSwitch = `switch-modulo-${mod}`;
-    const elSwitch = document.getElementById(idSwitch);
-
-    // Cargar estado inicial
-    const estadoGuardado = localStorage.getItem(`mod_${mod}`) !== "false"; // Default true
-    if (elSwitch) {
-      elSwitch.checked = estadoGuardado;
-      actualizarVisibilidadModulo(mod, estadoGuardado);
-
-      elSwitch.addEventListener("change", (e) => {
-        const activo = e.target.checked;
-        localStorage.setItem(`mod_${mod}`, activo);
-        actualizarVisibilidadModulo(mod, activo);
-      });
-    }
-  });
-
-}
-
-
-function actualizarVisibilidadModulo(nombreModulo, activo) {
-  // Mapeo de nombres de modulo a IDs de botones del sidebar y secciones
-  // notas -> data-target="seccion-notas"
-  // kanban -> data-target="seccion-tablero" (Ojo aqui con el mapeo)
-
-  let targetId = `seccion-${nombreModulo}`;
-  if (nombreModulo === "kanban") targetId = "seccion-tablero";
-
-  const btnSidebar = document.querySelector(`.menu-btn[data-target="${targetId}"]`);
-  if (btnSidebar) {
-    btnSidebar.style.display = activo ? "flex" : "none";
+  // Guardar Perfil
+  if (dom.btnGuardarPerfil) {
+    dom.btnGuardarPerfil.addEventListener("click", () => {
+      const perfil = {
+        name: dom.nombreUsuario.value,
+        lastname: dom.apellidoUsuario.value
+      };
+      Almacenamiento.guardar("user_profile", perfil);
+      cargarPerfil(); // Actualizar avatar
+      document.dispatchEvent(new Event("profile-updated")); // Avisar a dashboard
+      alert("Perfil actualizado correctamente");
+    });
   }
 }
 
 function cargarPerfil() {
-  const perfil = Storage.get("user_profile") || { name: "Usuario", lastname: "Demo" };
+  /* 
+     Nota: Las operaciones de localStorage en este archivo están usando la API nativa localStorage 
+     por diseño (para ajustes de tema críticos al inicio), excepto quizás el perfil.
+     Si hay uso de Storage.get/set, reemplazar aquí.
+     Revisando el archivo...
+  */
+  // Línea 218: Storage.get("user_profile") -> Almacenamiento.obtener("user_profile")
+  const perfil = Almacenamiento.obtener("user_profile") || { name: "Usuario", lastname: "Demo" };
   if (dom.nombreUsuario) dom.nombreUsuario.value = perfil.name;
   if (dom.apellidoUsuario) dom.apellidoUsuario.value = perfil.lastname;
 

@@ -1,4 +1,4 @@
-import { Storage } from "../services/storage.js";
+import { Almacenamiento } from "../services/storage.js";
 import { Utils } from "../utils.js";
 
 export function iniciarDashboard() {
@@ -57,7 +57,7 @@ function actualizarEncabezado() {
   // Saludo Personalizado
   const elSaludo = document.getElementById("saludo-dashboard");
   if (elSaludo) {
-    const perfil = Storage.get("user_profile") || { name: "Usuario" };
+    const perfil = Almacenamiento.obtener("user_profile") || { name: "Usuario" };
 
     const hora = new Date().getHours();
     let saludo = "Hola";
@@ -141,7 +141,7 @@ async function obtenerClima(lat, lon, contenedor) {
 // WIDGET PROYECTOS
 function crearWidgetProyectos() {
   const tarjeta = crearBaseTarjeta("Proyectos Activos", "seccion-proyectos");
-  const proyectos = Storage.get("projects") || [];
+  const proyectos = Almacenamiento.obtener("projects") || [];
   const proyectosActivos = proyectos
     .filter((p) => p.status === "active")
     .slice(0, 3);
@@ -188,9 +188,9 @@ function crearWidgetProyectos() {
 // WIDGET FINANZAS
 function crearWidgetFinanzas() {
   const tarjeta = crearBaseTarjeta(" $ Disponible Hoy", "seccion-finanzas");
-  const configuracion = Storage.get("finance_config") || { ingreso: 0, ahorroPct: 0 };
-  const fijos = Storage.get("finance_fixed") || [];
-  const movimientos = Storage.get("finance_movements") || [];
+  const configuracion = Almacenamiento.obtener("finance_config") || { ingreso: 0, ahorroPct: 0 };
+  const fijos = Almacenamiento.obtener("finance_fixed") || [];
+  const movimientos = Almacenamiento.obtener("finance_movements") || [];
 
   const ingreso = Number(configuracion.ingreso);
   const totalFijos = fijos.reduce((suma, i) => suma + Number(i.amount), 0);
@@ -217,7 +217,7 @@ function crearWidgetFinanzas() {
 // WIDGET TABLERO (KANBAN)
 function crearWidgetTablero() {
   const tarjeta = crearBaseTarjeta("Tareas Pendientes", "seccion-planner");
-  const tareas = Storage.get("kanban_tasks") || [];
+  const tareas = Almacenamiento.obtener("kanban_tasks") || [];
   const pendientes = tareas.filter((t) => t.status === "todo").length;
   const enProgreso = tareas.filter((t) => t.status === "doing").length;
 
@@ -241,7 +241,7 @@ function crearWidgetTablero() {
 // WIDGET CALENDARIO
 function crearWidgetCalendario() {
   const tarjeta = crearBaseTarjeta("Agenda Hoy", "seccion-calendario");
-  const eventos = Storage.get("calendar_events") || [];
+  const eventos = Almacenamiento.obtener("calendar_events") || [];
   const hoyStr = new Date().toISOString().split("T")[0];
   const eventosHoy = eventos.filter((e) => e.date === hoyStr);
 

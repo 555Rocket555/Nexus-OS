@@ -1,4 +1,4 @@
-import { Storage } from "../services/storage.js";
+import { Almacenamiento } from "../services/storage.js";
 import { Utils } from "../utils.js";
 
 // Estado local del módulo
@@ -13,9 +13,9 @@ export function iniciarEtiquetas() {
 
 function obtenerDatosEtiquetas() {
     const datos = {
-        notas: Storage.get("notes") || [],
-        proyectos: Storage.get("projects") || [],
-        tareas: Storage.get("kanban_tasks") || [] // Asumiendo que las tareas pueden tener tags
+        notas: Almacenamiento.obtener("quickNotes") || [],
+        proyectos: Almacenamiento.obtener("projects") || [],
+        tareas: Almacenamiento.obtener("nexus_kanban_data") || [] // Asumiendo que las tareas pueden tener tags
     };
 
     const mapaEtiquetas = new Map(); // tagName -> { count, items: [] }

@@ -1,127 +1,105 @@
-const save = (key, data) => localStorage.setItem(key, JSON.stringify(data));
-const load = (key) => {
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
+const guardar = (clave, datos) => localStorage.setItem(clave, JSON.stringify(datos));
+const cargar = (clave) => {
+  const datos = localStorage.getItem(clave);
+  return datos ? JSON.parse(datos) : null;
 };
 
-export const NotesService = {
-  getAll: () => {
-    return load("quickNotes") || [];
+export const ServicioNotas = {
+  obtenerTodas: () => {
+    return cargar("quickNotes") || [];
   },
 
-  save: (note) => {
-    const notes = NotesService.getAll();
-    if (note.id) {
+  guardar: (nota) => {
+    const notas = ServicioNotas.obtenerTodas();
+    if (nota.id) {
       // CASO A: EDITAR (Ya tiene ID)
-      const index = notes.findIndex((n) => n.id === note.id); // Buscamos la nota original y la reemplazamos
-      if (index !== -1) {
-        notes[index] = { ...notes[index], ...note }; // Actualizamos datos
+      const indice = notas.findIndex((n) => n.id === nota.id);
+      if (indice !== -1) {
+        notas[indice] = { ...notas[indice], ...nota };
       }
     } else {
       // CASO B: CREAR (No tiene ID)
-      // Le creamos un ID único usando la fecha/hora actual
-      note.id = Date.now();
-      // Agregamos la fecha automáticamente
-      note.fecha = new Date().toLocaleDateString("es-MX", {
+      nota.id = Date.now();
+      nota.fecha = new Date().toLocaleDateString("es-MX", {
         day: "numeric",
         month: "short",
         year: "numeric",
       });
-      // La agregamos al principio del array para que salga primero
-      notes.unshift(note);
+      notas.unshift(nota);
     }
-    // Guardamos la LISTA COMPLETA actualizada
-    save("quickNotes", notes);
+    guardar("quickNotes", notas);
   },
 
-  // 3. Eliminar una nota
-  delete: (id) => {
-    const notes = NotesService.getAll(); // Filtramos: "Dame todas las notas EXCEPTO la que tiene este ID"
-    const filteredNotes = notes.filter((n) => n.id !== id);
-    save("quickNotes", filteredNotes);
+  eliminar: (id) => {
+    const notas = ServicioNotas.obtenerTodas();
+    const notasFiltradas = notas.filter((n) => n.id !== id);
+    guardar("quickNotes", notasFiltradas);
   },
 };
 
-export const TaskService = {
-  getAll: () => {
-    const data = load("tareasKanban") || [];
-    // Migración rápida: asegurar que tengan estado
-    return data.map((t) => ({
+export const ServicioTareas = {
+  obtenerTodas: () => {
+    const datos = cargar("tareasKanban") || [];
+    return datos.map((t) => ({
       ...t,
       estado: t.estado || (t.completada ? "done" : "todo"),
     }));
   },
-  saveAll: (tareas) => save("tareasKanban", tareas),
+  guardarTodas: (tareas) => guardar("tareasKanban", tareas),
 };
 
-export const PlannerService = {
-  getAll: () => load("plannerData") || {},
-  saveAll: (data) => save("plannerData", data),
-};
-
-export const CalendarService = {
-  getEvents: () => load("eventosGuardados") || {},
-  saveEvents: (events) => save("eventosGuardados", events),
-  getNoDateEvents: () => load("eventosSinFecha") || {},
-  saveNoDateEvents: (events) => save("eventosSinFecha", events),
+export const ServicioCalendario = {
+  obtenerEventos: () => cargar("eventosGuardados") || {},
+  guardarEventos: (eventos) => guardar("eventosGuardados", eventos),
+  obtenerEventosSinFecha: () => cargar("eventosSinFecha") || {},
+  guardarEventosSinFecha: (eventos) => guardar("eventosSinFecha", eventos),
 };
 
 // --- SERVICIO FINANCIERO ---
-export const FinanceService = {
-  // 1. Configuración General (Salario, % Ahorro, Día de Pago)
-  getConfig: () =>
-    load("finanzasConfig") || { ingreso: 0, ahorroPct: 10, diaPago: 15 },
-  saveConfig: (config) => save("finanzasConfig", config),
+export const ServicioFinanzas = {
+  obtenerConfiguracion: () =>
+    cargar("finanzasConfig") || { ingreso: 0, ahorroPct: 10, diaPago: 15 },
+  guardarConfiguracion: (config) => guardar("finanzasConfig", config),
 
-  // 2. Gastos Fijos (Renta, Internet, Netflix)
-  getFixedExpenses: () => load("finanzasFijos") || [],
-  saveFixedExpenses: (list) => save("finanzasFijos", list),
+  obtenerGastosFijos: () => cargar("finanzasFijos") || [],
+  guardarGastosFijos: (lista) => guardar("finanzasFijos", lista),
 
-  // 3. Gastos Variables (El café, el taxi - Para la Fase 2)
-  getDailyMovements: () => load("finanzasMovimientos") || [],
-  saveMovement: (mov) => {
-    const list = load("finanzasMovimientos") || [];
-    list.unshift(mov);
-    save("finanzasMovimientos", list);
+  obtenerMovimientos: () => cargar("finanzasMovimientos") || [],
+  guardarMovimiento: (mov) => {
+    const lista = cargar("finanzasMovimientos") || [];
+    lista.unshift(mov);
+    guardar("finanzasMovimientos", lista);
   },
 };
 
-// Agrega esto dentro de tu archivo storage.js existente
+const CLAVE_KANBAN = "nexus_kanban_data";
 
-// Clave para localStorage
-const KANBAN_KEY = "nexus_kanban_data";
-
-export const KanbanService = {
-  getAll: () => {
-    const data = localStorage.getItem(KANBAN_KEY);
-    // Si no hay datos, devolvemos array vacío
-    return data ? JSON.parse(data) : [];
+export const ServicioKanban = {
+  obtenerTodos: () => {
+    const datos = localStorage.getItem(CLAVE_KANBAN);
+    return datos ? JSON.parse(datos) : [];
   },
 
-  saveAll: (items) => {
-    localStorage.setItem(KANBAN_KEY, JSON.stringify(items));
+  guardarTodos: (items) => {
+    localStorage.setItem(CLAVE_KANBAN, JSON.stringify(items));
   },
 };
 
-export const Storage = {
-  get: (key) => {
-    // Reutilizamos tu función load() existente
-    return load(key);
+export const Almacenamiento = {
+  obtener: (clave) => {
+    return cargar(clave);
   },
 
-  set: (key, value) => {
-    // Reutilizamos tu función save() existente
-    save(key, value);
+  guardar: (clave, valor) => {
+    guardar(clave, valor);
   },
 
-  // Función auxiliar para inicializar datos si están vacíos
-  init: (key, defaultValue) => {
-    const existing = load(key);
-    // Cambiar !existing por check a null, para permitir valores falsy válidos (0, false, "")
-    if (existing === null || existing === undefined) {
-      save(key, defaultValue);
-      return defaultValue;
+  inicializar: (clave, valorPorDefecto) => {
+    const existente = cargar(clave);
+    if (existente === null || existente === undefined) {
+      guardar(clave, valorPorDefecto);
+      return valorPorDefecto;
     }
-    return existing;
+    return existente;
   },
 };

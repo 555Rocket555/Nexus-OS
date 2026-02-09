@@ -1,17 +1,15 @@
 import { Utils } from "../utils.js";
-import { Storage } from "../services/storage.js";
+import { Almacenamiento } from "../services/storage.js";
 
 // Estado local
 let proyectos = [];
 let filtroEstadoActual = "all";
-let etiquetasTemporales = [];
-let seccionesTemporales = [];
 let idProyectoEditando = null;
 let vistaActual = localStorage.getItem("proj_view_mode") || "list";
 
 export function iniciarProyectos() {
   // 1. Cargar datos
-  proyectos = Storage.get("projects") || [];
+  proyectos = Almacenamiento.obtener("projects") || [];
   // 2. Renderizar estructura
   renderizarInterfaz();
   // 3. Renderizar contenido
@@ -23,7 +21,7 @@ export function iniciarProyectos() {
 }
 
 function guardar() {
-  Storage.set("projects", proyectos);
+  Almacenamiento.guardar("projects", proyectos);
   actualizarKPIs();
   renderizarListaProyectos();
 }
@@ -157,15 +155,17 @@ function renderizarListaProyectos() {
   }
 
   // Clases CSS según vista
-  // Asumimos que existen clases .proj-list-view y .proj-grid-view en CSS
-  const claseContenedor = vistaActual === 'list' ? 'bg-list' : 'bg-grid';
-  contenedor.className = `projects-list-scroll ${claseContenedor}`;
+  // Alineado con projects.css
+  if (vistaActual === 'grid') {
+    contenedor.className = 'projects-container grid-view';
+  } else {
+    contenedor.className = 'projects-list-scroll';
+  }
 
   resultados.forEach(proy => {
     const tarjeta = document.createElement("div");
-    // Clase base: proj-card-list o proj-card-grid
-    const claseTarjeta = vistaActual === 'list' ? 'proj-card-list' : 'proj-card-grid';
-    tarjeta.className = claseTarjeta;
+    // Clase base siempre es 'project-card', el layout lo maneja el padre
+    tarjeta.className = 'project-card';
 
     // Cálculo de progreso
     const totalTareas = proy.stats?.totalTasks || 0;
@@ -173,22 +173,36 @@ function renderizarListaProyectos() {
     const porcentaje = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
 
     tarjeta.innerHTML = `
-        <div class="proj-card-content" onclick="window.editarProyecto('${proy.id}')">
-            <div class="proj-header">
+        <div class="pc-header">
+            <div class="pc-title-area">
                 <h3>${Utils.escaparHTML(proy.title)}</h3>
-                <span class="status-badge ${proy.status}">${proy.status}</span>
+                <span class="pc-desc">${Utils.escaparHTML(proy.description || "")}</span>
             </div>
-            <p class="proj-desc">${Utils.escaparHTML(proy.description || "")}</p>
-            
-            <div class="proj-meta">
-                <div class="progress-bar-mini">
-                    <div class="fill" style="width:${porcentaje}%"></div>
-                </div>
-                <span class="progress-text">${porcentaje}% (${tareasCompletadas}/${totalTareas})</span>
-                <span class="priority-dot ${proy.priority}" title="Prioridad ${proy.priority}"></span>
+            <span class="status-badge st-${proy.status}">${proy.status}</span>
+        </div>
+        
+        <div class="pc-info-grid">
+             <div class="info-item">
+                <label>Prioridad</label>
+                <span>${proy.priority || 'Normal'}</span>
+             </div>
+             <div class="info-item">
+                <label>Tareas</label>
+                <span>${tareasCompletadas}/${totalTareas}</span>
+             </div>
+        </div>
+
+        <div class="pc-progress">
+            <div class="pc-progress-text">
+                <span>Progreso</span>
+                <span>${porcentaje}%</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="width:${porcentaje}%"></div>
             </div>
         </div>
-        <div class="proj-actions">
+        <div class="pc-actions" style="margin-top:15px; border-top:1px solid var(--border-color); padding-top:10px; justify-content:flex-end;">
+           <button onclick="window.editarProyecto('${proy.id}')" class="btn-icon-soft" title="Editar">✏️</button>
            <button onclick="window.eliminarProyecto('${proy.id}')" class="btn-icon-soft text-danger" title="Eliminar">🗑️</button>
         </div>
     `;
@@ -266,9 +280,7 @@ function abrirModal(proyectoEditar = null) {
   if (!modal) return;
 
   form.reset();
-  seccionesTemporales = []; // Reset secciones
-
-  // Limpiar contenedor de secciones
+  // Limpiar contenedor de secciones (si existiera)
   const contenedorSecciones = document.getElementById("lista-secciones-modal");
   if (contenedorSecciones) contenedorSecciones.innerHTML = "";
 
@@ -320,8 +332,7 @@ function configurarLogicaModal() {
           id: Utils.generarId(),
           ...datos,
           createdAt: new Date().toISOString(),
-          stats: { totalTasks: 0, completedTasks: 0 },
-          secciones: [] // Las secciones se añadirían aquí si implementamos la UI completa
+          stats: { totalTasks: 0, completedTasks: 0 }
         };
         proyectos.push(nuevoProyecto);
       }

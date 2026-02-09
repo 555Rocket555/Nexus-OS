@@ -1,5 +1,5 @@
 import { Utils } from "../utils.js";
-import { Storage } from "../services/storage.js";
+import { ServicioFinanzas, Almacenamiento } from "../services/storage.js";
 
 const CONFIG_POR_DEFECTO = {
   ingreso: 0,
@@ -8,15 +8,11 @@ const CONFIG_POR_DEFECTO = {
   periodo: "mensual",
 };
 
-let configuracion = {};
-let gastosFijos = [];
-let movimientosDiarios = [];
+let configuracion = ServicioFinanzas.obtenerConfiguracion() || CONFIG_POR_DEFECTO;
+let gastosFijos = ServicioFinanzas.obtenerGastosFijos();
+let movimientosDiarios = ServicioFinanzas.obtenerMovimientos();
 
 export function iniciarFinanzas() {
-  configuracion = Storage.get("finance_config") || CONFIG_POR_DEFECTO;
-  gastosFijos = Storage.get("finance_fixed") || [];
-  movimientosDiarios = Storage.get("finance_movements") || [];
-
   renderizarDashboard();
   renderizarGastosFijos();
   renderizarMovimientos();
@@ -169,7 +165,7 @@ function configurarListeners() {
         ahorroPct: document.getElementById("input-rango-ahorro").value,
         periodo: document.getElementById("select-periodo").value,
       };
-      Storage.set("finance_config", configuracion);
+      ServicioFinanzas.guardarConfiguracion(configuracion);
       modalConfig.classList.add("hidden");
       renderizarDashboard();
     };
@@ -189,13 +185,18 @@ function configurarListeners() {
       const monto = parseFloat(inputMonto.value);
 
       if (descripcion && monto) {
-        movimientosDiarios.push({
+        const nuevoMov = {
           id: Utils.generarId(),
           desc: descripcion,
           amount: monto,
           date: new Date().toISOString(),
-        });
-        Storage.set("finance_movements", movimientosDiarios);
+        };
+        // Usar lógica local para actualizar UI inmediatamente y luego guardar todo (o usar servicio)
+        // El servicio hace unshift, así que hacemos lo mismo aquí
+        movimientosDiarios.unshift(nuevoMov);
+
+        // Guardar usando la clave correcta
+        Almacenamiento.guardar("finanzasMovimientos", movimientosDiarios);
 
         inputDesc.value = "";
         inputMonto.value = "";
@@ -221,7 +222,7 @@ function configurarListeners() {
         amount: document.getElementById("input-monto-fijo").value,
         freq: 30,
       });
-      Storage.set("finance_fixed", gastosFijos);
+      ServicioFinanzas.guardarGastosFijos(gastosFijos);
       formFijo.reset();
       formFijo.classList.add("hidden");
       renderizarDashboard();
@@ -233,7 +234,7 @@ function configurarListeners() {
   window.eliminarGastoFijo = (id) => {
     if (confirm("¿Borrar gasto fijo?")) {
       gastosFijos = gastosFijos.filter((e) => e.id != id);
-      Storage.set("finance_fixed", gastosFijos);
+      ServicioFinanzas.guardarGastosFijos(gastosFijos);
       renderizarDashboard();
       renderizarGastosFijos();
     }
@@ -242,7 +243,7 @@ function configurarListeners() {
   window.eliminarMovimiento = (id) => {
     if (confirm("¿Borrar movimiento?")) {
       movimientosDiarios = movimientosDiarios.filter((e) => e.id != id);
-      Storage.set("finance_movements", movimientosDiarios);
+      Almacenamiento.guardar("finanzasMovimientos", movimientosDiarios);
       renderizarDashboard();
       renderizarMovimientos();
     }

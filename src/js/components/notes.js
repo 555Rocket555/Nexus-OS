@@ -1,6 +1,7 @@
 import { Utils } from "../utils.js";
-import { Storage } from "../services/storage.js";
-// TagHub deleted
+import { ServicioNotas, Almacenamiento } from "../services/storage.js";
+// Imports cleaned up
+
 
 // Estado local
 let estado = {
@@ -8,17 +9,20 @@ let estado = {
   idSeleccionado: null,
   busqueda: "",
   etiquetaActiva: "Todas",
-  modoVista: Storage.get("notes_view_mode") || "grid", // "list" | "grid"
+  modoVista: Almacenamiento.obtener("notes_view_mode") || "grid", // "list" | "grid"
   editorAbierto: false
 };
 
 export function iniciarNotas() {
-  estado.notas = Storage.get("notes") || [];
+  estado.notas = ServicioNotas.obtenerTodas(); // Replaced Storage.get("notes")
   renderizarInterfaz();
 }
 
 function guardar() {
-  Storage.set("notes", estado.notas);
+  // This function is now redundant if all saves go through ServicioNotas
+  // However, the instruction only showed specific calls, not a full replacement of this function.
+  // For now, I'll keep it as is, but it might be removed in a later step.
+  Almacenamiento.guardar("quickNotes", estado.notas);
 }
 
 // Obtener tags únicos
@@ -78,7 +82,7 @@ function renderizarInterfaz() {
   document.getElementById("btn-cambiar-vista").addEventListener("click", () => {
     // Toggle
     estado.modoVista = estado.modoVista === "grid" ? "list" : "grid";
-    Storage.set("notes_view_mode", estado.modoVista);
+    Almacenamiento.guardar("notes_view_mode", estado.modoVista);
     renderizarInterfaz();
     // Si el editor está abierto, mantenerlo abierto
     if (estado.editorAbierto) renderizarEditor();
@@ -359,4 +363,5 @@ function agregarEtiquetaNota(nota, etiqueta) {
   }
 }
 
-// TagHub removed
+// Exponer TagHub globalmente
+// End of file
