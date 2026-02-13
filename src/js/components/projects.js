@@ -201,7 +201,10 @@ function renderProjectList() {
             </div>
 
             <div class="pc-info-grid">
-                <div class="info-item"><label>Plazo</label><span>${formatDate(p.end)}</span></div>
+                <div class="info-item">
+    <label>Plazo</label>
+    <span>${formatDate(p.startDate)} - ${formatDate(p.endDate)}</span>
+</div>
                 <div class="info-item"><label>Tareas</label><span>${doneTasks}/${totalTasks}</span></div>
             </div>
 

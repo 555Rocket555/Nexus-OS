@@ -11,10 +11,9 @@ export function iniciarDashboard() {
     document.addEventListener("reload-dashboard", renderizarDashboard);
     document.addEventListener("profile-updated", renderizarDashboard);
     
-    // Inicializar sistemas de arrastre con un pequeño delay para asegurar DOM
+    // Inicializar Drag & Drop de widgets
     setTimeout(() => {
         inicializarDragAndDropWidgets();
-        hacerFabDraggable(); // Lógica para mover el botón de rayo
     }, 200);
 }
 
@@ -47,9 +46,6 @@ export function renderizarDashboard() {
 
         contenedor.appendChild(elemento);
     });
-
-    // Inyectar Botón de Acciones Rápidas (Floating Action Button)
-    renderizarFabAcciones();
 }
 
 // Helper para inyectar el icono de "agarrar"
@@ -310,7 +306,7 @@ function crearWidgetCalendario() {
     return tarjeta;
 }
 
-// --- 1. DRAG AND DROP DE WIDGETS ---
+// --- DRAG AND DROP DE WIDGETS ---
 function inicializarDragAndDropWidgets() {
     const cards = document.querySelectorAll('.dashboard-card');
     cards.forEach(card => {
@@ -344,15 +340,8 @@ function handleDrop(e) {
     if (e.stopPropagation) e.stopPropagation();
     if (dragSrcEl !== this) {
         const container = this.parentNode;
-        const todos = [...container.children];
-        const indexSrc = todos.indexOf(dragSrcEl);
-        const indexTarget = todos.indexOf(this);
-
-        if (indexSrc < indexTarget) {
-            container.insertBefore(dragSrcEl, this.nextSibling);
-        } else {
-            container.insertBefore(dragSrcEl, this);
-        }
+        // Insertamos el arrastrado antes del target
+        container.insertBefore(dragSrcEl, this);
     }
     return false;
 }
@@ -361,133 +350,4 @@ function handleDragEnd() {
     this.style.opacity = '1';
     this.classList.remove('dragging');
     document.querySelectorAll('.dashboard-card').forEach(item => item.classList.remove('drag-over'));
-}
-
-function renderizarFabAcciones() {
-    if(document.getElementById('fab-actions')) return;
-
-    // 1. Checar preferencia de visibilidad
-    // Si no existe la key, asumimos true (visible)
-    const isVisible = Almacenamiento.obtener("nexus_fab_visible") !== false;
-
-    const fab = document.createElement('div');
-    fab.id = 'fab-actions';
-    fab.className = 'fab-container';
-    
-    // 2. Cargar Posición Guardada (Persistencia)
-    const savedPos = Almacenamiento.obtener("nexus_fab_position");
-    if (savedPos) {
-        fab.style.right = savedPos.right;
-        fab.style.bottom = savedPos.bottom;
-    }
-
-    // Aplicar visibilidad inicial
-    if (!isVisible) fab.style.display = 'none';
-
-    fab.innerHTML = `
-        <div class="fab-menu" id="fab-menu">
-            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-notas\\']').click(); setTimeout(()=>document.getElementById('btn-crear-nota').click(), 300);">📝 Nota</button>
-            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-proyectos\\']').click(); setTimeout(()=>document.getElementById('btnOpenModal').click(), 300);">🚀 Proyecto</button>
-            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-calendario\\']').click(); setTimeout(()=>document.getElementById('btn-nuevo-evento').click(), 300);">📅 Evento</button>
-        </div>
-        <div class="fab-trigger" id="fab-btn">⚡</div>
-    `;
-    
-    document.body.appendChild(fab);
-    
-    // Lógica Toggle
-    const btn = fab.querySelector('#fab-btn');
-    const menu = fab.querySelector('#fab-menu');
-    
-    btn.addEventListener('click', (e) => {
-        if (fab.getAttribute('data-is-dragging') === 'true') return; 
-        menu.classList.toggle('active');
-        btn.classList.toggle('active');
-    });
-
-    document.addEventListener('click', (e) => {
-        if (!fab.contains(e.target)) {
-            menu.classList.remove('active');
-            btn.classList.remove('active');
-        }
-    });
-}
-
-function hacerFabDraggable() {
-    const fab = document.getElementById('fab-actions');
-    const trigger = document.getElementById('fab-btn');
-    if (!fab || !trigger) return;
-
-    let isDragging = false;
-    let startX, startY, initialRight, initialBottom;
-
-    const startDrag = (e) => {
-        if (!e.target.closest('#fab-btn')) return;
-        isDragging = false;
-        
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        startX = clientX;
-        startY = clientY;
-
-        const rect = fab.getBoundingClientRect();
-        initialRight = window.innerWidth - rect.right;
-        initialBottom = window.innerHeight - rect.bottom;
-
-        document.addEventListener('mousemove', onMove);
-        document.addEventListener('touchmove', onMove, { passive: false });
-        document.addEventListener('mouseup', endDrag);
-        document.addEventListener('touchend', endDrag);
-    };
-
-    const onMove = (e) => {
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-        const dx = startX - clientX; 
-        const dy = startY - clientY; 
-
-        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
-            isDragging = true;
-            fab.setAttribute('data-is-dragging', 'true');
-            fab.style.transition = 'none'; 
-            
-            let newRight = initialRight + dx;
-            let newBottom = initialBottom + dy;
-            
-            newRight = Math.max(10, Math.min(window.innerWidth - 70, newRight));
-            newBottom = Math.max(10, Math.min(window.innerHeight - 70, newBottom));
-
-            fab.style.right = `${newRight}px`;
-            fab.style.bottom = `${newBottom}px`;
-            
-            if (e.cancelable) e.preventDefault(); 
-        }
-    };
-
-    const endDrag = () => {
-        document.removeEventListener('mousemove', onMove);
-        document.removeEventListener('touchmove', onMove);
-        document.removeEventListener('mouseup', endDrag);
-        document.removeEventListener('touchend', endDrag);
-
-        fab.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
-
-        if (isDragging) {
-            // 3. GUARDAR POSICIÓN AL SOLTAR
-            const currentPos = {
-                right: fab.style.right,
-                bottom: fab.style.bottom
-            };
-            Almacenamiento.guardar("nexus_fab_position", currentPos);
-        }
-
-        setTimeout(() => {
-            fab.setAttribute('data-is-dragging', 'false');
-        }, 50);
-    };
-
-    trigger.addEventListener('mousedown', startDrag);
-    trigger.addEventListener('touchstart', startDrag, { passive: false });
 }

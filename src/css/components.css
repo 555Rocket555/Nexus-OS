@@ -15,7 +15,7 @@ button {
     color: white;
     padding: 12px 24px;
     border-radius: var(--radius);
-    margin-bottom: 15px;
+    margin-bottom: 7px;
     box-shadow: 0 4px 6px rgba(79, 70, 229, 0.25);
     transition: all 0.2s ease;
     font-weight: 600;

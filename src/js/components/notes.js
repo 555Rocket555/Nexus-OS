@@ -178,7 +178,7 @@ function renderizarLista() {
                 </div>
             </div>
             <div class="dropdown-menu card-dropdown" style="display:none;">
-                <button class="menu-item btn-eliminar-desde-lista">🗑️ Eliminar</button>
+                <button class="menu-item btn-eliminar-desde-lista">Eliminar</button>
             </div>
         `;
 

@@ -56,3 +56,21 @@ export const Utils = {
     return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
   }
 };
+/* src/js/utils.js - AGREGAR AL FINAL */
+
+// Función anti-lag: Evita que una función se ejecute miles de veces por segundo
+export function debounce(func, wait) {
+  let timeout;
+  return function (...args) {
+    const context = this;
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(context, args), wait);
+  };
+}
+
+// Función para animaciones suaves (usando el reloj del monitor)
+export function onNextFrame(callback) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(callback);
+  });
+}
