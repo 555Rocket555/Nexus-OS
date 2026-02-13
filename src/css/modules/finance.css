@@ -1,340 +1,219 @@
-/* Layout mejorado para Finanzas */
-.finance-dashboard-layout {
-    display: grid;
-    grid-template-columns: 320px 1fr;
+/* src/css/modules/finance.css */
+
+/* --- LAYOUT PRINCIPAL --- */
+.finance-layout-wrapper {
+    display: flex;
+    flex-direction: column;
     gap: 25px;
+    height: 100%;
+    animation: fadeIn 0.4s ease-out;
+    overflow: hidden;
 }
 
-/* Tarjetas de Gastos (Fijos y Variables) */
-.f-panel-clean {
+/* 1. FILA DE ESTADÍSTICAS (Top Row) */
+.finance-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
-}
-
-.form-fijo-row, .quick-add-row {
-    display: grid;
-    grid-template-columns: 1fr 100px 50px;
     gap: 10px;
-    background: var(--bg-body);
-    padding: 15px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 15px;
-}
-
-.quick-input, .form-fijo-row input, .form-fijo-row select {
-    background: var(--bg-card) !important;
-    border: 1px solid var(--border-color) !important;
-    padding: 8px 12px;
-    border-radius: 8px;
-    color: var(--text-main);
-    outline: none;
-}
-
-.fijos-list-scroll {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-/* Ajuste para las etiquetas de los mini-cards */
-.f-mini-card {
-    background: var(--bg-card);
-    padding: 20px;
-    border-radius: 16px;
-    border: 1px solid var(--border-color);
-    margin-bottom: 10px;
-}
-
-
-.f-card.f-diario-hero {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 30px;
-    text-align: center;
-    box-shadow: var(--shadow);
-    border-left: 6px solid transparent;
-    transition: all 0.3s ease;
-}
-
-.f-diario-hero.status-ok {
-    border-left-color: var(--success);
-    background: linear-gradient(to right, rgba(16, 185, 129, 0.05), var(--bg-card));
-}
-
-.f-diario-hero.status-warning {
-    border-left-color: #f59e0b;
-    background: linear-gradient(to right, rgba(245, 158, 11, 0.05), var(--bg-card));
-}
-
-.f-diario-hero.status-danger {
-    border-left-color: var(--danger);
-    background: linear-gradient(to right, rgba(239, 68, 68, 0.05), var(--bg-card));
-}
-
-.diario-content .big {
-    font-size: 3.5rem;
-    margin: 10px 0;
-    line-height: 1;
-    font-weight: 800;
-    color: var(--text-main);
-}
-
-.diario-content span {
-    font-weight: 600;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-.finance-mini-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-}
-
-.f-mini-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    box-shadow: var(--shadow);
-}
-
-.f-mini-card.highlight {
-    background: var(--input-bg);
-    border-color: var(--primary);
-}
-
-.mini-label {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-bottom: 5px;
-    text-transform: uppercase;
-}
-
-.mini-value {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--text-main);
-}
-
-.text-success {
-    color: var(--success);
-}
-
-.text-danger {
-    color: var(--danger);
-}
-
-.text-warning {
-    color: #f59e0b;
-}
-
-.f-panel-clean {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: var(--shadow);
-    flex: 1;
-    min-height: 0;
-}
-
-.panel-header-clean {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.panel-header-clean h3 {
-    font-size: 1.1rem;
-    color: var(--text-main);
-}
-
-/* Botón Circular (+) */
-.btn-plus-round {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    background: var(--primary);
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     transition: transform 0.2s;
 }
 
-.btn-plus-round:hover {
-    transform: rotate(90deg);
-}
-
-.form-fijo-row {
-    background: var(--input-bg);
-    padding: 10px;
-    border-radius: 12px;
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    border: 1px solid var(--primary);
-    animation: slideDown 0.2s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-.fijo-row-inputs input, .quick-input {
-    width: 100%;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    padding: 8px;
-    border-radius: 6px;
-    color: var(--text-main);
-}
-
-.btn-check {
-    background: var(--success);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    width: 40px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-/* --- NUEVO: INPUT RÁPIDO (Movimientos) --- */
-.quick-add-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 15px;
-    background: var(--input-bg);
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-#in-mov-desc {
-    flex: 1;
-    min-width: 0;
-}
-
-#in-mov-amount {
-    width: 80px;
-    flex-shrink: 0;
-    text-align: right;
-}
-
-/* Estilo general inputs */
-.quick-input {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 10px;
-    color: var(--text-main);
-    outline: none;
-    font-size: 0.9rem;
-    height: 38px;
-}
-
-.quick-input::placeholder {
-    color: var(--text-muted);
-}
-
-.quick-input:focus {
+.stat-card:hover {
+    transform: translateY(-3px);
     border-color: var(--primary);
 }
 
-#btn-add-movement {
-    flex-shrink: 0;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
+.stat-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+.icon-income { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.icon-expense { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.icon-savings { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.icon-balance { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+
+.stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+.stat-value { font-size: 1.4rem; font-weight: 800; color: var(--text-main); }
+
+/* 2. GRID PRINCIPAL (Izquierda: Hero / Derecha: Listas) */
+.finance-main-grid {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 25px;
+    flex: 1;
+    min-height: 0; /* Fix scroll */
+}
+
+/* Columna Izquierda */
+.col-actions {
     display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Hero Card Rediseñada */
+.balance-hero-card {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.balance-hero-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+}
+
+.hero-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+.hero-amount { font-size: 3.5rem; font-weight: 800; color: var(--text-main); margin: 10px 0; letter-spacing: -1px;}
+.hero-status {
+    display: inline-block; padding: 5px 12px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 600;
+}
+.status-good { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.status-warn { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.status-bad { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+/* Input Rápido Compacto */
+.quick-expense-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
+.quick-expense-box h4 { margin: 0 0 15px 0; font-size: 1rem; color: var(--text-main); }
+
+.compact-input-row {
+    display: flex; gap: 10px; margin-bottom: 10px;
+}
+.compact-input {
+    background: var(--bg-body); border: 1px solid var(--border-color);
+    border-radius: 8px; padding: 10px; color: var(--text-main); outline: none; width: 100%;
+}
+.btn-quick-add {
+    width: 100%; background: var(--text-main); color: var(--bg-card);
+    border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer;
+    transition: 0.2s;
+}
+.btn-quick-add:hover { opacity: 0.9; transform: translateY(-2px); }
+
+/* Columna Derecha (Listas con Tabs) */
+.col-lists {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.lists-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
+}
+
+/* Tabs Estilo iOS/Moderno */
+.finance-tabs {
+    display: flex;
+    background: var(--bg-body);
+    padding: 4px;
+    border-radius: 10px;
+}
+.f-tab {
+    padding: 8px 20px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.f-tab.active {
+    background: var(--bg-card);
+    color: var(--text-main);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-add-fixed {
+    background: rgba(var(--primary-rgb), 0.1); color: var(--primary);
+    border: none; width: 32px; height: 32px; border-radius: 8px;
+    font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.btn-add-fixed:hover { background: var(--primary); color: white; }
+
+/* Lista Unificada */
+.unified-list-scroll {
+    flex: 1;
+    overflow-y: auto;
     padding: 0;
 }
 
-/* --- RESPONSIVE WALLET --- */
-@media (max-width: 768px) {
+.transaction-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.1s;
+}
+.transaction-row:hover { background: var(--bg-body); }
 
-    /* 1. Layout vertical */
-    .finance-dashboard-layout {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        height: auto;
-        /* Altura automática */
-    }
+.t-left { display: flex; align-items: center; gap: 15px; }
+.t-icon {
+    width: 42px; height: 42px; background: var(--bg-body);
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; border: 1px solid var(--border-color);
+}
+.t-info { display: flex; flex-direction: column; }
+.t-name { font-weight: 600; color: var(--text-main); font-size: 0.95rem; }
+.t-date { font-size: 0.75rem; color: var(--text-muted); }
 
-    /* 2. Panel Izquierdo (Métricas) */
-    .finance-left-col {
-        width: 100%;
-    }
+.t-right { display: flex; align-items: center; gap: 15px; }
+.t-amount { font-weight: 700; font-size: 1rem; }
+.t-amount.expense { color: var(--danger); }
+.t-amount.fixed { color: var(--warning); }
 
-    .f-diario-hero {
-        padding: 20px;
-    }
+.btn-del-trans {
+    opacity: 0; background: transparent; border: none; color: var(--text-muted);
+    cursor: pointer; font-size: 1.1rem; transition: 0.2s;
+}
+.transaction-row:hover .btn-del-trans { opacity: 1; }
+.btn-del-trans:hover { color: var(--danger); }
 
-    .diario-content .big {
-        font-size: 2.5rem;
-        /* Número más pequeño */
-    }
+/* Modal Fijo Inline (Oculto por defecto) */
+#box-nuevo-fijo {
+    padding: 20px;
+    background: var(--bg-body);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
 
-    /* 3. Panel Derecho (Listas) */
-    .finance-right-col {
-        width: 100%;
-        height: auto;
-    }
-
-    .f-panel-clean {
-        height: auto !important;
-        /* Quitar altura fija */
-        min-height: 300px;
-        margin-bottom: 20px;
-    }
-
-    /* 4. Input rápido de gastos */
-    .quick-add-row {
-        flex-direction: row;
-        /* Mantener fila */
-        gap: 5px;
-    }
-
-    #in-mov-desc {
-        flex: 2;
-        min-width: 0;
-    }
-
-    #in-mov-amount {
-        flex: 1;
-        min-width: 60px;
-    }
+@media (max-width: 1000px) {
+    .finance-stats-row { grid-template-columns: 1fr 1fr; }
+    .finance-main-grid { grid-template-columns: 1fr; }
 }

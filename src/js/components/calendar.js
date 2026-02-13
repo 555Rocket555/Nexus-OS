@@ -16,6 +16,8 @@ const dom = {
     btnAnterior: document.getElementById("btn-mes-anterior"),
     btnSiguiente: document.getElementById("btn-mes-siguiente"),
     btnNuevoEvento: document.getElementById("btn-nuevo-evento"),
+    
+    // Modal
     modal: document.getElementById("modal-evento"),
     inputTitulo: document.getElementById("input-evento-titulo"),
     inputFecha: document.getElementById("input-evento-fecha"),
@@ -66,6 +68,7 @@ function formatearKey(date) {
 
 function renderizarCalendario() {
     if (!dom.grid) return;
+    
     const year = fechaActual.getFullYear();
     const month = fechaActual.getMonth();
     const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
@@ -87,7 +90,6 @@ function renderizarCalendario() {
         
         div.innerHTML = `<div class="day-label">${i}</div>`;
         div.onclick = (e) => {
-            // Si el clic fue en un evento, no abrir modal vacío
             if (e.target.classList.contains('evento-mark')) return;
             abrirModal(fecha, false);
         };
@@ -110,6 +112,7 @@ function renderizarCalendario() {
         if (key === formatearKey(new Date())) div.classList.add("today");
         dom.grid.appendChild(div);
     }
+    
     renderizarListaLateral();
 }
 
@@ -121,7 +124,6 @@ function renderizarListaLateral() {
     const month = fechaActual.getMonth();
     let hayEventos = false;
 
-    // Ordenar fechas
     Object.keys(eventos).sort().forEach(key => {
         const [y, m, d] = key.split('-').map(Number);
         if (y === year && m === (month + 1)) {
@@ -140,16 +142,15 @@ function renderizarListaLateral() {
 
 function crearTarjetaEvento(evt, dia, key, idx) {
     const div = document.createElement("div");
-    // Si no hay tags, mostrar algo genérico visualmente, pero no agregar el tag al dato
-    const tagVisual = evt.tags?.[0] || ""; 
-    const colorIdx = ServicioEtiquetas.asignarColor(tagVisual || "General");
+    const tag = evt.tags?.[0] || "";
+    const colorIdx = ServicioEtiquetas.asignarColor(tag || "General");
     
     div.className = `agenda-item evt-type-${colorIdx}`;
     div.innerHTML = `
         <div class="agenda-date-box"><span class="dia-num">${dia}</span></div>
         <div class="agenda-content">
             <span>${evt.titulo}</span>
-            ${tagVisual ? `<small>#${tagVisual}</small>` : ''}
+            ${tag ? `<small>#${tag}</small>` : ''}
         </div>
         <button class="btn-delete-event">×</button>
     `;
@@ -164,7 +165,6 @@ function crearTarjetaEvento(evt, dia, key, idx) {
         }
     };
 
-    // Parsear fecha correctamente para evitar problemas de zona horaria
     const [yy, mm, dd] = key.split('-').map(Number);
     const fechaObj = new Date(yy, mm - 1, dd);
     div.onclick = () => abrirModal(fechaObj, false, evt, idx);
@@ -213,38 +213,33 @@ function renderizarRecordatorios() {
 
 // --- MODAL ---
 function abrirModal(fecha, esRecordatorio, data = null, index = null) {
-    // 1. Limpiar Tags: Si hay datos, úsalos; si no, array vacío.
-    tagsTemporales = data?.tags ? [...data.tags] : []; 
+    // Si data existe, copiamos sus tags. Si no, empezamos vacío.
+    tagsTemporales = data && data.tags ? [...data.tags] : []; 
+    
     dom.inputTitulo.value = data?.titulo || "";
     
     fechaSeleccionada = fecha;
     eventoEditandoIndex = index;
+    // Guardamos el ID si existe, o null si es nuevo
     eventoEditandoId = data?.id || null;
 
     const esEdicion = data !== null;
     dom.modal.querySelector("h3").textContent = esRecordatorio ? "⏰ Recordatorio" : (esEdicion ? "✏️ Editar Evento" : "📅 Nuevo Evento");
     
-    // 2. Lógica del Input de Fecha
+    // Lógica del Input de Fecha
     if (esRecordatorio) {
         dom.inputFecha.style.display = "none";
     } else {
         dom.inputFecha.style.display = "block";
         if (fecha) {
             dom.inputFecha.value = formatearKey(fecha);
-            // 3. BLOQUEAR INPUT: Si abrimos desde una celda (fecha existe) y NO es recordatorio
-            // Si es edición desde la lista lateral, tal vez quieras permitir cambiar fecha, pero
-            // si el usuario hizo click en el día 20, bloqueamos para que sea el 20.
+            // Bloqueamos fecha si venimos de un clic en celda para evitar incoherencias
             dom.inputFecha.disabled = true; 
         } else {
-            // Caso botón flotante (+) o error
             dom.inputFecha.disabled = false;
         }
     }
     
-    // Si estamos editando un evento existente desde la lista, permitimos cambiar la fecha si se desea (opcional)
-    // Pero tu requerimiento fue "no tiene logica cambiar fecha si selecciona recuadro".
-    // La lógica de arriba cumple eso.
-
     renderizarTagsModal();
     dom.modal.classList.remove("hidden");
     setTimeout(() => dom.inputTitulo.focus(), 100);
@@ -258,8 +253,13 @@ function guardarEvento() {
     const titulo = dom.inputTitulo.value.trim();
     if(!titulo) return alert("Falta el título");
 
-    // 4. Guardar sin forzar "General"
-    const nuevo = { titulo, tags: tagsTemporales, createdAt: new Date().toISOString() };
+    // CORRECCIÓN: tagsTemporales contiene el estado actual de los tags (incluyendo eliminaciones)
+    const nuevo = { 
+        titulo, 
+        tags: [...tagsTemporales], 
+        createdAt: new Date().toISOString() 
+    };
+    
     const esRecordatorio = dom.inputFecha.style.display === "none";
 
     if (esRecordatorio) {
@@ -273,11 +273,13 @@ function guardarEvento() {
         if (eventoEditandoIndex !== null && fechaSeleccionada) {
             // Es edición
             const oldKey = formatearKey(fechaSeleccionada);
-            // Si la fecha es la misma (que debe serlo si está disabled), reemplazamos
+            
+            // Si estamos en la misma fecha (lo normal)
             if (oldKey === key && eventos[key]) {
+                // Actualizamos el objeto en el array existente con los nuevos tags
                 eventos[key][eventoEditandoIndex] = nuevo;
             } else {
-                // Si por alguna razón cambió (ej. desbloqueo futuro), movemos
+                // Si cambió la fecha (caso raro si está disabled, pero por seguridad)
                 if (eventos[oldKey]) {
                     eventos[oldKey].splice(eventoEditandoIndex, 1);
                     if(eventos[oldKey].length===0) delete eventos[oldKey];
@@ -305,13 +307,58 @@ function agregarTag(val) {
     }
 }
 
+// CORRECCIÓN PRINCIPAL AQUÍ:
 function renderizarTagsModal() {
     dom.listaTagsModal.innerHTML = tagsTemporales.map(t => `
-        <span class="tag-chip bg-c${ServicioEtiquetas.asignarColor(t)}">#${t} <span style="cursor:pointer;margin-left:4px;" onclick="this.parentElement.remove()">×</span></span>
+        <span class="tag-chip bg-c${ServicioEtiquetas.asignarColor(t)}">
+            #${t} 
+            <span style="cursor:pointer;margin-left:4px;" class="btn-remove-tag" data-tag="${t}">×</span>
+        </span>
     `).join("");
+
+    // Agregar listeners reales para eliminar el tag del array
+    dom.listaTagsModal.querySelectorAll('.btn-remove-tag').forEach(btn => {
+        btn.onclick = (e) => {
+            const tagToRemove = e.target.dataset.tag;
+            tagsTemporales = tagsTemporales.filter(t => t !== tagToRemove);
+            renderizarTagsModal(); // Re-renderizar para reflejar el cambio visualmente
+        };
+    });
 }
 
 function cambiarMes(d) {
     fechaActual.setMonth(fechaActual.getMonth() + d);
     renderizarCalendario();
 }
+
+/* ======================================================
+   API GLOBAL PARA ETIQUETAS (Bridge)
+   Permite que tag.js abra este modal
+   ====================================================== */
+window.NexusCalendar = {
+    editarEvento: (dateKey, index) => {
+        // Necesitamos abrir la sección de calendario primero para que el DOM exista
+        document.querySelector('[data-target="seccion-calendario"]').click();
+        
+        // Pequeño timeout para dar tiempo a que se renderice el HTML de calendario
+        setTimeout(() => {
+            const [y, m, d] = dateKey.split('-').map(Number);
+            const fechaObj = new Date(y, m - 1, d);
+            const data = eventos[dateKey][index];
+            if (data) {
+                abrirModal(fechaObj, false, data, index);
+            }
+        }, 100);
+    },
+    editarRecordatorio: (id) => {
+        document.querySelector('[data-target="seccion-calendario"]').click();
+        setTimeout(() => {
+            const data = eventosSinFecha[id];
+            if (data) {
+                // Inyectamos el ID temporalmente para que guardar sepa qué actualizar
+                data.id = id; 
+                abrirModal(null, true, data);
+            }
+        }, 100);
+    }
+};

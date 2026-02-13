@@ -1,456 +1,654 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nexus OS</title>
-    <link rel="icon" type="image/svg+xml" href="./icons/rocket.svg">
+    <link rel="icon" type="image/svg+xml" href="./icons/rocket.svg" />
 
-    <link rel="stylesheet" href="./css/main.css">
-    <link rel="stylesheet" href="./css/layout.css">
-    <link rel="stylesheet" href="./css/components.css">
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components.css" />
 
-    <link rel="stylesheet" href="./css/modules/dashboard.css">
-    <link rel="stylesheet" href="./css/modules/kanban.css">
-    <link rel="stylesheet" href="./css/modules/finance.css">
-    <link rel="stylesheet" href="./css/modules/calendar.css">
-    <link rel="stylesheet" href="./css/modules/projects.css">
-    <link rel="stylesheet" href="./css/modules/settings.css">
-    <link rel="stylesheet" href="./css/modules/notes.css">
-    <link rel="stylesheet" href="./css/modules/tags.css">
-</head>
+    <link rel="stylesheet" href="./css/modules/dashboard.css" />
+    <link rel="stylesheet" href="./css/modules/kanban.css" />
+    <link rel="stylesheet" href="./css/modules/finance.css" />
+    <link rel="stylesheet" href="./css/modules/calendar.css" />
+    <link rel="stylesheet" href="./css/modules/projects.css" />
+    <link rel="stylesheet" href="./css/modules/settings.css" />
+    <link rel="stylesheet" href="./css/modules/notes.css" />
+    <link rel="stylesheet" href="./css/modules/tags.css" />
+  </head>
 
-<body>
+  <body>
     <div class="app-layout">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo">
+            <h2>Nexus OS</h2>
+          </div>
+          <button id="btnToggle" class="toggle-btn">☰</button>
+        </div>
+        <nav class="menu">
+          <button class="menu-btn active" data-target="seccion-dashboard">
+            <img src="./icons/home.svg" class="icon" alt="Inicio" />
+            <span>Inicio</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-notas">
+            <img src="./icons/notes.svg" class="icon" alt="Notas" />
+            <span>Notas</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-proyectos">
+            <img src="./icons/rocket.svg" class="icon" alt="Proyectos" />
+            <span>Proyectos</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-tablero">
+            <img src="./icons/planner.svg" class="icon" alt="Tablero" />
+            <span>Tablero</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-calendario">
+            <img src="./icons/date.svg" class="icon" alt="Calendario" />
+            <span>Agenda</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-finanzas">
+            <img src="./icons/money.svg" class="icon" alt="Finanzas" />
+            <span>Finanzas</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-tags">
+            <img src="./icons/tags.svg" class="icon" alt="Etiquetas" />
+            <span>Etiquetas</span>
+          </button>
+          <button class="menu-btn" data-target="seccion-configuracion">
+            <img src="./icons/settings.svg" class="icon" alt="Config" />
+            <span>Preferencias</span>
+          </button>
+        </nav>
+        <div class="user-info">
+          <p>user</p>
+        </div>
+      </aside>
 
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <h2>Nexus OS</h2>
-                </div>
-                <button id="btnToggle" class="toggle-btn">☰</button>
+      <main class="main-content">
+        <div class="mobile-header-bar">
+          <button id="btnMobileMenu">☰</button>
+          <h2 style="margin: 0; font-size: 1.2rem; color: var(--primary)">
+            Nexus OS
+          </h2>
+        </div>
+
+        <section id="seccion-dashboard" class="pagina active">
+          <div id="dashboard" class="main-container">
+            <div id="header-dashboard" class="header-content">
+              <div class="dashboard-welcome">
+                <h1 id="saludo-dashboard" class="dashboard-welcome">
+                  Hola, Usuario 😉
+                </h1>
+                <p id="fecha-dashboard">Cargando...</p>
+              </div>
             </div>
-            <nav class="menu">
-                <button class="menu-btn active" data-target="seccion-dashboard">
-                    <img src="./icons/home.svg" class="icon" alt="Inicio">
-                    <span>Inicio</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-notas">
-                    <img src="./icons/notes.svg" class="icon" alt="Notas">
-                    <span>Notas</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-proyectos">
-                    <img src="./icons/rocket.svg" class="icon" alt="Proyectos">
-                    <span>Proyectos</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-tablero">
-                    <img src="./icons/planner.svg" class="icon" alt="Tablero">
-                    <span>Tablero</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-calendario">
-                    <img src="./icons/date.svg" class="icon" alt="Calendario">
-                    <span>Agenda</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-finanzas">
-                    <img src="./icons/money.svg" class="icon" alt="Finanzas">
-                    <span>Wallet</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-tags">
-                    <img src="./icons/tags.svg" class="icon" alt="Etiquetas">
-                    <span>Etiquetas</span>
-                </button>
-                <button class="menu-btn" data-target="seccion-configuracion">
-                    <img src="./icons/settings.svg" class="icon" alt="Config">
-                    <span>Preferencias</span>
-                </button>
-            </nav>
-            <div class="user-info">
-                <p>user</p>
-            </div>
-        </aside>
+            <div class="dashboard-grid" id="contenido-dashboard"></div>
+          </div>
+        </section>
 
-        <main class="main-content">
-            <div class="mobile-header-bar">
-                <button id="btnMobileMenu">☰</button>
-                <h2 style="margin:0; font-size:1.2rem; color:var(--primary);">Nexus OS</h2>
-            </div>
+        <section id="seccion-notas" class="pagina hidden">
+          <div
+            id="vista-notas"
+            class="main-container"
+            style="height: 100%"
+          ></div>
+        </section>
 
-            <section id="seccion-dashboard" class="pagina active">
-                <div id="dashboard" class="main-container">
-                    <div id="header-dashboard" class="header-content">
-                        <div class="dashboard-welcome">
-                            <h1 id="saludo-dashboard" class="dashboard-welcome">Hola, Usuario 😉</h1>
-                            <p id="fecha-dashboard">Cargando...</p>
-                        </div>
-                    </div>
-                    <div class="dashboard-grid" id="contenido-dashboard"></div>
-                </div>
-            </section>
+        <section id="seccion-proyectos" class="pagina hidden">
+          <div
+            id="vista-proyectos"
+            class="main-container"
+            style="height: 100%"
+          ></div>
+        </section>
 
-            <section id="seccion-notas" class="pagina hidden">
-                <div id="vista-notas" class="main-container" style="height: 100%;"></div>
-            </section>
+        <section id="seccion-tablero" class="pagina hidden">
+          <div
+            id="vista-tablero"
+            class="main-container"
+            style="height: 100%"
+          ></div>
+        </section>
 
-            <section id="seccion-proyectos" class="pagina hidden">
-                <div id="vista-proyectos" class="main-container" style="height: 100%;"></div>
-            </section>
-
-            <section id="seccion-tablero" class="pagina hidden">
-                <div id="vista-tablero" class="main-container" style="height: 100%;"></div>
-            </section>
-
-          <section id="seccion-calendario" class="pagina hidden">
-    <div class="main-container">
-        <div class="calendario-layout">
-            <div class="header-content">
+        <section id="seccion-calendario" class="pagina hidden">
+          <div class="main-container">
+            <div class="calendario-layout">
+              <div class="header-content">
                 <div class="seccion-header">
-                    <h1>Agenda</h1>
-                    <p style="color: var(--text-muted); margin-top: 5px;">Eventos y recordatorios</p>
+                  <h1>Agenda</h1>
+                  <p style="color: var(--text-muted); margin-top: 5px">
+                    Eventos y recordatorios
+                  </p>
                 </div>
-            </div>
+              </div>
 
-            <div class="agenda-main-grid">
+              <div class="agenda-main-grid">
                 <div class="calendar-card">
-                    <div class="calendar-header">
-                        <h2 id="mes-anio">Cargando...</h2>
-                        <div class="calendar-nav">
-                            <button id="btn-mes-anterior" title="Mes Anterior">‹</button>
-                            <button id="btn-mes-siguiente" title="Mes Siguiente">›</button>
-                        </div>
+                  <div class="calendar-header">
+                    <h2 id="mes-anio">Cargando...</h2>
+                    <div class="calendar-nav">
+                      <button id="btn-mes-anterior" title="Mes Anterior">
+                        ‹
+                      </button>
+                      <button id="btn-mes-siguiente" title="Mes Siguiente">
+                        ›
+                      </button>
                     </div>
-                    
-                    <div class="calendar-weekdays">
-                        <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
-                    </div>
-                    
-                    <div class="calendar-grid" id="grid-calendario">
-                        </div>
+                  </div>
+
+                  <div class="calendar-weekdays">
+                    <div>Dom</div>
+                    <div>Lun</div>
+                    <div>Mar</div>
+                    <div>Mié</div>
+                    <div>Jue</div>
+                    <div>Vie</div>
+                    <div>Sáb</div>
+                  </div>
+
+                  <div class="calendar-grid" id="grid-calendario"></div>
                 </div>
 
                 <div class="agenda-sidebar">
-                    <div class="sidebar-panel">
-                        <div class="panel-header">
-                            <h3>Eventos del Mes</h3>
-                        </div>
-                        <div id="eventos-calendario">
-                            </div>
+                  <div class="sidebar-panel">
+                    <div class="panel-header">
+                      <h3>Eventos del Mes</h3>
                     </div>
+                    <div id="eventos-calendario"></div>
+                  </div>
 
-                    <div class="sidebar-panel">
-                        <div class="panel-header">
-                            <h3>Recordatorios</h3>
-                            <button id="btn-nuevo-evento" class="btn-plus-round" style="width: 32px; height: 32px; font-size: 1.2rem;">+</button>
-                        </div>
-                        <div id="eventos-sin-asignar">
-                            </div>
+                  <div class="sidebar-panel">
+                    <div class="panel-header">
+                      <h3>Recordatorios</h3>
+                      <button
+                        id="btn-nuevo-evento"
+                        class="btn-plus-round"
+                        style="width: 32px; height: 32px; font-size: 1.2rem"
+                      >
+                        +
+                      </button>
                     </div>
+                    <div id="eventos-sin-asignar"></div>
+                  </div>
                 </div>
+              </div>
             </div>
-        </div>
+          </div>
+        </section>
+
+        <section id="seccion-finanzas" class="pagina hidden">
+          <div class="main-container">
+            <div class="finance-layout-wrapper">
+              <div
+                class="seccion-header"
+                style="justify-content: space-between"
+              >
+                <div>
+                  <h1>Wallet</h1>
+                  <p style="color: var(--text-muted); margin-top: 5px">
+                    Control de gastos inteligente
+                  </p>
+                </div>
+                <button id="btn-config-finanzas" class="btn-secondary">
+                  ⚙️ Configuración
+                </button>
+              </div>
+
+              <div class="finance-stats-row">
+                <div class="stat-card">
+                  <div class="stat-icon icon-income">💰</div>
+                  <span class="stat-label">Ingreso Neto</span>
+                  <span class="stat-value" id="val-ingreso">$0.00</span>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon icon-expense">📉</div>
+                  <span class="stat-label">Gastos Totales</span>
+                  <span class="stat-value" id="val-gastos">$0.00</span>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon icon-savings">🐷</div>
+                  <span class="stat-label">Ahorro Meta</span>
+                  <span class="stat-value" id="val-ahorro">$0.00</span>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon icon-balance">💎</div>
+                  <span class="stat-label">Libre Real</span>
+                  <span class="stat-value" id="val-libre">$0.00</span>
+                </div>
+              </div>
+
+              <div class="finance-main-grid">
+                <div class="col-actions">
+             <div class="balance-hero-card" id="hero-card-bg">
+    <span class="hero-label" id="hero-days">Calculando...</span>
+    
+    <div class="hero-amount" id="hero-amount">$0.00</div>
+    <span class="hero-status status-good" id="hero-status-pill">Saludable</span>
+    <p style="margin-top:10px; font-size:0.8rem; color:var(--text-muted);">Diario Disponible</p>
+</div>
+
+                  <div class="quick-expense-box">
+                    <h4>⚡ Gasto Rápido</h4>
+                    <div class="compact-input-row">
+                      <input
+                        type="text"
+                        id="q-desc"
+                        class="compact-input"
+                        placeholder="¿En qué gastaste? (Café, Uber...)"
+                      />
+                    </div>
+                    <div class="compact-input-row">
+                      <input
+                        type="number"
+                        id="q-amount"
+                        class="compact-input"
+                        placeholder="$ 0.00"
+                      />
+                      <button id="btn-quick-add" class="btn-quick-add">
+                        ➜
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lists">
+                  <div class="lists-header">
+                    <div class="finance-tabs">
+                      <button class="f-tab active" id="tab-movimientos">
+                        Movimientos
+                      </button>
+                      <button class="f-tab" id="tab-fijos">Gastos Fijos</button>
+                    </div>
+                    <button
+                      id="btn-toggle-fijo"
+                      class="btn-add-fixed"
+                      style="display: none"
+                      title="Nuevo Gasto Fijo"
+                    >
+                      ＋
+                    </button>
+                  </div>
+
+                  <div id="box-nuevo-fijo" class="hidden">
+                    <select
+                      id="f-icon"
+                      class="compact-input"
+                      style="width: 60px"
+                    >
+                      <option>🏠</option>
+                      <option>🚗</option>
+                      <option>💡</option>
+                      <option>🍔</option>
+                      <option>💳</option>
+                    </select>
+                    <input
+                      type="text"
+                      id="f-name"
+                      class="compact-input"
+                      placeholder="Nombre (Renta, Internet...)"
+                    />
+                    <input
+                      type="number"
+                      id="f-amount"
+                      class="compact-input"
+                      placeholder="$"
+                      style="width: 80px"
+                    />
+                    <button id="btn-save-fijo" class="btn-check">✔</button>
+                  </div>
+
+                  <div class="unified-list-scroll" id="lista-unificada"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="seccion-tags" class="pagina hidden">
+          <div
+            id="vista-etiquetas"
+            class="main-container"
+            style="height: 100%"
+          ></div>
+        </section>
+
+        <section id="seccion-configuracion" class="pagina hidden">
+          <div class="main-container">
+            <div class="seccion-header" style="margin-bottom: 10px">
+              <div style="display: flex; align-items: center; gap: 10px">
+                <span style="font-size: 1.8rem">⚙️</span>
+                <div>
+                  <h1 style="font-size: 1.5rem; margin: 0">Preferencias</h1>
+                  <p
+                    style="
+                      margin: 0;
+                      color: var(--text-muted);
+                      font-size: 0.9rem;
+                    "
+                  >
+                    Personaliza tu experiencia en Nexus OS
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="settings-tabs">
+              <button
+                class="pestana-configuracion active"
+                data-target="tab-general"
+              >
+                <img src="./icons/palette.svg" class="icon" />Apariencia
+              </button>
+              <button class="pestana-configuracion" data-target="tab-modulos">
+                <img src="./icons/view.svg" class="icon" />Módulos
+              </button>
+              <button
+                class="pestana-configuracion"
+                data-target="tab-notificaciones"
+              >
+                <img src="./icons/noti.svg" class="icon" />Notificaciones
+              </button>
+              <button class="pestana-configuracion" data-target="tab-cuenta">
+                <img src="./icons/user.svg" class="icon" />Cuenta
+              </button>
+            </div>
+            <div class="settings-content-wrapper">
+              <div id="tab-general" class="panel-configuracion active">
+                <div class="setting-group">
+                  <h3>Tema & Colores</h3>
+                  <div class="setting-row">
+                    <div class="setting-desc">
+                      <h4>Tema Base</h4>
+                      <p>Elige el ambiente visual general.</p>
+                    </div>
+                    <select id="selector-tema" class="theme-selector">
+                      <option value="">Claro (Default)</option>
+                      <optgroup label="Temas Claros">
+                        <option value="light-blue">Cielo (Azul)</option>
+                        <option value="light-gray">Minimalista (Gris)</option>
+                      </optgroup>
+                      <optgroup label="Temas Oscuros">
+                        <option value="dark-mode">Elegante (Default)</option>
+                        <option value="dark-mode2">Medianoche (Azul)</option>
+                        <option value="dark-green">Bosque (Verde)</option>
+                        <option value="dark-purple">Neón (Violeta)</option>
+                        <option value="warm-mode">Café (Cálido)</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div class="setting-row">
+                    <div class="setting-desc">
+                      <h4>Color Principal</h4>
+                      <p>Botones, enlaces y elementos activos.</p>
+                    </div>
+                    <input
+                      type="color"
+                      id="picker-color-primario"
+                      class="color-picker-input"
+                    />
+                  </div>
+                  <div class="setting-row">
+                    <div class="setting-desc">
+                      <h4>Color Secundario</h4>
+                      <p>Detalles, bordes y acentos sutiles.</p>
+                    </div>
+                    <input
+                      type="color"
+                      id="picker-color-secundario"
+                      class="color-picker-input"
+                    />
+                  </div>
+                  <div class="setting-row" style="justify-content: flex-end">
+                    <button
+                      id="btn-reset-colores"
+                      class="btn-secondary danger-hover"
+                    >
+                      Restaurar Valores por Defecto
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div id="tab-modulos" class="panel-configuracion hidden">
+                <div class="setting-group">
+                  <h3>Módulos del Sistema</h3>
+                  <p style="color: var(--text-muted); margin-bottom: 20px">
+                    Activa o desactiva las herramientas que necesitas.
+                  </p>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>📝 Notas</h4>
+                      <p>Captura rápida de ideas.</p>
+                    </div>
+                    <label class="switch">
+                      <input type="checkbox" id="toggle-mod-notas" checked />
+                      <span class="slider round"></span>
+                    </label>
+                  </div>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>🚀 Proyectos</h4>
+                      <p>Gestión avanzada de Proyectos.</p>
+                    </div>
+                    <label class="switch"
+                      ><input
+                        type="checkbox"
+                        id="toggle-mod-proyectos"
+                        checked /><span class="slider round"></span
+                    ></label>
+                  </div>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>📋 Tablero</h4>
+                      <p>Tablero de flujo de trabajo.</p>
+                    </div>
+                    <label class="switch"
+                      ><input
+                        type="checkbox"
+                        id="toggle-mod-kanban"
+                        checked /><span class="slider round"></span
+                    ></label>
+                  </div>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>📅 Agenda</h4>
+                      <p>Agenda y eventos.</p>
+                    </div>
+                    <label class="switch"
+                      ><input
+                        type="checkbox"
+                        id="toggle-mod-calendario"
+                        checked /><span class="slider round"></span
+                    ></label>
+                  </div>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>💳 Finanzas</h4>
+                      <p>Control de finanzas personales.</p>
+                    </div>
+                    <label class="switch"
+                      ><input
+                        type="checkbox"
+                        id="toggle-mod-finanzas"
+                        checked /><span class="slider round"></span
+                    ></label>
+                  </div>
+                </div>
+              </div>
+              <div id="tab-notificaciones" class="panel-configuracion hidden">
+                <div class="setting-group">
+                  <h3>Preferencias de Notificaciones</h3>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>Recordatorio de tareas</h4>
+                      <p>Notificaciones de tareas pendientes.</p>
+                    </div>
+                    <label class="switch"
+                      ><input type="checkbox" checked /><span
+                        class="slider round"
+                      ></span
+                    ></label>
+                  </div>
+                  <div class="module-toggle-item">
+                    <div class="mod-info">
+                      <h4>Próximos eventos</h4>
+                      <p>Alertas de calendario.</p>
+                    </div>
+                    <label class="switch"
+                      ><input type="checkbox" checked /><span
+                        class="slider round"
+                      ></span
+                    ></label>
+                  </div>
+                </div>
+              </div>
+              <div id="tab-cuenta" class="panel-configuracion hidden">
+                <div class="setting-group">
+                  <h3>Información Personal</h3>
+                  <div class="profile-edit-grid">
+                    <div class="avatar-section">
+                      <div class="avatar-preview">UD</div>
+                      <button class="btn-secondary" style="font-size: 0.8rem">
+                        Cambiar foto
+                      </button>
+                    </div>
+                    <div class="profile-inputs">
+                      <div class="input-group">
+                        <label>Nombre</label>
+                        <input
+                          type="text"
+                          id="input-nombre-usuario"
+                          value="Usuario"
+                        />
+                      </div>
+                      <div class="input-group">
+                        <label>Apellido</label>
+                        <input
+                          type="text"
+                          id="input-apellido-usuario"
+                          value="Demo"
+                        />
+                      </div>
+                      <div class="input-group full-width">
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          value="demo@nexusos.app"
+                          disabled
+                          style="opacity: 0.7"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div style="margin-top: 20px">
+                    <button id="btn-guardar-perfil" class="btn-primary">
+                      Guardar Cambios
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
-</section>
+    <div id="modal-evento" class="modal-event-overlay hidden">
+      <div class="modal-event-card">
+        <h3>📅 Nuevo Evento</h3>
+        <input
+          type="text"
+          id="input-evento-titulo"
+          placeholder="Título del evento"
+          autofocus
+        />
+        <input type="date" id="input-evento-fecha" />
 
-            <section id="seccion-finanzas" class="pagina hidden">
-                <div class="main-container">
-                    <div class="seccion-header" style="justify-content: space-between;">
-                        <h1>Finanzas</h1>
-                        <button id="btn-config-finanzas" class="btn-secondary">
-                            ⚙️ Configuración
-                        </button>
-                    </div>
-                    <div class="finance-dashboard-layout">
-                        <div class="finance-left-col">
-                            <div class="f-card f-diario-hero">
-                                <div class="diario-content">
-                                    <small id="lbl-dias-restantes">Calculando...</small>
-                                    <div class="money-display big" id="val-diario">$0.00</div>
-                                    <span>Diario Disponible</span>
-                                </div>
-                            </div>
-                            <div class="finance-mini-grid">
-                                <div class="f-mini-card">
-                                    <span class="mini-label">Ingreso</span>
-                                    <span class="mini-value" id="val-ingreso">$0.00</span>
-                                </div>
-                                <div class="f-mini-card">
-                                    <span class="mini-label">Ahorro (<span id="val-ahorro-pct">0</span>%)</span>
-                                    <span class="mini-value text-warning" id="val-ahorro">$0.00</span>
-                                </div>
-                                <div class="f-mini-card">
-                                    <span class="mini-label">Gastos Fijos</span>
-                                    <span class="mini-value text-danger" id="val-gastos-fijos">$0.00</span>
-                                </div>
-                                <div class="f-mini-card highlight">
-                                    <span class="mini-label">Libre Real</span>
-                                    <span class="mini-value text-success" id="val-disponible">$0.00</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="finance-right-col">
-                            <div class="f-panel-clean" style="flex: 1;">
-                                <div class="panel-header-clean">
-                                    <h3>Gastos Fijos</h3>
-                                    <button id="btn-agregar-fijo" class="btn-plus-round">＋</button>
-                                </div>
-                                <form id="form-nuevo-fijo" class="form-fijo-row hidden">
-                                    <div class="fijo-row-inputs">
-                                        <select id="select-categoria-fijo" class="input-mini-icon">
-                                            <option value="🏠">🏠</option>
-                                            <option value="🍔">🍔</option>
-                                            <option value="🚗">🚗</option>
-                                            <option value="💡">💡</option>
-                                            <option value="💳">💳</option>
-                                            <option value="🍿">🍿</option>
-                                        </select>
-                                        <input type="text" id="input-nombre-fijo" placeholder="Concepto" required>
-                                    </div>
-                                    <div class="fijo-row-inputs">
-                                        <input type="number" id="input-monto-fijo" placeholder="$" required>
-                                        <button type="submit" class="btn-check">✔</button>
-                                    </div>
-                                </form>
-                                <div class="fijos-list-scroll">
-                                    <ul id="lista-gastos-fijos" class="list-clean"></ul>
-                                </div>
-                            </div>
-                            <div class="f-panel-clean" style="flex: 1;">
-                                <div class="panel-header-clean">
-                                    <h3>Gastos Variables</h3>
-                                </div>
-                                <div class="quick-add-row">
-                                    <input type="text" id="input-mov-desc" class="quick-input" placeholder="Ej. Café, Uber..." style="flex:2;">
-                                    <input type="number" id="input-mov-monto" class="quick-input" placeholder="$" style="flex:1;">
-                                    <button id="btn-agregar-movimiento" class="btn-plus-round" style="width:38px; height:38px; border-radius:8px;">➜</button>
-                                </div>
-                                <div id="lista-movimientos" class="fijos-list-scroll"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="seccion-tags" class="pagina hidden">
-                <div id="vista-etiquetas" class="main-container" style="height: 100%;"></div>
-            </section>
-
-            <section id="seccion-configuracion" class="pagina hidden">
-                <div class="main-container">
-                    <div class="seccion-header" style="margin-bottom: 10px;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <span style="font-size:1.8rem;">⚙️</span>
-                            <div>
-                                <h1 style="font-size:1.5rem; margin:0;">Preferencias</h1>
-                                <p style="margin:0; color:var(--text-muted); font-size:0.9rem;">Personaliza tu experiencia en Nexus OS</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="settings-tabs">
-                        <button class="pestana-configuracion active" data-target="tab-general">
-                            <img src="./icons/palette.svg" class="icon">Apariencia
-                        </button>
-                        <button class="pestana-configuracion" data-target="tab-modulos">
-                            <img src="./icons/view.svg" class="icon">Módulos
-                        </button>
-                        <button class="pestana-configuracion" data-target="tab-notificaciones">
-                            <img src="./icons/noti.svg" class="icon">Notificaciones
-                        </button>
-                        <button class="pestana-configuracion" data-target="tab-cuenta">
-                            <img src="./icons/user.svg" class="icon">Cuenta
-                        </button>
-                    </div>
-                    <div class="settings-content-wrapper">
-                        <div id="tab-general" class="panel-configuracion active">
-                            <div class="setting-group">
-                                <h3>Tema & Colores</h3>
-                                <div class="setting-row">
-                                    <div class="setting-desc">
-                                        <h4>Tema Base</h4>
-                                        <p>Elige el ambiente visual general.</p>
-                                    </div>
-                                    <select id="selector-tema" class="theme-selector">
-                                        <option value="">Claro (Default)</option>
-                                        <optgroup label="Temas Claros">
-                                            <option value="light-blue">Cielo (Azul)</option>
-                                            <option value="light-gray">Minimalista (Gris)</option>
-                                        </optgroup>
-                                        <optgroup label="Temas Oscuros">
-                                            <option value="dark-mode">Elegante (Default)</option>
-                                            <option value="dark-mode2">Medianoche (Azul)</option>
-                                            <option value="dark-green">Bosque (Verde)</option>
-                                            <option value="dark-purple">Neón (Violeta)</option>
-                                            <option value="warm-mode">Café (Cálido)</option>
-                                        </optgroup>
-                                    </select>
-                                </div>
-                                <div class="setting-row">
-                                    <div class="setting-desc">
-                                        <h4>Color Principal</h4>
-                                        <p>Botones, enlaces y elementos activos.</p>
-                                    </div>
-                                    <input type="color" id="picker-color-primario" class="color-picker-input">
-                                </div>
-                                <div class="setting-row">
-                                    <div class="setting-desc">
-                                        <h4>Color Secundario</h4>
-                                        <p>Detalles, bordes y acentos sutiles.</p>
-                                    </div>
-                                    <input type="color" id="picker-color-secundario" class="color-picker-input">
-                                </div>
-                                <div class="setting-row" style="justify-content: flex-end;">
-                                    <button id="btn-reset-colores" class="btn-secondary danger-hover">Restaurar Valores por Defecto</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="tab-modulos" class="panel-configuracion hidden">
-                            <div class="setting-group">
-                                <h3>Módulos del Sistema</h3>
-                                <p style="color:var(--text-muted); margin-bottom:20px;">Activa o desactiva las herramientas que necesitas.</p>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>📝 Notas</h4>
-                                        <p>Captura rápida de ideas.</p>
-                                    </div>
-                                    <label class="switch">
-                                        <input type="checkbox" id="toggle-mod-notas" checked>
-                                        <span class="slider round"></span>
-                                    </label>
-                                </div>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>🚀 Proyectos</h4>
-                                        <p>Gestión avanzada de Proyectos.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" id="toggle-mod-proyectos" checked><span class="slider round"></span></label>
-                                </div>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>📋 Tablero</h4>
-                                        <p>Tablero de flujo de trabajo.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" id="toggle-mod-kanban" checked><span class="slider round"></span></label>
-                                </div>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>📅 Agenda</h4>
-                                        <p>Agenda y eventos.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" id="toggle-mod-calendario" checked><span class="slider round"></span></label>
-                                </div>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>💳 Finanzas</h4>
-                                        <p>Control de finanzas personales.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" id="toggle-mod-finanzas" checked><span class="slider round"></span></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="tab-notificaciones" class="panel-configuracion hidden">
-                            <div class="setting-group">
-                                <h3>Preferencias de Notificaciones</h3>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>Recordatorio de tareas</h4>
-                                        <p>Notificaciones de tareas pendientes.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
-                                </div>
-                                <div class="module-toggle-item">
-                                    <div class="mod-info">
-                                        <h4>Próximos eventos</h4>
-                                        <p>Alertas de calendario.</p>
-                                    </div>
-                                    <label class="switch"><input type="checkbox" checked><span class="slider round"></span></label>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="tab-cuenta" class="panel-configuracion hidden">
-                            <div class="setting-group">
-                                <h3>Información Personal</h3>
-                                <div class="profile-edit-grid">
-                                    <div class="avatar-section">
-                                        <div class="avatar-preview">UD</div>
-                                        <button class="btn-secondary" style="font-size:0.8rem;">Cambiar foto</button>
-                                    </div>
-                                    <div class="profile-inputs">
-                                        <div class="input-group">
-                                            <label>Nombre</label>
-                                            <input type="text" id="input-nombre-usuario" value="Usuario">
-                                        </div>
-                                        <div class="input-group">
-                                            <label>Apellido</label>
-                                            <input type="text" id="input-apellido-usuario" value="Demo">
-                                        </div>
-                                        <div class="input-group full-width">
-                                            <label>Email</label>
-                                            <input type="email" value="demo@nexusos.app" disabled style="opacity:0.7;">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div style="margin-top:20px;">
-                                    <button id="btn-guardar-perfil" class="btn-primary">Guardar Cambios</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div> <div id="modal-evento" class="modal-event-overlay hidden">
-        <div class="modal-event-card">
-            <h3>📅 Nuevo Evento</h3>
-            <input type="text" id="input-evento-titulo" placeholder="Título del evento" autofocus>
-            <input type="date" id="input-evento-fecha">
-
-            <div class="tags-input-area" style="margin-bottom: 20px;">
-                <label style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px; display:block;">Etiquetas (Enter para agregar)</label>
-                <div class="tags-wrapper" id="lista-etiquetas-modal"></div>
-                <div style="position:relative;">
-                    <input type="text" id="input-evento-tag" placeholder="Ej. Trabajo, Importante..." autocomplete="off">
-                    <div id="sugerencias-modal" class="dropdown-menu"></div>
-                </div>
-            </div>
-
-            <div class="modal-btns">
-                <button id="btn-cancelar-evento" class="btn-modal btn-cancel">Cancelar</button>
-                <button id="btn-guardar-evento" class="btn-modal btn-save">Guardar</button>
-            </div>
+        <div class="tags-input-area" style="margin-bottom: 20px">
+          <label
+            style="
+              font-size: 0.85rem;
+              color: var(--text-muted);
+              margin-bottom: 5px;
+              display: block;
+            "
+            >Etiquetas (Enter para agregar)</label
+          >
+          <div class="tags-wrapper" id="lista-etiquetas-modal"></div>
+          <div style="position: relative">
+            <input
+              type="text"
+              id="input-evento-tag"
+              placeholder="Ej. Trabajo, Importante..."
+              autocomplete="off"
+            />
+            <div id="sugerencias-modal" class="dropdown-menu"></div>
+          </div>
         </div>
+
+        <div class="modal-btns">
+          <button id="btn-cancelar-evento" class="btn-modal btn-cancel">
+            Cancelar
+          </button>
+          <button id="btn-guardar-evento" class="btn-modal btn-save">
+            Guardar
+          </button>
+        </div>
+      </div>
     </div>
 
     <div id="modal-config-finanzas" class="form-card-container hidden">
-        <div class="form-card">
-            <h2>⚙️ Configurar Billetera</h2>
-            <form id="form-config-finanzas">
-                <div class="input-group">
-                    <label>Ingreso Neto:</label>
-                    <input type="number" id="input-salario" placeholder="Ej. 15000" required>
-                </div>
-                <div class="input-group">
-                    <label>Periodo:</label>
-                    <select id="select-periodo">
-                        <option value="mensual">Mensual (30 días)</option>
-                        <option value="quincenal">Quincenal (15 días)</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Fecha de cobro (Inicio):</label>
-                    <input type="date" id="input-fecha-inicio" required>
-                </div>
-                <div class="input-group">
-                    <label>Meta Ahorro (%): <span id="val-rango-ahorro">10%</span></label>
-                    <input type="range" id="input-rango-ahorro" min="0" max="50" step="5" value="10">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">Guardar Cambios</button>
-                    <button type="button" id="btn-cerrar-config-finanzas" class="btn-secondary">Cancelar</button>
-                </div>
-            </form>
-        </div>
+      <div class="form-card">
+        <h2>⚙️ Configurar Billetera</h2>
+        <form id="form-config-finanzas">
+          <div class="input-group">
+            <label>Ingreso Neto:</label>
+            <input
+              type="number"
+              id="input-salario"
+              placeholder="Ej. 15000"
+              required
+            />
+          </div>
+          <div class="input-group">
+            <label>Periodo:</label>
+            <select id="select-periodo">
+              <option value="mensual">Mensual (30 días)</option>
+              <option value="quincenal">Quincenal (15 días)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label>Fecha de cobro (Inicio):</label>
+            <input type="date" id="input-fecha-inicio" required />
+          </div>
+          <div class="input-group">
+            <label
+              >Meta Ahorro (%): <span id="val-rango-ahorro">10%</span></label
+            >
+            <input
+              type="range"
+              id="input-rango-ahorro"
+              min="0"
+              max="50"
+              step="5"
+              value="10"
+            />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary">Guardar Cambios</button>
+            <button
+              type="button"
+              id="btn-cerrar-config-finanzas"
+              class="btn-secondary"
+            >
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     <script type="module" src="./js/app.js"></script>
-</body>
+  </body>
 </html>
