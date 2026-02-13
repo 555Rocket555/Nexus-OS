@@ -1,39 +1,64 @@
 import { Almacenamiento, ServicioKanban, ServicioFinanzas, ServicioCalendario, ServicioProyectos } from "../services/storage.js";
 import { Utils } from "../utils.js";
 
+// Variable para el estado del Drag & Drop de Widgets
+let dragSrcEl = null;
+
 export function iniciarDashboard() {
     renderizarDashboard();
+    
+    // Listeners globales para recarga
     document.addEventListener("reload-dashboard", renderizarDashboard);
     document.addEventListener("profile-updated", renderizarDashboard);
+    
+    // Inicializar sistemas de arrastre con un pequeño delay para asegurar DOM
+    setTimeout(() => {
+        inicializarDragAndDropWidgets();
+        hacerFabDraggable(); // Lógica para mover el botón de rayo
+    }, 200);
 }
 
 export function renderizarDashboard() {
     const contenedor = document.getElementById("contenido-dashboard");
     if (!contenedor) return;
 
-    // Actualizar Header
     actualizarEncabezadoYClima();
-
     contenedor.innerHTML = "";
 
-    // Construcción del Grid de Widgets
-    // 1. Calendario
-    const calendario = crearWidgetCalendario();
-    calendario.classList.add("widget-medium");
-    contenedor.appendChild(calendario);
+    // Array de configuración de widgets
+    const widgets = [
+        { id: 'cal', builder: crearWidgetCalendario, class: 'widget-medium' },
+        { id: 'fin', builder: crearWidgetFinanzas, class: '' },
+        { id: 'kan', builder: crearWidgetTablero, class: '' },
+        { id: 'proj', builder: crearWidgetProyectos, class: 'widget-medium' }
+    ];
 
-    // 2. Finanzas
-    const finanzas = crearWidgetFinanzas();
-    contenedor.appendChild(finanzas);
+    // Renderizar Widgets
+    widgets.forEach(w => {
+        const elemento = w.builder(); 
+        if (w.class) elemento.classList.add(w.class);
+        
+        // Atributos para Drag & Drop
+        elemento.setAttribute('draggable', 'true'); 
+        elemento.dataset.id = w.id;
+        
+        // Agregar icono de agarre (Grip)
+        agregarGripVisual(elemento);
 
-    // 3. Tablero (Kanban)
-    const tablero = crearWidgetTablero();
-    contenedor.appendChild(tablero);
+        contenedor.appendChild(elemento);
+    });
 
-    // 4. Proyectos
-    const proyectos = crearWidgetProyectos();
-    proyectos.classList.add("widget-medium");
-    contenedor.appendChild(proyectos);
+    // Inyectar Botón de Acciones Rápidas (Floating Action Button)
+    renderizarFabAcciones();
+}
+
+// Helper para inyectar el icono de "agarrar"
+function agregarGripVisual(elemento) {
+    const grip = document.createElement('div');
+    grip.className = 'widget-drag-handle';
+    grip.innerHTML = '⋮⋮'; 
+    grip.title = "Arrastrar para mover";
+    elemento.appendChild(grip);
 }
 
 // --- HEADER ---
@@ -41,7 +66,6 @@ function actualizarEncabezadoYClima() {
     const headerContainer = document.getElementById("header-dashboard");
     if (!headerContainer) return;
 
-    // Verificar estructura interna
     let welcomeDiv = document.getElementById("dashboard-welcome-container");
     let weatherDiv = document.getElementById("dashboard-weather-container");
 
@@ -127,26 +151,31 @@ function obtenerIconoClima(codigo, isDay) {
     return "🌡️";
 }
 
-// --- WIDGETS ---
+// --- WIDGET BUILDERS ---
 
 function crearBaseTarjeta(titulo, seccionObjetivo) {
     const div = document.createElement("div");
     div.className = "dashboard-card";
-    if (seccionObjetivo) {
-        div.onclick = () => {
+    if (titulo) {
+        div.innerHTML = `<h3>${titulo}</h3>`;
+    }
+    
+    // Navegación al hacer click (ignorando el grip)
+    div.addEventListener('click', (e) => {
+        if (e.target.classList.contains('widget-drag-handle')) return;
+        
+        if (seccionObjetivo) {
             const btn = document.querySelector(`.menu-btn[data-target="${seccionObjetivo}"]`);
             if (btn) btn.click();
-        };
-    }
-    if (titulo) div.innerHTML = `<h3>${titulo}</h3>`;
+        }
+    });
+    
     return div;
 }
 
 function crearWidgetProyectos() {
     const tarjeta = crearBaseTarjeta("Proyectos Activos", "seccion-proyectos");
-    // Usamos el servicio en lugar de acceso directo
     const proyectos = ServicioProyectos ? ServicioProyectos.obtenerTodos() : (Almacenamiento.obtener("projects") || []);
-    
     const activos = proyectos.filter((p) => p.status === "active").slice(0, 3);
 
     if (activos.length === 0) {
@@ -163,9 +192,6 @@ function crearWidgetProyectos() {
                         hecho += s.tasks.filter(t => t.done).length;
                     }
                 });
-            } else if (p.subtasks) {
-                total = p.subtasks.length;
-                hecho = p.subtasks.filter(s => s.done).length;
             }
             const pct = total === 0 ? 0 : Math.round((hecho / total) * 100);
 
@@ -186,7 +212,7 @@ function crearWidgetProyectos() {
 }
 
 function crearWidgetFinanzas() {
-    const tarjeta = crearBaseTarjeta(" $ Disponible Hoy", "seccion-finanzas");
+    const tarjeta = crearBaseTarjeta("Disponible Hoy", "seccion-finanzas");
     const config = ServicioFinanzas.obtenerConfiguracion() || { ingreso: 0, ahorroPct: 0 };
     const fijos = ServicioFinanzas.obtenerGastosFijos() || [];
     const movs = ServicioFinanzas.obtenerMovimientos() || [];
@@ -223,12 +249,12 @@ function crearWidgetTablero() {
     div.style.cssText = "display:flex; justify-content:space-around; align-items:center; height:100%; width:100%;";
     div.innerHTML = `
         <div style="text-align:center;">
-            <div style="font-size:1.5rem; font-weight:bold;">${pendientes}</div>
+            <div style="font-size:1.8rem; font-weight:bold;">${pendientes}</div>
             <div style="font-size:0.8rem; color:var(--text-muted);">Pendientes</div>
         </div>
-        <div style="width:1px; height:30px; background:var(--border-color);"></div>
+        <div style="width:1px; height:40px; background:var(--border-color);"></div>
         <div style="text-align:center;">
-            <div style="font-size:1.5rem; font-weight:bold; color:var(--primary);">${enProgreso}</div>
+            <div style="font-size:1.8rem; font-weight:bold; color:var(--primary);">${enProgreso}</div>
             <div style="font-size:0.8rem; color:var(--text-muted);">En Curso</div>
         </div>
     `;
@@ -237,25 +263,231 @@ function crearWidgetTablero() {
 }
 
 function crearWidgetCalendario() {
-    const tarjeta = crearBaseTarjeta("Agenda Hoy", "seccion-calendario");
+    const tarjeta = crearBaseTarjeta("Próximos Eventos", "seccion-calendario");
     const eventosMap = ServicioCalendario.obtenerEventos() || {}; 
-    const hoyStr = new Date().toISOString().split("T")[0];
-    const eventosHoy = eventosMap[hoyStr] || [];
+    
+    const hoy = new Date();
+    hoy.setHours(0,0,0,0);
+    
+    let proximos = [];
+    
+    Object.keys(eventosMap).forEach(key => {
+        const [y,m,d] = key.split('-').map(Number);
+        const fechaEvento = new Date(y, m-1, d);
+        
+        if (fechaEvento >= hoy) {
+            eventosMap[key].forEach(evt => {
+                proximos.push({
+                    fecha: fechaEvento,
+                    titulo: evt.titulo,
+                    key: key
+                });
+            });
+        }
+    });
 
-    if (eventosHoy.length === 0) {
-        tarjeta.innerHTML += `<div class="empty-widget">Nada para hoy.</div>`;
+    proximos.sort((a, b) => a.fecha - b.fecha);
+    proximos = proximos.slice(0, 4);
+
+    if (proximos.length === 0) {
+        tarjeta.innerHTML += `<div class="empty-widget">Nada pendiente.</div>`;
     } else {
         const lista = document.createElement("div");
         lista.className = "widget-list";
-        eventosHoy.forEach((e) => {
+        proximos.forEach((e) => {
+            const esHoy = e.fecha.getTime() === hoy.getTime();
+            const diaStr = esHoy ? "Hoy" : e.fecha.toLocaleDateString("es-ES", {day: "numeric", month: "short"});
+            
             lista.innerHTML += `
                 <div class="widget-item">
-                    <span style="width:8px; height:8px; border-radius:50%; background:var(--primary); display:inline-block;"></span>
-                    <span>${Utils.escaparHTML(e.titulo)}</span>
+                    <div class="wi-date ${esHoy ? 'today' : ''}">${diaStr}</div>
+                    <span class="wi-title">${Utils.escaparHTML(e.titulo)}</span>
                 </div>
             `;
         });
         tarjeta.appendChild(lista);
     }
     return tarjeta;
+}
+
+// --- 1. DRAG AND DROP DE WIDGETS ---
+function inicializarDragAndDropWidgets() {
+    const cards = document.querySelectorAll('.dashboard-card');
+    cards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragenter', handleDragEnter);
+        card.addEventListener('dragover', handleDragOver);
+        card.addEventListener('dragleave', handleDragLeave);
+        card.addEventListener('drop', handleDrop);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+}
+
+function handleDragStart(e) {
+    this.style.opacity = '0.4';
+    dragSrcEl = this;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.innerHTML);
+    this.classList.add('dragging');
+}
+
+function handleDragOver(e) {
+    if (e.preventDefault) e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    return false;
+}
+
+function handleDragEnter() { this.classList.add('drag-over'); }
+function handleDragLeave() { this.classList.remove('drag-over'); }
+
+function handleDrop(e) {
+    if (e.stopPropagation) e.stopPropagation();
+    if (dragSrcEl !== this) {
+        const container = this.parentNode;
+        const todos = [...container.children];
+        const indexSrc = todos.indexOf(dragSrcEl);
+        const indexTarget = todos.indexOf(this);
+
+        if (indexSrc < indexTarget) {
+            container.insertBefore(dragSrcEl, this.nextSibling);
+        } else {
+            container.insertBefore(dragSrcEl, this);
+        }
+    }
+    return false;
+}
+
+function handleDragEnd() {
+    this.style.opacity = '1';
+    this.classList.remove('dragging');
+    document.querySelectorAll('.dashboard-card').forEach(item => item.classList.remove('drag-over'));
+}
+
+function renderizarFabAcciones() {
+    if(document.getElementById('fab-actions')) return;
+
+    // 1. Checar preferencia de visibilidad
+    // Si no existe la key, asumimos true (visible)
+    const isVisible = Almacenamiento.obtener("nexus_fab_visible") !== false;
+
+    const fab = document.createElement('div');
+    fab.id = 'fab-actions';
+    fab.className = 'fab-container';
+    
+    // 2. Cargar Posición Guardada (Persistencia)
+    const savedPos = Almacenamiento.obtener("nexus_fab_position");
+    if (savedPos) {
+        fab.style.right = savedPos.right;
+        fab.style.bottom = savedPos.bottom;
+    }
+
+    // Aplicar visibilidad inicial
+    if (!isVisible) fab.style.display = 'none';
+
+    fab.innerHTML = `
+        <div class="fab-menu" id="fab-menu">
+            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-notas\\']').click(); setTimeout(()=>document.getElementById('btn-crear-nota').click(), 300);">📝 Nota</button>
+            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-proyectos\\']').click(); setTimeout(()=>document.getElementById('btnOpenModal').click(), 300);">🚀 Proyecto</button>
+            <button class="fab-item" onclick="document.querySelector('[data-target=\\'seccion-calendario\\']').click(); setTimeout(()=>document.getElementById('btn-nuevo-evento').click(), 300);">📅 Evento</button>
+        </div>
+        <div class="fab-trigger" id="fab-btn">⚡</div>
+    `;
+    
+    document.body.appendChild(fab);
+    
+    // Lógica Toggle
+    const btn = fab.querySelector('#fab-btn');
+    const menu = fab.querySelector('#fab-menu');
+    
+    btn.addEventListener('click', (e) => {
+        if (fab.getAttribute('data-is-dragging') === 'true') return; 
+        menu.classList.toggle('active');
+        btn.classList.toggle('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!fab.contains(e.target)) {
+            menu.classList.remove('active');
+            btn.classList.remove('active');
+        }
+    });
+}
+
+function hacerFabDraggable() {
+    const fab = document.getElementById('fab-actions');
+    const trigger = document.getElementById('fab-btn');
+    if (!fab || !trigger) return;
+
+    let isDragging = false;
+    let startX, startY, initialRight, initialBottom;
+
+    const startDrag = (e) => {
+        if (!e.target.closest('#fab-btn')) return;
+        isDragging = false;
+        
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        startX = clientX;
+        startY = clientY;
+
+        const rect = fab.getBoundingClientRect();
+        initialRight = window.innerWidth - rect.right;
+        initialBottom = window.innerHeight - rect.bottom;
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('touchmove', onMove, { passive: false });
+        document.addEventListener('mouseup', endDrag);
+        document.addEventListener('touchend', endDrag);
+    };
+
+    const onMove = (e) => {
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+        const dx = startX - clientX; 
+        const dy = startY - clientY; 
+
+        if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+            isDragging = true;
+            fab.setAttribute('data-is-dragging', 'true');
+            fab.style.transition = 'none'; 
+            
+            let newRight = initialRight + dx;
+            let newBottom = initialBottom + dy;
+            
+            newRight = Math.max(10, Math.min(window.innerWidth - 70, newRight));
+            newBottom = Math.max(10, Math.min(window.innerHeight - 70, newBottom));
+
+            fab.style.right = `${newRight}px`;
+            fab.style.bottom = `${newBottom}px`;
+            
+            if (e.cancelable) e.preventDefault(); 
+        }
+    };
+
+    const endDrag = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('touchmove', onMove);
+        document.removeEventListener('mouseup', endDrag);
+        document.removeEventListener('touchend', endDrag);
+
+        fab.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+
+        if (isDragging) {
+            // 3. GUARDAR POSICIÓN AL SOLTAR
+            const currentPos = {
+                right: fab.style.right,
+                bottom: fab.style.bottom
+            };
+            Almacenamiento.guardar("nexus_fab_position", currentPos);
+        }
+
+        setTimeout(() => {
+            fab.setAttribute('data-is-dragging', 'false');
+        }, 50);
+    };
+
+    trigger.addEventListener('mousedown', startDrag);
+    trigger.addEventListener('touchstart', startDrag, { passive: false });
 }

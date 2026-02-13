@@ -224,3 +224,57 @@ input:checked+.slider:before {
     from { opacity: 0; }
     to { opacity: 1; }
 }
+
+/* --- RESPONSIVE FIXES: PREFERENCIAS --- */
+@media (max-width: 768px) {
+    /* Contenedor de pestañas desplazable */
+    .settings-tabs {
+        display: flex;
+        overflow-x: auto; /* Scroll horizontal */
+        white-space: nowrap;
+        padding-bottom: 5px; /* Espacio para scrollbar */
+        gap: 10px;
+        background: transparent; /* Quitar fondo de bloque */
+        border: none;
+    }
+
+    /* Ocultar barra de scroll fea */
+    .settings-tabs::-webkit-scrollbar {
+        height: 4px;
+    }
+    .settings-tabs::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 4px;
+    }
+
+    /* Botón individual */
+    .pestana-configuracion {
+        flex: 0 0 auto; /* No encoger */
+        padding: 10px 15px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        font-size: 0.9rem;
+    }
+
+    .pestana-configuracion.active {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+
+    /* Ajustar filas de configuración */
+    .setting-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .setting-desc {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    /* Switches a la derecha */
+    .module-toggle-item {
+        justify-content: space-between;
+    }
+}

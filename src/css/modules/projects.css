@@ -734,8 +734,55 @@
         font-size: 1.4rem;
     }
 
+   
+}
+
+
+/* --- RESPONSIVE FIXES: PROYECTOS --- */
+@media (max-width: 768px) {
+     .proj-kpi-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .kpi-value {
+        font-size: 1.4rem;
+    }
+     
     .projects-container.grid-view {
         grid-template-columns: 1fr;
         /* 1 col en móvil */
+    }
+    /* Ajuste del Modal */
+    .form-card {
+        padding: 20px 15px; /* Menos relleno */
+        max-height: 85vh; /* Evitar que se corte */
+    }
+
+    /* Forzar 1 columna en los inputs de fecha/prioridad */
+    .modal-grid-2 {
+        grid-template-columns: 1fr; 
+        gap: 15px;
+    }
+
+    /* Ajustar botones de acción para que no se salgan */
+    .form-actions {
+        flex-direction: column-reverse; /* Guardar arriba, Cancelar abajo */
+        gap: 10px;
+    }
+
+    .form-actions button {
+        width: 100%;
+    }
+
+    /* Ajustar el header del modal */
+    .form-card h2 {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+    
+    /* Input de etiquetas */
+    .tags-input-container {
+        min-height: 45px;
     }
 }

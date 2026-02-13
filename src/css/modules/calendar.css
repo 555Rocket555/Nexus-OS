@@ -330,3 +330,53 @@
 @media (max-width: 1100px) {
     .agenda-main-grid { grid-template-columns: 1fr; }
 }
+
+/* --- RESPONSIVE FIXES: CALENDARIO --- */
+@media (max-width: 768px) {
+    /* 1. Layout Vertical */
+    .calendario-layout {
+        height: auto;
+        overflow-y: auto; /* Permitir scroll en toda la página */
+    }
+
+    .agenda-main-grid {
+        grid-template-columns: 1fr; /* Una sola columna */
+        gap: 30px;
+        height: auto;
+    }
+
+    /* 2. Ajuste de la Cuadrícula */
+    .calendar-grid {
+        gap: 3px; /* Menos espacio entre días */
+    }
+
+    .day-cell {
+        min-height: 60px; /* Celdas más bajitas */
+        padding: 2px;
+        border-radius: 8px;
+    }
+
+    .day-label {
+        font-size: 0.75rem;
+        margin-right: 2px;
+    }
+
+    .calendar-weekdays {
+        font-size: 0.6rem; /* Letra más pequeña para LUN, MAR... */
+    }
+
+    /* 3. Píldoras de eventos en móvil */
+    .evento-mark {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+        height: 16px;
+        line-height: 14px;
+    }
+
+    /* 4. Barra Lateral (que ahora va abajo) */
+    .agenda-sidebar {
+        overflow: visible;
+        padding-right: 0;
+        margin-bottom: 50px;
+    }
+}

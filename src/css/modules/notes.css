@@ -276,8 +276,40 @@
 }
 .text-danger { color: var(--danger) !important; }
 
-/* Responsive */
+/* --- RESPONSIVE FIXES: NOTAS --- */
 @media (max-width: 768px) {
-    .notes-list.grid { grid-template-columns: 1fr; } /* 1 columna en móvil */
-    .note-item-card { min-height: auto; } /* Altura auto en móvil */
+    /* Cuando el editor está ABIERTO */
+    .notes-layout.editor-open {
+        display: block; /* Romper el grid */
+        position: relative;
+    }
+
+    .notes-layout.editor-open .notes-sidebar {
+        display: none; /* Ocultar la lista */
+    }
+
+    .notes-layout.editor-open .note-editor-area {
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        padding: 15px;
+        z-index: 10;
+        display: flex;
+    }
+
+    /* Ajustes internos del editor */
+    .editor-title {
+        font-size: 1.5rem;
+        padding: 10px 0;
+    }
+
+    .editor-top-bar {
+        padding: 10px 0;
+        margin-bottom: 10px;
+    }
+
+    /* Botón volver (Asegúrate de que este ID exista en tu JS) */
+    #btn-volver-lista {
+        display: block; /* Mostrar botón atrás si estaba oculto */
+    }
 }
